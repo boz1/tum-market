@@ -14,7 +14,6 @@ class App extends Component {
   componentDidMount(){
     const rootRef = firebase.database().ref().child('users')
     const usernameRef = rootRef.orderByChild('email').equalTo('user1@mytum.de')
-
     usernameRef.on('value', this.snap)
   }
 
