@@ -13,7 +13,10 @@ class Home extends Component {
     }
 
     render() {
-        return (<h1>Home</h1>);
+        return (<div><h1>Home</h1>
+            <button type="submit" onClick={this.logout} class="btn btn-primary">logout</button>
+                </div>
+            );
 
     }
 
