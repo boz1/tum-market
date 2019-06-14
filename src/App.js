@@ -1,29 +1,32 @@
 import React, {Component} from 'react';
 import './App.css';
-import * as firebase from 'firebase'
+import fire from './Config/fire-config';
 
 class App extends Component {
   constructor(){
     super()
-    this.state = {
-      user: ""
-    }
-    this.snap = this.snap.bind(this)
+    this.state = ({
+      user: null,
+    });
+    this.authListener = this.authListener.bind(this);
   }
 
-  componentDidMount(){
-    const rootRef = firebase.database().ref().child('users')
-    const usernameRef = rootRef.orderByChild('email').equalTo('user1@mytum.de')
-
-    usernameRef.on('value', this.snap)
+  componentDidMount() {
+    this.authListener();
   }
 
-  snap(data){
-    this.setState({
-      user: data.val()[1].username
-    })
+  authListener() {
+    fire.auth().onAuthStateChanged((user) => {
+      console.log(user);
+      if (user) {
+        this.setState({ user });
+        localStorage.setItem('user', user.uid);
+      } else {
+        this.setState({ user: null });
+        localStorage.removeItem('user');
+      }
+    });
   }
-
   render(){
     return (
       <div className="App">
