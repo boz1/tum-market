@@ -29,12 +29,7 @@ class App extends Component {
   }
   render(){
     return (
-      <div className="App">
-        <header className="App-header">
-          {this.state.user}
-        </header>
-      </div>
-    );
+      <div>{this.state.user ? : ( <Home/>) : (<Login />)}</div>
   }
   
 }
