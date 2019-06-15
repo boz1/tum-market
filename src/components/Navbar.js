@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
+import Dropdown from 'react-bootstrap/Dropdown';
+import styled from 'styled-components';
 
 export default class Navbar extends Component {
     render() {
@@ -19,13 +21,26 @@ export default class Navbar extends Component {
                         <Link to="/NewAdvertisement" className="text-new-ad">New Advertisement</Link>
                     </li>
                 </ul>
-                <div className="ml-auto mr-auto">
+                <div className="ml-auto">
                     <Form inline>
-                        <FormControl type="text" placeholder="Type in Title, Item No, ..." className=" mr-sm-2" />
+                        <FormControl type="text" placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
                         <Button type="submit">Filter</Button>
                     </Form>
                 </div>
-                <button className="ml-auto"><FontAwesomeIcon icon={faBars} /></button>
+                <Dropdown className="ml-auto mr-5">
+                    <Dropdown.Toggle variant="info" id="dropdown-basic">
+                        John Doe
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
+                        <Dropdown.Item href="#/action-2">My Advertisements</Dropdown.Item>
+                        <Dropdown.Item href="#/action-3">My Buying Requests</Dropdown.Item>
+                        <Dropdown.Item href="#/action-3">My Trade Offers</Dropdown.Item>
+                        <Dropdown.Item href="#/action-3">Chat Bot</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item href="#/action-3">Log Out</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             </nav>
         )
     }

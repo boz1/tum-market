@@ -24,6 +24,10 @@ body{
   font-size: 18px;
 }
 
+.text-new-ad:hover {
+  color: var(--mainWhite);
+}
+
 .text-category-title {
   color: var(--mainBlue);
   font-size: 18px;
@@ -48,4 +52,8 @@ body{
 
 .nav-back{
   background: var(--navGray)
+}
+
+.search {
+  width:350px !important;
 }
