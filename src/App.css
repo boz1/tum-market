@@ -14,9 +14,24 @@ body{
   font-size: 16px !important;
 }
 
+.category-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 200px;
+}
+
+.category-item{
+  display: block;
+  padding: 2px 12px;
+  text-decoration: none;
+}
+
 .text-title {
   color: var(--mainBlue);
-  font-size: 24px;
+  font-size: 20px;
+  padding-top: 5px;
+  padding-bottom: 0px;
 }
 
 .text-new-ad {
@@ -30,7 +45,7 @@ body{
 
 .text-category-title {
   color: var(--mainBlue);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
 }
 
@@ -47,7 +62,7 @@ body{
 }
 
 .logo{
-  width: 52px;
+  width: 55px;
 }
 
 .nav-back{
@@ -56,4 +71,9 @@ body{
 
 .search {
   width:350px !important;
+}
+
+.brand {
+  margin-bottom: 4px;
+  font-size: 20px;
 }

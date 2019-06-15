@@ -7,7 +7,6 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
-import styled from 'styled-components';
 
 export default class Navbar extends Component {
     render() {
@@ -27,11 +26,11 @@ export default class Navbar extends Component {
                         <Button type="submit">Filter</Button>
                     </Form>
                 </div>
-                <Dropdown className="ml-auto mr-5">
+                <Dropdown className="ml-auto">
                     <Dropdown.Toggle variant="info" id="dropdown-basic">
                         John Doe
                     </Dropdown.Toggle>
-                    <Dropdown.Menu>
+                    <Dropdown.Menu alignRight>
                         <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
                         <Dropdown.Item href="#/action-2">My Advertisements</Dropdown.Item>
                         <Dropdown.Item href="#/action-3">My Buying Requests</Dropdown.Item>
