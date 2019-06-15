@@ -1,6 +1,15 @@
 import React, {Component} from 'react';
+import {Switch, Route} from 'react-router-dom'
 import './App.css';
-import * as firebase from 'firebase'
+import firebase from './config/firebaseConfig';
+import Navbar from './components/Navbar'
+import Colbar from './components/Colbar'
+import Footer from './components/Footer'
+import AdvertisementList from './components/advertisement/AdvertisementList'
+import AdDetails from './components/advertisement/AdDetails'
+import PageNotFound from './components/PageNotFound'
+import NewAdvertisement from "./components/advertisement/NewAdvertisement"
+
 
 class App extends Component {
   constructor(){
@@ -25,11 +34,17 @@ class App extends Component {
 
   render(){
     return (
-      <div className="App">
-        <header className="App-header">
-          {this.state.user}
-        </header>
-      </div>
+     <React.Fragment>
+       <Navbar></Navbar>
+       <Colbar></Colbar>
+       <Footer/>
+       <Switch>
+         <Route exact path="/" component={AdvertisementList}/>
+         <Route path="/adDetails" component={AdDetails}/>
+         <Route path="/newAdvertisement" component={NewAdvertisement}/>
+         <Route component={PageNotFound}/>
+       </Switch>
+     </React.Fragment>
     );
   }
   
