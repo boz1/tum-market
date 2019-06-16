@@ -54,7 +54,8 @@ body{
 }
 
 .text-trade{
-  color: var(--tradeGreen)
+  color: var(--tradeGreen);
+  float: right;
 }
 
 .text-link{
@@ -76,4 +77,9 @@ body{
 .brand {
   margin-bottom: 4px;
   font-size: 20px;
+}
+
+.ad-img {
+  width: 171px !important; 
+  height: 180px;
 }

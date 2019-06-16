@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import Advertisment from './Advertisement'
 import Title from '../Title'
+import CardDeck from 'react-bootstrap/CardDeck';
+
 
 export default class AdvertisementList extends Component {
     constructor(props) {
@@ -10,24 +12,22 @@ export default class AdvertisementList extends Component {
         }
     }
 
-    componentDidMount(){
-        
-    }
-
-    getDataComponent = (data) => {
-        return <li key={data}>{data.title}</li>;
-    }
-
-    
+    // getItem = (data) => {
+    //     return (
+    //         <Advertisment ad = {data}/>
+    //     );
+    // }
 
     render() {
         const data = this.props.adsList;
         return (
             <React.Fragment>
-                <Title title="Marketplace" />
-                <hr></hr>
-                <div>
-                    {data.length > 0 ? data.map((d) => <li key={d.title}>{d.title}</li>) : ""}
+                <div className="container">
+                    <Title title="Marketplace" />
+                    <hr></hr>
+                    <CardDeck>
+                        {data.length > 0 ? data.map((d) => <Advertisment key={d.title} ad={d} />) : ""}
+                    </CardDeck>
                 </div>
             </React.Fragment>
         )
