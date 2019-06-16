@@ -11,7 +11,7 @@ body{
   font-family: 'Ebrima' !important;
   background: var(--mainWhite) !important;
   color: var(--textGray) !important;
-  font-size: 16px !important;
+  font-size: 14px !important;
 }
 
 .category-list {
@@ -31,7 +31,14 @@ body{
   color: var(--mainBlue);
   font-size: 20px;
   padding-top: 5px;
-  padding-bottom: 0px;
+  padding-bottom: -2px;
+}
+
+.text-sub-title {
+  color: var(--mainBlue);
+  font-size: 18px;
+  padding-top: 5px;
+  padding-bottom: 3px;
 }
 
 .text-new-ad {
@@ -56,6 +63,7 @@ body{
 .text-trade{
   color: var(--tradeGreen);
   float: right;
+  
 }
 
 .text-link{
@@ -79,7 +87,15 @@ body{
   font-size: 20px;
 }
 
-.ad-img {
-  width: 171px !important; 
-  height: 180px;
+.bold {
+  font-weight: bold;
+}
+
+.details-list{
+  width: 300px;
+  float: right;
+}
+
+.center-item {
+  text-align: right;
 }

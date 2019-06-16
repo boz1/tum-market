@@ -3,7 +3,6 @@ import { Switch, Route } from 'react-router-dom'
 import './App.css';
 import firebase from './config/firebaseConfig';
 import Navbar from './components/Navbar'
-import Colbar from './components/Colbar'
 import Footer from './components/Footer'
 import AdvertisementList from './components/advertisement/AdvertisementList'
 import AdDetails from './components/advertisement/AdDetails'
@@ -25,6 +24,7 @@ class App extends Component {
     this.getAdvertisements = this.getAdvertisements.bind(this)
     this.getCategories = this.getCategories.bind(this)
     this.getConditions = this.getConditions.bind(this)
+    this.getAdCondition = this.getAdCondition.bind(this)
   }
 
   componentDidMount() {
@@ -34,18 +34,25 @@ class App extends Component {
     this.getConditions()
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.usersRef.off('value')
-    this.usersRef= null;
+    this.usersRef = null;
 
     this.adsRef.off('value')
-    this.adsRef= null;
+    this.adsRef = null;
 
     this.categoriesRef.off('value')
-    this.categoriesRef= null;
+    this.categoriesRef = null;
 
     this.conditionsRef.off('value')
-    this.conditionsRef= null;
+    this.conditionsRef = null;
+  }
+
+  getAdCondition(id) {
+    const condRef = firebase.database().ref('conditionsRef').equalTo(id);
+    condRef.on('value', snap => {
+      return snap.val()
+    })
   }
 
   getUsers() {
@@ -62,8 +69,23 @@ class App extends Component {
     this.adsRef.on('value', snap => {
       let data = snap.val();
       let ads = [];
-      Object.keys(data).forEach(function(user){
-        data[user].forEach(function(ad){
+      Object.keys(data).forEach(function (user) {
+        data[user].forEach(function (ad) {
+          const condRef = firebase.database().ref('conditions').child(ad.conditionId);
+          condRef.on('value', cond => {
+            ad.condition = cond.val()
+          })
+
+          const mainCatRef = firebase.database().ref('categories').child(ad.mainCategoryId);
+          mainCatRef.on('value', cat => {
+            const mainCat = cat.val()
+            ad.mainCategory = mainCat;
+            const subCatRef = firebase.database().ref('sub-categories').child(ad.mainCategoryId).child(ad.subCategoryId);
+            subCatRef.on('value', sub => {
+              const subCat = sub.val();
+              ad.subCategory = subCat;
+            })
+          })
           ads.push(ad)
         })
       });
@@ -95,20 +117,13 @@ class App extends Component {
     return (
       <React.Fragment>
         <div className="container">
-          <Navbar/>
-          <div className="d-flex">
-            <div className="col-md-3">
-              <Colbar></Colbar>
-            </div>
-            <div className="col-md-9">
-              <Switch>
-                <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements}/>} />
-                <Route path="/adDetails" component={AdDetails} />
-                <Route path="/newAdvertisement" component={NewAdvertisement} />
-                <Route component={PageNotFound} />
-              </Switch>
-            </div>
-          </div>
+          <Navbar />
+          <Switch>
+            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} />} />
+            <Route path="/adDetails/:id" component={AdDetails} />
+            <Route path="/newAdvertisement" component={NewAdvertisement} />
+            <Route component={PageNotFound} />
+          </Switch>
           <Footer />
         </div>
       </React.Fragment>
