@@ -9,6 +9,12 @@ import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export default class Navbar extends Component {
+    // constructor(props){
+    //     super(props)
+    //     this.setState = {
+    //         advertisements: this.props.adsList
+    //     }
+    // }
     render() {
         return (
             <nav className="navbar navbar-expand-sm px-sm-5 nav-back">
