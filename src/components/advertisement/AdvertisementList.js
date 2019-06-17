@@ -4,8 +4,6 @@ import Title from '../Title'
 import CardDeck from 'react-bootstrap/CardDeck';
 import Colbar from '../Colbar'
 
-
-
 export default class AdvertisementList extends Component {
     constructor(props) {
         super(props)
