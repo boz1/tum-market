@@ -1,6 +1,6 @@
-import firebase from 'firebase';
+import * as firebase from 'firebase'
 
-const firebaseConfig = {
+var firebaseConfig = {
   apiKey: "AIzaSyCpc6o1X4c_vIxMafO2QE29aBDM4w-UPio",
   authDomain: "tum-market.firebaseapp.com",
   databaseURL: "https://tum-market.firebaseio.com",
@@ -9,5 +9,10 @@ const firebaseConfig = {
   messagingSenderId: "1018647233485",
   appId: "1:1018647233485:web:ee411c8fc9da26f3"
 };
-const fire = firebase.initializeApp(firebaseConfig);
-export default fire
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+const storage = firebase.storage();
+
+export {storage, firebase as default};
