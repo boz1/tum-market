@@ -46,6 +46,15 @@ class App extends Component {
 
     this.conditionsRef.off('value')
     this.conditionsRef = null;
+
+    this.mainCatRef.off('value')
+    this.mainCatRef = null;
+
+    this.subCatRef.off('value')
+    this.subCatRef = null;
+
+    this.condRef.off('value')
+    this.condRef = null;
   }
 
   getAdCondition(id) {
@@ -71,16 +80,16 @@ class App extends Component {
       let ads = [];
       Object.keys(data).forEach(function (user) {
         data[user].forEach(function (ad) {
-          const condRef = firebase.database().ref('conditions').child(ad.conditionId);
+          this.condRef = firebase.database().ref('conditions').child(ad.conditionId);
           condRef.on('value', cond => {
             ad.condition = cond.val()
           })
 
-          const mainCatRef = firebase.database().ref('categories').child(ad.mainCategoryId);
+          this.mainCatRef = firebase.database().ref('categories').child(ad.mainCategoryId);
           mainCatRef.on('value', cat => {
             const mainCat = cat.val()
             ad.mainCategory = mainCat;
-            const subCatRef = firebase.database().ref('sub-categories').child(ad.mainCategoryId).child(ad.subCategoryId);
+            this.subCatRef = firebase.database().ref('sub-categories').child(ad.mainCategoryId).child(ad.subCategoryId);
             subCatRef.on('value', sub => {
               const subCat = sub.val();
               ad.subCategory = subCat;
