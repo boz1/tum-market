@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import Nav from 'react-bootstrap/Nav';
 
 export default class Colbar extends Component {
     render() {

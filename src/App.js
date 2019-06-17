@@ -1,25 +1,26 @@
 import React, { Component } from 'react';
 import './App.css';
-import fire from './Config/fire-config';
+import firebase from './config/firebaseConfig'
 import Home from './components/Home';
 import Login from './components/Login';
-
-
 
 class App extends Component {
   constructor() {
     super()
+
     this.state = {
       user: null
     }
-    this.authListener = this.authListener.bind(this);
 
+    this.authListener = this.authListener.bind(this);
   }
+
   componentDidMount() {
     this.authListener();
   }
+
   authListener() {
-    fire.auth().onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged((user) => {
       console.log(user);
       if (user) {
         this.setState({ user });
@@ -30,6 +31,7 @@ class App extends Component {
       }
     });
   }
+
   render(){
     return (
       <div>{this.state.user ?  ( <Home/>) : (<Login />)}</div>)

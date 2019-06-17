@@ -6,5 +6,5 @@ const port=8000;
 app.get('/login',(req,res)=>{
     
 })
-app.listen(port,()=> console.log('sever started at ${port}'))
 
+app.listen(port,()=> console.log('server started at ${port}'))
