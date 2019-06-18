@@ -23,14 +23,14 @@ export default class AdDetails extends Component {
                                 <span className="text-sub-title">Details</span>
                                 <div className="d-flex mt-2 col-sm-12 p-0">
                                     <div className="col-sm-6">
-                                    <Image
+                                    <Image className="mt-0"
                                         src={ad.image}
                                         height={240}
                                         width={300}
                                     />
                                     </div>
                                     
-                                    <div className="col-sm-6 p-0">
+                                    <div className="col-sm-6 p-0 mt-3">
                                         <ul className="align-content-center category-list details-list">
                                             <li className="center-item"><span className="float-left">ID</span><strong>{ad.id}</strong></li>
                                             <hr></hr>

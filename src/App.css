@@ -52,7 +52,7 @@ body{
 
 .text-category-title {
   color: var(--mainBlue);
-  font-size: 16px;
+  font-size: 16px !important;
   font-weight: bold;
 }
 

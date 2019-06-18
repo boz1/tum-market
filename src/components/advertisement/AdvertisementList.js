@@ -12,12 +12,6 @@ export default class AdvertisementList extends Component {
         }
     }
 
-    // getItem = (data) => {
-    //     return (
-    //         <Advertisment ad = {data}/>
-    //     );
-    // }
-
     render() {
         const data = this.props.adsList;
         return (
@@ -29,7 +23,7 @@ export default class AdvertisementList extends Component {
                     <div className="col-md-9">
                         <Title title="Marketplace" />
                         <hr></hr>
-                        <CardDeck>
+                        <CardDeck className="mb-5">
                             {data.length > 0 ? data.map((d) => <Advertisment key={d.title} ad={d} />) : ""}
                         </CardDeck>
                     </div>
