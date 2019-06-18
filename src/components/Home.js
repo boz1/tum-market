@@ -13,19 +13,17 @@ class Home extends Component {
     super(props);
 
     this.state = {
-      user: "",
       usersList: {},
       advertisements: {},
       categories: {},
       conditions: {}
     }
 
-    this.getUser = this.getUsers.bind(this)
+    this.getUsers = this.getUsers.bind(this)
     this.getAdvertisements = this.getAdvertisements.bind(this)
     this.getCategories = this.getCategories.bind(this)
     this.getConditions = this.getConditions.bind(this)
     this.getAdCondition = this.getAdCondition.bind(this)
-    this.logout = this.logout.bind(this)
   }
 
   componentDidMount() {
@@ -119,10 +117,6 @@ class Home extends Component {
     })
   }
 
-  logout() {
-    firebase.auth().signOut();
-  }
-
   render() {
     return (
       <React.Fragment>
@@ -134,7 +128,6 @@ class Home extends Component {
             <Route path="/newAdvertisement" component={NewAdvertisement} />
             <Route component={PageNotFound} />
           </Switch>
-          <button type="submit" onClick={this.logout} className="btn btn-primary">Log Out</button>
           <Footer />
         </div>
       </React.Fragment>
