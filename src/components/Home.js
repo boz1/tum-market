@@ -50,6 +50,11 @@ class Home extends Component {
       this.condRef.off('value')
       this.condRef = null;
     }
+
+    if(this.usersRef !== undefined){
+      this.usersRef.off('value')
+      this.usersRef = null;
+    }
   }
 
   getAdCondition(id) {
@@ -78,6 +83,11 @@ class Home extends Component {
           const conRef = firebase.database().ref('conditions').child(ad.conditionId);
           conRef.on('value', cond => {
             ad.condition = cond.val()
+          })
+
+          const userRef = firebase.database().ref('users').child(ad.userId);
+          userRef.on('value', user => {
+            ad.user = user.val()
           })
 
           const mainCatRef = firebase.database().ref('categories').child(ad.mainCategoryId);

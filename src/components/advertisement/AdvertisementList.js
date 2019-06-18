@@ -8,7 +8,6 @@ export default class AdvertisementList extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            advertisements: this.props.adsList
         }
     }
 
@@ -24,7 +23,7 @@ export default class AdvertisementList extends Component {
                         <Title title="Marketplace" />
                         <hr></hr>
                         <CardDeck className="mb-5">
-                            {data.length > 0 ? data.map((d) => <Advertisment key={d.title} ad={d} />) : ""}
+                            {data.length > 0 ? data.map((ad) => <Advertisment key={ad.title} ad={ad}/>) : ""}
                         </CardDeck>
                     </div>
                 </div>
