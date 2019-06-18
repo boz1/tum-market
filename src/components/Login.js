@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import firebase from '../config/firebaseConfig';
+import Alert from 'react-bootstrap/Alert'
 
 class Login extends Component {
   constructor(props) {
@@ -7,7 +8,8 @@ class Login extends Component {
 
     this.state = {
       email: '',
-      password: ''
+      password: '',
+      showAlert: false
     };
 
     this.login = this.login.bind(this);
@@ -23,25 +25,34 @@ class Login extends Component {
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((u) => {
     }).catch((error) => {
       console.log(error);
+      this.setState({
+        showAlert: true
+      })
     });
   }
 
   render() {
     return (
-      <div className="col-md-6">
-        <form>
-          <div className="form-group">
-            <label htmlFor="exampleInputEmail1">Email address</label>
-            <input value={this.state.email} onChange={this.handleChange} type="email" name="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" />
-            <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
-          </div>
-          <div className="form-group">
-            <label htmlFor="exampleInputPassword1">Password</label>
-            <input value={this.state.password} onChange={this.handleChange} type="password" name="password" className="form-control" id="exampleInputPassword1" placeholder="Password" />
-          </div>
-          <button type="submit" onClick={this.login} className="btn btn-primary">Login</button>
-        </form>
-
+      <div className="container mt-5">
+        <div className="mx-auto my-auto p-4 w-50 login-border">
+          <h3 className="login-header">Student Login</h3>
+          <hr></hr>
+          <form>
+            <div className="form-group large-text" >
+              <label htmlFor="exampleInputEmail1">Email</label>
+              <input value={this.state.email} onChange={this.handleChange} type="email" name="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email address" />
+              {/* <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small> */}
+            </div>
+            <div className="form-group large-text">
+              <label htmlFor="exampleInputPassword1">Password</label>
+              <input value={this.state.password} onChange={this.handleChange} type="password" name="password" className="form-control" id="exampleInputPassword1" placeholder="Enter password" />
+            </div>
+            {this.state.showAlert ?  <Alert variant={"danger"} >
+              Wrong password or email, please try again.
+            </Alert> : ''}
+            <button type="submit" onClick={this.login} className="btn btn-primary">Login</button> 
+          </form>
+        </div>
       </div>
     );
   }

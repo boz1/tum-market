@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import firebase from '../config/firebaseConfig';
 import logo from '../logo.svg'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -7,12 +8,19 @@ import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export default class Navbar extends Component {
-    // constructor(props){
-    //     super(props)
-    //     this.setState = {
-    //         advertisements: this.props.adsList
-    //     }
-    // }
+    constructor(props) {
+        super(props)
+        this.setState = {
+            advertisements: this.props.adsList
+        }
+
+        this.logout = this.logout.bind(this)
+    }
+
+    logout() {
+        firebase.auth().signOut();
+    }
+
     render() {
         return (
             <nav className="navbar navbar-expand-sm px-sm-5 nav-back">
@@ -41,7 +49,7 @@ export default class Navbar extends Component {
                         <Dropdown.Item href="#/action-3">My Trade Offers</Dropdown.Item>
                         <Dropdown.Item href="#/action-3">Chat Bot</Dropdown.Item>
                         <Dropdown.Divider />
-                        <Dropdown.Item href="#/action-3">Log Out</Dropdown.Item>
+                        <Dropdown.Item onClick={this.logout}>Log Out</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
             </nav>
