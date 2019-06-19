@@ -13,24 +13,26 @@ class Home extends Component {
     super(props);
 
     this.state = {
+      user: {},
       usersList: {},
       advertisements: {},
       categories: {},
       conditions: {}
     }
 
+    this.getUser = this.getUser.bind(this)
     this.getUsers = this.getUsers.bind(this)
     this.getAdvertisements = this.getAdvertisements.bind(this)
     this.getCategories = this.getCategories.bind(this)
     this.getConditions = this.getConditions.bind(this)
-    this.getAdCondition = this.getAdCondition.bind(this)
   }
 
   componentDidMount() {
     this.getUsers()
-    this.getAdvertisements()
     this.getCategories()
     this.getConditions()
+    this.getAdvertisements(this.props.user, this.getUser)
+      .catch(function (err) { console.log(err) })
   }
 
   componentWillUnmount() {
@@ -46,17 +48,64 @@ class Home extends Component {
     this.conditionsRef.off('value')
     this.conditionsRef = null;
 
-    if (this.condRef !== undefined) {
-      this.condRef.off('value')
-      this.condRef = null;
-    }
+    this.userRef.off('value')
+    this.userRef = null;
+
+    this.userAdsRef.off('value')
+    this.userAdsRef = null;
+
+    this.userBuyReqRef.off('value')
+    this.userBuyReqRef = null;
+
+    this.userTradeReqRef.off('value')
+    this.userTradeReqRef = null;
   }
 
-  getAdCondition(id) {
-    this.condRef = firebase.database().ref('conditionsRef').equalTo(id);
-    this.condRef.on('value', snap => {
-      return snap.val()
-    })
+  getUser(user) {
+    if (user !== undefined) {
+      const id = user.uid;
+
+      this.userRef = firebase.database().ref('users').child(id)
+      this.userRef.on('value', snap => {
+        let val = snap.val();
+        let stateObj = this.state.user;
+        stateObj.info = val;
+        this.setState({
+          user: stateObj
+        })
+      })
+
+
+      this.userAdsRef = firebase.database().ref('advertisements').child(id)
+      this.userAdsRef.on('value', snap => {
+        let val = snap.val();
+        let stateObj = this.state.user;
+        stateObj.ads = val;
+        this.setState({
+          user: stateObj
+        })
+      })
+
+      this.userBuyReqRef = firebase.database().ref('buying-requests').child(id)
+      this.userBuyReqRef.on('value', snap => {
+        let val = snap.val();
+        let stateObj = this.state.user;
+        stateObj.buyReq = val;
+        this.setState({
+          user: stateObj
+        })
+      })
+
+      this.userTradeReqRef = firebase.database().ref('trade-requests').child(id)
+      this.userTradeReqRef.on('value', snap => {
+        let val = snap.val();
+        let stateObj = this.state.user;
+        stateObj.tradeReq = val;
+        this.setState({
+          user: stateObj
+        })
+      });
+    }
   }
 
   getUsers() {
@@ -68,33 +117,49 @@ class Home extends Component {
     })
   }
 
-  getAdvertisements() {
-    this.adsRef = firebase.database().ref('advertisements')
-    this.adsRef.on('value', snap => {
-      let data = snap.val();
-      let ads = [];
-      Object.keys(data).forEach(function (user) {
-        data[user].forEach(function (ad) {
-          const conRef = firebase.database().ref('conditions').child(ad.conditionId);
-          conRef.on('value', cond => {
-            ad.condition = cond.val()
-          })
-
-          const mainCatRef = firebase.database().ref('categories').child(ad.mainCategoryId);
-          mainCatRef.on('value', cat => {
-            const mainCat = cat.val()
-            ad.mainCategory = mainCat;
-            const subCatRef = firebase.database().ref('sub-categories').child(ad.mainCategoryId).child(ad.subCategoryId);
-            subCatRef.on('value', sub => {
-              const subCat = sub.val();
-              ad.subCategory = subCat;
+  getAdvertisements(currentUser, cb) {
+    return new Promise((resolve, reject) => {
+      this.adsRef = firebase.database().ref('advertisements')
+      this.adsRef.on('value', snap => {
+        let data = snap.val();
+        let ads = [];
+        Object.keys(data).forEach(function (user) {
+          data[user].forEach(function (ad) {
+            const conRef = firebase.database().ref('conditions').child(ad.conditionId);
+            conRef.on('value', cond => {
+              ad.condition = cond.val()
             })
+
+            const ownerRef = firebase.database().ref('users').child(ad.userId);
+            ownerRef.on('value', user => {
+              ad.user = user.val()
+            })
+
+            const mainCatRef = firebase.database().ref('categories').child(ad.mainCategoryId);
+            mainCatRef.on('value', cat => {
+              const mainCat = cat.val()
+              ad.mainCategory = mainCat;
+              const subCatRef = firebase.database().ref('sub-categories').child(ad.mainCategoryId).child(ad.subCategoryId);
+              subCatRef.on('value', sub => {
+                const subCat = sub.val();
+                ad.subCategory = subCat;
+              })
+            })
+            ads.push(ad)
           })
-          ads.push(ad)
+        });
+        
+        this.setState({
+          advertisements: ads
         })
-      });
-      this.setState({
-        advertisements: ads
+
+        if (this.state.advertisements.length !== undefined) {
+          resolve(cb(currentUser))
+        }
+        else {
+          reject('ads error')
+        }
+
       })
     })
   }
@@ -109,7 +174,7 @@ class Home extends Component {
   }
 
   getConditions() {
-    this.conditionsRef = firebase.database().ref('conditionsRef')
+    this.conditionsRef = firebase.database().ref('conditions')
     this.conditionsRef.on('value', snap => {
       this.setState({
         conditions: snap.val()
@@ -121,9 +186,9 @@ class Home extends Component {
     return (
       <React.Fragment>
         <div className="container">
-          <Navbar />
+          <Navbar user={this.state.user} />
           <Switch>
-            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} />} />
+            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} user={this.state.user} />} />
             <Route path="/adDetails/:id" component={AdDetails} />
             <Route path="/newAdvertisement" component={NewAdvertisement} />
             <Route component={PageNotFound} />

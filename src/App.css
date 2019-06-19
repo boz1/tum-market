@@ -51,9 +51,14 @@ body{
 }
 
 .text-category-title {
-  color: var(--mainBlue);
-  font-size: 16px;
-  font-weight: bold;
+  color: var(--lightBlue);
+  font-size: 14px !important;
+  font-weight: bold !important;
+}
+
+.text-ad-title {
+  font-size: 16px !important;
+  color: var(--lightBlue);
 }
 
 .text-premium{
@@ -112,4 +117,9 @@ body{
 .login-border {
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
+}
+
+hr {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
