@@ -19,14 +19,15 @@ class Home extends Component {
       conditions: {}
     }
 
+    this.getUser = this.getUser.bind(this)
     this.getUsers = this.getUsers.bind(this)
     this.getAdvertisements = this.getAdvertisements.bind(this)
     this.getCategories = this.getCategories.bind(this)
     this.getConditions = this.getConditions.bind(this)
-    this.getAdCondition = this.getAdCondition.bind(this)
   }
 
   componentDidMount() {
+    this.getUser(this.props.user)
     this.getUsers()
     this.getAdvertisements()
     this.getCategories()
@@ -46,22 +47,20 @@ class Home extends Component {
     this.conditionsRef.off('value')
     this.conditionsRef = null;
 
-    if (this.condRef !== undefined) {
-      this.condRef.off('value')
-      this.condRef = null;
-    }
-
-    if(this.usersRef !== undefined){
-      this.usersRef.off('value')
-      this.usersRef = null;
-    }
+    this.userRef.off('value')
+    this.userRef = null;
   }
 
-  getAdCondition(id) {
-    this.condRef = firebase.database().ref('conditionsRef').equalTo(id);
-    this.condRef.on('value', snap => {
-      return snap.val()
-    })
+  getUser(user) {
+    if (user !== undefined) {
+      let id = user.uid;
+      this.userRef = firebase.database().ref('users').child(id)
+      this.userRef.on('value', snap => {
+        this.setState({
+          user: snap.val()
+        })
+      })
+    }
   }
 
   getUsers() {
@@ -85,8 +84,8 @@ class Home extends Component {
             ad.condition = cond.val()
           })
 
-          const userRef = firebase.database().ref('users').child(ad.userId);
-          userRef.on('value', user => {
+          const ownerRef = firebase.database().ref('users').child(ad.userId);
+          ownerRef.on('value', user => {
             ad.user = user.val()
           })
 
@@ -119,7 +118,7 @@ class Home extends Component {
   }
 
   getConditions() {
-    this.conditionsRef = firebase.database().ref('conditionsRef')
+    this.conditionsRef = firebase.database().ref('conditions')
     this.conditionsRef.on('value', snap => {
       this.setState({
         conditions: snap.val()
@@ -131,7 +130,7 @@ class Home extends Component {
     return (
       <React.Fragment>
         <div className="container">
-          <Navbar />
+          <Navbar user={this.state.user} />
           <Switch>
             <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} />} />
             <Route path="/adDetails/:id" component={AdDetails} />

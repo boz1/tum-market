@@ -16,7 +16,7 @@ export default class AdvertisementList extends Component {
         return (
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
-                    <div className="col-md-3">
+                    <div className="col-md-3 mt-5">
                         <Colbar></Colbar>
                     </div>
                     <div className="col-md-9">
