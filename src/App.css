@@ -1,33 +1,115 @@
-.App {
-  text-align: center;
+:root{
+  --mainBlue: #006BD6;
+  --lightBlue: #3482D1;
+  --navGray: #2A2525;
+  --textGray: #707070;
+  --tradeGreen: #346E27;
+  --mainWhite: #ffffff;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+body{
+  font-family: 'Ebrima' !important;
+  background: var(--mainWhite) !important;
+  color: var(--textGray) !important;
+  font-size: 14px !important;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.category-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 200px;
 }
 
-.App-link {
-  color: #61dafb;
+.category-item{
+  display: block;
+  padding: 2px 12px;
+  text-decoration: none;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.text-title {
+  color: var(--mainBlue);
+  font-size: 20px;
+  padding-top: 5px;
+  padding-bottom: -2px;
+}
+
+.text-sub-title {
+  color: var(--mainBlue);
+  font-size: 18px;
+  padding-top: 5px;
+  padding-bottom: 3px;
+}
+
+.text-new-ad {
+  color: var(--mainWhite);
+  font-size: 18px;
+}
+
+.text-new-ad:hover {
+  color: var(--mainWhite);
+}
+
+.text-category-title {
+  color: var(--mainBlue);
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.text-premium{
+  color: var(--lightBlue)
+}
+
+.login-header{
+  color: var(--mainBlue);
+  font-size: 24px;
+}
+
+.text-trade{
+  color: var(--tradeGreen);
+  float: right;
+  
+}
+
+.text-link{
+  color: var(--mainWhite) !important;
+}
+
+.logo{
+  width: 55px;
+}
+
+.nav-back{
+  background: var(--navGray)
+}
+
+.search {
+  width:350px !important;
+}
+
+.brand {
+  margin-bottom: 4px;
+  font-size: 20px;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.details-list{
+  width: 300px;
+  float: right;
+}
+
+.center-item {
+  text-align: right;
+}
+
+.large-text {
+  font-size: 16px;
+}
+
+.login-border {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
 }
