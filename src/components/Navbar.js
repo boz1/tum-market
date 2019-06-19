@@ -22,6 +22,7 @@ export default class Navbar extends Component {
 
     render() {
         const user = this.props.user;
+
         return (
             <nav className="navbar navbar-expand-sm px-sm-5 nav-back">
                 <Link to='/'>
@@ -40,7 +41,7 @@ export default class Navbar extends Component {
                 </div>
                 <Dropdown className="ml-auto">
                     <Dropdown.Toggle variant="info" id="dropdown-basic">
-                        {user !== undefined ? user.name : ""}
+                        {user !== undefined && user.info !== undefined ? user.info.name : ""}
                     </Dropdown.Toggle>
                     <Dropdown.Menu alignRight>
                         <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>

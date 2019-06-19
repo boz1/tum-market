@@ -13,7 +13,7 @@ export default class Advertisement extends Component {
     render() {
         return (
             <Card style={{ width: '18rem', height: 'fit-content' }}>
-                <Link to={{ pathname: '/adDetails/' + this.props.ad.id, state: { ad: this.props.ad} }}><Image
+                <Link to={{ pathname: '/adDetails/' + this.props.ad.id, state: { ad: this.props.ad, user: this.props.user} }}><Image
                     src={this.props.ad.image}
                     height={240}
                 /></Link>
