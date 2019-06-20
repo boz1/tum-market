@@ -23,9 +23,9 @@ export default class AdvertisementList extends Component {
                     </div>
                     <div className="col-md-9">
                         <Title title="Marketplace" />
-                        <hr></hr>
+                        <hr className="my-2"></hr>
                         <CardDeck className="mb-5">
-                            {data.length > 0 ? data.map((ad) => <Advertisment key={ad.title} ad={ad} user={user}/>) : ""}
+                            {data.length > 0 ? data.map((ad) => <Advertisment key={ad.id} ad={ad} user={user}/>) : ""}
                         </CardDeck>
                     </div>
                 </div>

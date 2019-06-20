@@ -7,6 +7,7 @@ import AdvertisementList from './advertisement/AdvertisementList'
 import AdDetails from './advertisement/AdDetails'
 import PageNotFound from './PageNotFound'
 import NewAdvertisement from "./advertisement/NewAdvertisement"
+import TradeList from './trade/TradeList'
 
 class Home extends Component {
   constructor(props) {
@@ -57,8 +58,11 @@ class Home extends Component {
     this.userBuyReqRef.off('value')
     this.userBuyReqRef = null;
 
-    this.userTradeReqRef.off('value')
-    this.userTradeReqRef = null;
+    this.userTradeReqRefSent.off('value')
+    this.userTradeReqRefSent = null;
+
+    this.userTradeReqRefReceived.off('value')
+    this.userTradeReqRefReceived = null;
   }
 
   getUser(user) {
@@ -96,11 +100,21 @@ class Home extends Component {
         })
       })
 
-      this.userTradeReqRef = firebase.database().ref('trade-requests').child(id)
-      this.userTradeReqRef.on('value', snap => {
+      this.userTradeReqRefSent = firebase.database().ref('trade-requests').child(id)
+      this.userTradeReqRefSent.on('value', snap => {
         let val = snap.val();
         let stateObj = this.state.user;
         stateObj.tradeReq = val;
+        this.setState({
+          user: stateObj
+        })
+      });
+
+      this.userTradeReqRefReceived = firebase.database().ref('received-offers').child(id)
+      this.userTradeReqRefReceived.on('value', snap => {
+        let val = snap.val();
+        let stateObj = this.state.user;
+        stateObj.receivedOffers = val;
         this.setState({
           user: stateObj
         })
@@ -148,7 +162,7 @@ class Home extends Component {
             ads.push(ad)
           })
         });
-        
+
         this.setState({
           advertisements: ads
         })
@@ -189,6 +203,7 @@ class Home extends Component {
           <Navbar user={this.state.user} />
           <Switch>
             <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} user={this.state.user} />} />
+            <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user}/>} />
             <Route path="/adDetails/:id" component={AdDetails} />
             <Route path="/newAdvertisement" component={NewAdvertisement} />
             <Route component={PageNotFound} />
