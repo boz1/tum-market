@@ -9,7 +9,7 @@ export default class AdDetails extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            offeredItem : this.props.location.state.user.ads[1].title
+            offeredItem : this.props.location.state.user.ads[this.props.location.state.user.ads.length - 1].title
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -33,9 +33,7 @@ export default class AdDetails extends Component {
         let tradeRequest;
         let items = user.ads.map((item) => <option key={item.id} value={item.title}>{item.title}</option>)
         
-        // console.log(user.ads[1].title)
-
-        if (ad.trade){ //&& user.info.id !== ad.userId) {
+        if (ad.trade && user.info.id !== ad.userId) {
             tradeRequest = <div className="mt-3">
                 <span className="text-sub-title">Trade Request</span>
                 <Card style={{ width: '18rem', background: 'whitesmoke' }} className="mt-2">
@@ -62,7 +60,7 @@ export default class AdDetails extends Component {
             <React.Fragment>
                 <div className="container">
                     <Title title={ad.title} />
-                    <hr></hr>
+                    <hr className="my-2"></hr>
                     <div className="row">
                         <div className="col-md-12 d-flex p-0">
                             <div className="col-md-8">

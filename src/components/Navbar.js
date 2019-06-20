@@ -35,7 +35,7 @@ export default class Navbar extends Component {
                 </ul>
                 <div className="ml-auto">
                     <Form inline>
-                        <FormControl type="text" placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
+                        <FormControl type="text" placeholder="Type in Title, Item ID, ..." className="mr-sm-2 search" />
                         <Button type="submit">Filter</Button>
                     </Form>
                 </div>
@@ -47,7 +47,7 @@ export default class Navbar extends Component {
                         <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
                         <Dropdown.Item href="#/action-2">My Advertisements</Dropdown.Item>
                         <Dropdown.Item href="#/action-3">My Buying Requests</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3">My Trade Offers</Dropdown.Item>
+                        <Link to={{ pathname: '/tradeRequests' }} className="dropdown-item">My Trade Requests</Link>
                         <Dropdown.Item href="#/action-3">Chat Bot</Dropdown.Item>
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={this.logout}>Log Out</Dropdown.Item>
