@@ -11,7 +11,7 @@ export default class Navbar extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            advertisements: this.props.ad
+            advertisements: this.props.search
         }
         this.logout = this.logout.bind(this)
     }
@@ -22,7 +22,7 @@ export default class Navbar extends Component {
 
     render() {
         const user = this.props.user;
-        
+
         return (
             <nav className="navbar navbar-expand-sm px-sm-5 nav-back">
                 <Link to='/'>
@@ -35,7 +35,7 @@ export default class Navbar extends Component {
                 </ul>
                 <div className="ml-auto">
                     <Form inline>
-                        <FormControl onChange={this.props.ad} placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
+                        <FormControl onChange={this.props.search} placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
                         <Button type="submit">Filter</Button>
                     </Form>
                 </div>
