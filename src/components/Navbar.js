@@ -19,7 +19,11 @@ export default class Navbar extends Component {
     }
 
     render() {
+<<<<<<< HEAD
         console.log( this.state.advertisements)
+=======
+        const user = this.props.user;
+>>>>>>> 2a8b8bcc709dafd83f89f9f607bd3745870bd5c2
 
         return (
             <nav className="navbar navbar-expand-sm px-sm-5 nav-back">
@@ -28,9 +32,10 @@ export default class Navbar extends Component {
                 </Link>
                 <ul className="navbar-nav align-items-center">
                     <li className="nav-item ml-5">
-                        <Link to="/NewAdvertisement" className="text-new-ad">New Advertisement</Link>
+                        <Link to="/newAdvertisement" className="text-new-ad">New Advertisement</Link>
                     </li>
                 </ul>
+<<<<<<< HEAD
                 <Search ad={this.props.adsList}></Search>
     <Dropdown className="ml-auto">
         <Dropdown.Toggle variant="info" id="dropdown-basic">
@@ -57,6 +62,28 @@ export default class Navbar extends Component {
                 </form>
             </Dropdown.Menu>
         </Dropdown>
+=======
+                <div className="ml-auto">
+                    <Form inline>
+                        <FormControl type="text" placeholder="Type in Title, Item ID, ..." className="mr-sm-2 search" />
+                        <Button type="submit">Filter</Button>
+                    </Form>
+                </div>
+                <Dropdown className="ml-auto">
+                    <Dropdown.Toggle variant="info" id="dropdown-basic">
+                        {user !== undefined && user.info !== undefined ? user.info.name : ""}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu alignRight>
+                        <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
+                        <Dropdown.Item href="#/action-2">My Advertisements</Dropdown.Item>
+                        <Dropdown.Item href="#/action-3">My Buying Requests</Dropdown.Item>
+                        <Link to={{ pathname: '/tradeRequests' }} className="dropdown-item">My Trade Requests</Link>
+                        <Dropdown.Item href="#/action-3">Chat Bot</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={this.logout}>Log Out</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+>>>>>>> 2a8b8bcc709dafd83f89f9f607bd3745870bd5c2
             </nav>
         )
     }
