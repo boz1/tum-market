@@ -18,7 +18,7 @@ class Home extends Component {
       user: {},
       usersList: {},
       advertisements: {},
-      sug:{},
+      sug: {},
       categories: {},
       conditions: {}
     }
@@ -177,7 +177,7 @@ class Home extends Component {
 
         this.setState({
           advertisements: ads,
-          sug:ads
+          sug: ads
         })
 
         if (this.state.advertisements.length !== undefined) {
@@ -208,21 +208,23 @@ class Home extends Component {
       })
     })
   }
-  search(input){
-    if(input.target.value.length ===0)
-      this.setState({sug:this.state.advertisements})
-      else{
-    const regix=new RegExp(`^${input.target.value}`,'i')
-    this.setState({sug:this.state.advertisements.filter(ad => regix.test(ad.title))})  
+
+  search(input) {
+    if (input.target.value.length === 0)
+      this.setState({ sug: this.state.advertisements })
+    else {
+      const regix = new RegExp(`^${input.target.value}`, 'i')
+      this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) })
+    }
   }
-}
+
   render() {
     return (
       <React.Fragment>
         <div className="container">
           <Navbar ad={this.search} user={this.state.user} />
           <Switch>
-            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user}/>} />
+            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} user={this.state.user} />} />
             <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
             <Route path="/adDetails/:id" component={AdDetails} />
             <Route path="/newAdvertisement" component={NewAdvertisement} />
