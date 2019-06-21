@@ -1,39 +1,41 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './App.css';
-import * as firebase from 'firebase'
+import firebase from './config/firebaseConfig'
+import Home from './components/Home';
+import Login from './components/Login';
 
 class App extends Component {
-  constructor(){
+  constructor() {
     super()
+
     this.state = {
-      user: ""
+      user: null
     }
-    this.snap = this.snap.bind(this)
+
+    this.authListener = this.authListener.bind(this);
   }
 
-  componentDidMount(){
-    const rootRef = firebase.database().ref().child('users')
-    const usernameRef = rootRef.orderByChild('email').equalTo('user1@mytum.de')
-
-    usernameRef.on('value', this.snap)
+  componentDidMount() {
+    this.authListener();
   }
 
-  snap(data){
-    this.setState({
-      user: data.val()[1].username
-    })
+  authListener() {
+    firebase.auth().onAuthStateChanged((user) => {
+      // console.log(user);
+      if (user) {
+        this.setState({ user });
+        localStorage.setItem('user', user.uid);
+      } else {
+        this.setState({ user: null });
+        localStorage.removeItem('user');
+      }
+    });
   }
 
-  render(){
+  render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          {this.state.user}
-        </header>
-      </div>
-    );
+      <div>{this.state.user ? (<Home user={this.state.user}/>) : (<Login />)}</div>)
   }
-  
 }
 
 export default App;
