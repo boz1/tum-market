@@ -2,15 +2,12 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import firebase from '../config/firebaseConfig';
 import logo from '../logo.svg'
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Search from './Search'
 export default class Navbar extends Component {
     constructor(props) {
         super(props)
-        this.setState = {
+        this.state = {
             advertisements: this.props.adsList
         }
 
@@ -22,6 +19,8 @@ export default class Navbar extends Component {
     }
 
     render() {
+        console.log( this.state.advertisements)
+
         return (
             <nav className="navbar navbar-expand-sm px-sm-5 nav-back">
                 <Link to='/'>
@@ -32,22 +31,32 @@ export default class Navbar extends Component {
                         <Link to="/NewAdvertisement" className="text-new-ad">New Advertisement</Link>
                     </li>
                 </ul>
-                
-                <Search></Search>
-                <Dropdown className="ml-auto">
-                    <Dropdown.Toggle variant="info" id="dropdown-basic">
+                <Search ad={this.props.adsList}></Search>
+    <Dropdown className="ml-auto">
+        <Dropdown.Toggle variant="info" id="dropdown-basic">
                         John Doe
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu alignRight>
-                        <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2">My Advertisements</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3">My Buying Requests</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3">My Trade Offers</Dropdown.Item>
-                        <Dropdown.Item href="#/action-3">Chat Bot</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item onClick={this.logout}>Log Out</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+            </Dropdown.Toggle>
+            <Dropdown.Menu alignRight>
+        <form>
+       <fieldset>
+          <legend>Selecting elements</legend>
+             <label>Select list</label>
+             <select id = "myList">
+               <option value = "1">one</option>
+               <option value = "2">two</option>
+               <option value = "3">three</option>
+               <option value = "4">four</option>
+             </select>
+
+            <p> First name:</p>
+            <input type="text" name="firstname"></input>
+            <p>Last name:</p>
+            <input type="text" name="lastname"></input>
+
+                </fieldset>
+                </form>
+            </Dropdown.Menu>
+        </Dropdown>
             </nav>
         )
     }

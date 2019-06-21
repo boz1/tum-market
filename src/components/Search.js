@@ -5,15 +5,19 @@ import FormControl from 'react-bootstrap/FormControl';
 export default class Search extends Component {
     constructor(props) {
         super(props)
-        this.setState = {
+        this.state = {
+            ad:this.props.ad
          }
+    }
+    click(value){
+        console.log(value)
     }
 render() {
     return (
     <div className="ml-auto">
 <Form inline>
     <FormControl type="text" placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
-    <Button type="submit">Filter</Button>
+    <Button onClick={this.click(this.state.ad)}>Filter</Button>
 </Form>
 </div>
 )
