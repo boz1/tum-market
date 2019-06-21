@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
-
+import Search from './Search'
 export default class Navbar extends Component {
     constructor(props) {
         super(props)
@@ -32,12 +32,8 @@ export default class Navbar extends Component {
                         <Link to="/NewAdvertisement" className="text-new-ad">New Advertisement</Link>
                     </li>
                 </ul>
-                <div className="ml-auto">
-                    <Form inline>
-                        <FormControl type="text" placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
-                        <Button type="submit">Filter</Button>
-                    </Form>
-                </div>
+                
+                <Search></Search>
                 <Dropdown className="ml-auto">
                     <Dropdown.Toggle variant="info" id="dropdown-basic">
                         John Doe
