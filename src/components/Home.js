@@ -8,6 +8,7 @@ import AdDetails from './advertisement/AdDetails'
 import PageNotFound from './PageNotFound'
 import NewAdvertisement from "./advertisement/NewAdvertisement"
 import TradeList from './trade/TradeList'
+import { template } from '@babel/core';
 
 class Home extends Component {
   constructor(props) {
@@ -17,6 +18,7 @@ class Home extends Component {
       user: {},
       usersList: {},
       advertisements: {},
+      sug:{},
       categories: {},
       conditions: {}
     }
@@ -26,6 +28,8 @@ class Home extends Component {
     this.getAdvertisements = this.getAdvertisements.bind(this)
     this.getCategories = this.getCategories.bind(this)
     this.getConditions = this.getConditions.bind(this)
+    this.search = this.search.bind(this);
+
   }
 
   componentDidMount() {
@@ -172,7 +176,8 @@ class Home extends Component {
         });
 
         this.setState({
-          advertisements: ads
+          advertisements: ads,
+          sug:ads
         })
 
         if (this.state.advertisements.length !== undefined) {
@@ -203,14 +208,21 @@ class Home extends Component {
       })
     })
   }
-
+  search(input){
+    if(input.target.value.length ===0)
+      this.setState({sug:this.state.advertisements})
+      else{
+    const regix=new RegExp(`^${input.target.value}`,'i')
+    this.setState({sug:this.state.advertisements.filter(ad => regix.test(ad.title))})  
+  }
+}
   render() {
     return (
       <React.Fragment>
         <div className="container">
-          <Navbar user={this.state.user} />
+          <Navbar ad={this.search} user={this.state.user} />
           <Switch>
-            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} user={this.state.user}/>} />
+            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user}/>} />
             <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
             <Route path="/adDetails/:id" component={AdDetails} />
             <Route path="/newAdvertisement" component={NewAdvertisement} />
