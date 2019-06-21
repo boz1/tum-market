@@ -30,7 +30,7 @@ export default class Navbar extends Component {
                 </Link>
                 <ul className="navbar-nav align-items-center">
                     <li className="nav-item ml-5">
-                        <Link to="/NewAdvertisement" className="text-new-ad">New Advertisement</Link>
+                        <Link to="/newAdvertisement" className="text-new-ad">New Advertisement</Link>
                     </li>
                 </ul>
                 <div className="ml-auto">

@@ -102,9 +102,13 @@ class Home extends Component {
 
       this.userTradeReqRefSent = firebase.database().ref('trade-requests').child(id)
       this.userTradeReqRefSent.on('value', snap => {
-        let val = snap.val();
+        var data = [];
+        snap.forEach(ss => {
+          data.push(ss.val());
+        });
+
         let stateObj = this.state.user;
-        stateObj.tradeReq = val;
+        stateObj.tradeReq = data;
         this.setState({
           user: stateObj
         })
@@ -112,9 +116,13 @@ class Home extends Component {
 
       this.userTradeReqRefReceived = firebase.database().ref('received-offers').child(id)
       this.userTradeReqRefReceived.on('value', snap => {
-        let val = snap.val();
+        var data = [];
+        snap.forEach(ss => {
+          data.push(ss.val());
+        });
+
         let stateObj = this.state.user;
-        stateObj.receivedOffers = val;
+        stateObj.receivedOffers = data;
         this.setState({
           user: stateObj
         })
@@ -202,8 +210,8 @@ class Home extends Component {
         <div className="container">
           <Navbar user={this.state.user} />
           <Switch>
-            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} user={this.state.user} />} />
-            <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user}/>} />
+            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} user={this.state.user}/>} />
+            <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
             <Route path="/adDetails/:id" component={AdDetails} />
             <Route path="/newAdvertisement" component={NewAdvertisement} />
             <Route component={PageNotFound} />
