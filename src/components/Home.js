@@ -211,6 +211,7 @@ class Home extends Component {
   search(input){
 
     const regix=new RegExp(`^${input.target.value}`,'i')
+    this.setState({sug:this.state.advertisements.filter(ad => regix.test(ad.title))})  
   }
 }
   render() {
