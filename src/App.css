@@ -118,3 +118,33 @@ body{
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
 }
+
+.offer-accept {
+  color: var(--textGray);
+}
+
+.offer-accept:hover {
+  color: #44CF6C
+}
+
+.accepted {
+  color: #44CF6C
+}
+
+.offer-reject {
+  color: var(--textGray);
+}
+
+.offer-reject:hover {
+  color: #841C26
+}
+
+.rejected {
+  color: #841C26
+}
+
+.modal-style{
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}

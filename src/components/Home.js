@@ -8,7 +8,6 @@ import AdDetails from './advertisement/AdDetails'
 import PageNotFound from './PageNotFound'
 import NewAdvertisement from "./advertisement/NewAdvertisement"
 import TradeList from './trade/TradeList'
-import { template } from '@babel/core';
 
 class Home extends Component {
   constructor(props) {
