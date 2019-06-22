@@ -188,25 +188,25 @@ export default class TradeRequest extends Component {
             receivedStatus =
                 <span>
                     <span className="float-right offer-accept ml-3 accepted"><FontAwesomeIcon icon={faCheck} /></span>
-                    <span className="float-right offer-reject" onClick={this.showStatusModal} data-span="Rejected"><FontAwesomeIcon icon={faTimes} /></span>
+                    <span className="float-right offer-reject" style={{cursor:"pointer"}} onClick={this.showStatusModal} data-span="Rejected"><FontAwesomeIcon icon={faTimes} /></span>
                 </span>
         }
         else if (this.state.status === "Rejected") {
             receivedStatus =
                 <span>
-                    <span className="float-right offer-accept ml-3" onClick={this.showStatusModal} data-span="Accepted"><FontAwesomeIcon icon={faCheck} /></span>
+                    <span className="float-right offer-accept ml-3" style={{cursor:"pointer"}} onClick={this.showStatusModal} data-span="Accepted"><FontAwesomeIcon icon={faCheck} /></span>
                     <span className="float-right offer-reject rejected"><FontAwesomeIcon icon={faTimes} /></span>
                 </span>
         }
         else {
             receivedStatus =
                 <span>
-                    <span className="float-right offer-accept ml-3" onClick={this.showStatusModal} data-span="Accepted"><FontAwesomeIcon icon={faCheck} /></span>
-                    <span className="float-right offer-reject" onClick={this.showStatusModal} data-span="Rejected"><FontAwesomeIcon icon={faTimes} /></span>
+                    <span className="float-right offer-accept ml-3" style={{cursor:"pointer"}} onClick={this.showStatusModal} data-span="Accepted"><FontAwesomeIcon icon={faCheck} /></span>
+                    <span className="float-right offer-reject" style={{cursor:"pointer"}} onClick={this.showStatusModal} data-span="Rejected"><FontAwesomeIcon icon={faTimes} /></span>
                 </span>
         }
 
-        sentStatus = <span className="float-right offer-reject" onClick={this.showDeleteModal}><FontAwesomeIcon icon={faTimes} /></span>
+        sentStatus = <span className="float-right offer-reject" style={{cursor:"pointer"}} onClick={this.showDeleteModal}><FontAwesomeIcon icon={faTimes} /></span>
 
         if (type === "received") {
             request = <Card className="w-100 h-auto">

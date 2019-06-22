@@ -126,7 +126,7 @@ export default class AdDetails extends Component {
         }
         else if (this.state.isAlreadyOffered){
             alert = <Alert variant={"info"} style={{ width: '18rem', marginTop: "10px" }} >
-                You have already sent a trade offer for this item.
+                You have already sent a trade request for this item.
           </Alert>
         }
 

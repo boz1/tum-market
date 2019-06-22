@@ -6,6 +6,8 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
+import history from '../history'
+
 
 export default class Navbar extends Component {
     constructor(props) {
@@ -18,6 +20,7 @@ export default class Navbar extends Component {
 
     logout() {
         firebase.auth().signOut();
+        history.push('/')
     }
 
     render() {

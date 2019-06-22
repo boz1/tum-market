@@ -124,7 +124,7 @@ body{
 }
 
 .offer-accept:hover {
-  color: #44CF6C
+  color: #44CF6C;
 }
 
 .accepted {
@@ -136,7 +136,7 @@ body{
 }
 
 .offer-reject:hover {
-  color: #841C26
+  color: #841C26;
 }
 
 .rejected {

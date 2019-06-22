@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import firebase from '../config/firebaseConfig';
 import Alert from 'react-bootstrap/Alert'
+import history from '../history'
+
 
 class Login extends Component {
   constructor(props) {
@@ -14,6 +16,10 @@ class Login extends Component {
 
     this.login = this.login.bind(this);
     this.handleChange = this.handleChange.bind(this);
+  }
+
+  componentDidMount() {
+    history.push('/')
   }
 
   handleChange(e) {
@@ -47,10 +53,10 @@ class Login extends Component {
               <label htmlFor="exampleInputPassword1">Password</label>
               <input value={this.state.password} onChange={this.handleChange} type="password" name="password" className="form-control" id="exampleInputPassword1" placeholder="Enter password" />
             </div>
-            {this.state.showAlert ?  <Alert variant={"danger"} >
+            {this.state.showAlert ? <Alert variant={"danger"} >
               Wrong password or email, please try again.
             </Alert> : ''}
-            <button type="submit" onClick={this.login} className="btn btn-primary">Login</button> 
+            <button type="submit" onClick={this.login} className="btn btn-primary">Login</button>
           </form>
         </div>
       </div>

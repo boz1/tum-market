@@ -9,6 +9,7 @@ import PageNotFound from './PageNotFound'
 import NewAdvertisement from "./advertisement/NewAdvertisement"
 import TradeList from './trade/TradeList'
 
+
 class Home extends Component {
   constructor(props) {
     super(props);
