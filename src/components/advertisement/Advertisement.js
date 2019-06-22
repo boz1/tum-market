@@ -16,7 +16,7 @@ export default class Advertisement extends Component {
             <Card style={{ width: '18rem', height: 'fit-content' }}>
                 <Link to={{ pathname: '/adDetails/' + this.props.ad.id, state: { ad: this.props.ad, user: this.props.user } }}><Image
                     src={this.props.ad.image}
-                    height={240}
+                    height={150}
                 /></Link>
                 {/* <Card.Img variant="top" src={this.props.ad.image} alt={this.props.ad.title} /> */}
                 <Card.Body className="p-2">

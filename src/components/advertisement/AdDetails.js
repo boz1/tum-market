@@ -51,12 +51,18 @@ export default class AdDetails extends Component {
         // Get a key for a new Post.
         var newPostKey = firebase.database().ref('trade-requests').child(user.info.id).push().key;
 
+        // Get date
+        var today = new Date(),
+        date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
         const postDataBuyer = {
             offeredItemId: itemId,
             sellerId: ad.userId,
             targetItemId: ad.id,
             userId: user.info.id,
-            id: newPostKey
+            id: newPostKey,
+            status: '-',
+            date: date
         };
 
         const postDataSeller = {
@@ -64,7 +70,9 @@ export default class AdDetails extends Component {
             userId: ad.userId,
             sentItemId: ad.id,
             buyerId: user.info.id,
-            id: newPostKey
+            id: newPostKey,
+            status: '-',
+            date: date
         };
 
         // Write the new post's data simultaneously in the posts list and the user's post list.
