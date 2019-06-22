@@ -6,6 +6,8 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Filter from './Filter';
+
 
 export default class Navbar extends Component {
     constructor(props) {
@@ -36,11 +38,12 @@ export default class Navbar extends Component {
                 <div className="ml-auto">
                     <Form inline>
                         <FormControl type="text" placeholder="Type in Title, Item ID, ..." className="mr-sm-2 search" />
-                        <Button type="submit">Filter</Button>
                     </Form>
                 </div>
+                <Filter/>
+
                 <Dropdown className="ml-auto">
-                    <Dropdown.Toggle variant="info" id="dropdown-basic">
+                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
                         {user !== undefined && user.info !== undefined ? user.info.name : ""}
                     </Dropdown.Toggle>
                     <Dropdown.Menu alignRight>
