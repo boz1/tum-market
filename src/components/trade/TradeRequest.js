@@ -14,7 +14,7 @@ export default class TradeRequest extends Component {
         this.setItems = this.setItems.bind(this)
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.setItems()
     }
 
@@ -85,9 +85,12 @@ export default class TradeRequest extends Component {
         let request;
 
         if (type === "received") {
-            request = <Card style={{width:"auto"}}>
-                <Card.Header><span className="text-sub-title" style={{color:"coral"}}>Received Offer - {item.id}</span></Card.Header>
-                <Card.Body style={{background:"#FFE7DF"}}>
+            request = <Card className="w-100 h-auto">
+                <Card.Header><span className="text-sub-title" style={{ color: "coral" }}>Received Offer</span></Card.Header>
+                <Card.Body style={{ background: "#FFE7DF" }}>
+                    <Card.Text>
+                        ID: <strong> {item.id}</strong>
+                    </Card.Text>
                     <Card.Text>
                         You Receive: <strong>{this.state.receivedItem.title} - ID {this.state.receivedItem.id}</strong>
                     </Card.Text>
@@ -101,9 +104,12 @@ export default class TradeRequest extends Component {
             </Card>
         }
         else if (type === "sent") {
-            request = <Card style={{width:"auto"}}>
-                <Card.Header><span className="text-sub-title" style={{color:"#3DA09B"}}>Sent Offer - {item.id}</span></Card.Header>
-                <Card.Body style={{background:"#DBEDEC"}}>
+            request = <Card className="w-100 h-auto mt-2">
+                <Card.Header><span className="text-sub-title" style={{ color: "#3DA09B" }}>Sent Offer</span></Card.Header>
+                <Card.Body style={{ background: "#DBEDEC" }}>
+                    <Card.Text>
+                        ID: <strong> {item.id}</strong>
+                    </Card.Text>
                     <Card.Text>
                         You Receive: <strong>{this.state.receivedItem.title} - ID {this.state.receivedItem.id}</strong>
                     </Card.Text>
@@ -118,7 +124,7 @@ export default class TradeRequest extends Component {
         }
 
         return (
-            <div>
+            <div className="mr-2">
                 {request}
             </div>
         )

@@ -24,8 +24,8 @@ export default class TradeList extends Component {
                     <div className="col-md-9">
                         <Title title="My Trade Requests" />
                         <hr className="my-2"></hr>
-                        <div className="d-flex mb-5">
-                            <CardDeck className="mr-2">
+                        <div className="d-block mb-5">
+                            <CardDeck>
                                 {receivedOffers !== undefined && receivedOffers !== null ? (receivedOffers.length > 0 ? receivedOffers.map((item) => <TradeRequest key={item.id} item={item} type="received" />) : "") : ""}
                             </CardDeck>
                             <CardDeck>

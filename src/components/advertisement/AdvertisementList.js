@@ -16,6 +16,7 @@ export default class AdvertisementList extends Component {
         const user = this.props.user;
 
         return (
+
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
                     <div className="col-md-3 mt-5">

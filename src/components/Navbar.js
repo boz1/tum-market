@@ -41,7 +41,6 @@ export default class Navbar extends Component {
                     </Form>
                 </div>
                 <Filter/>
-
                 <Dropdown className="ml-auto">
                     <Dropdown.Toggle variant="primary" id="dropdown-basic">
                         {user !== undefined && user.info !== undefined ? user.info.name : ""}
