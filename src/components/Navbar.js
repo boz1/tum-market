@@ -6,15 +6,14 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
-import Filter from './Filter';
-
+import Filter from './Filter'
 
 export default class Navbar extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            advertisements: this.props.search
         }
-
         this.logout = this.logout.bind(this)
     }
 
@@ -32,12 +31,12 @@ export default class Navbar extends Component {
                 </Link>
                 <ul className="navbar-nav align-items-center">
                     <li className="nav-item ml-5">
-                        <Link to="/NewAdvertisement" className="text-new-ad">New Advertisement</Link>
+                        <Link to="/newAdvertisement" className="text-new-ad">New Advertisement</Link>
                     </li>
                 </ul>
                 <div className="ml-auto">
                     <Form inline>
-                        <FormControl type="text" placeholder="Type in Title, Item ID, ..." className="mr-sm-2 search" />
+                        <FormControl onChange={this.props.search} placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
                     </Form>
                 </div>
                 <Filter/>
