@@ -47,6 +47,7 @@ class Login extends Component {
       })
   }
   render() {
+    if (!this.state.singupBool){
     return (
       <div className="container mt-5">
         <div className="mx-auto my-auto p-4 w-50 login-border">
@@ -72,7 +73,11 @@ class Login extends Component {
       </div>
     );
     }
+    else{
+    return (
 
+        );
+    }
   }
 }
 export default Login;
