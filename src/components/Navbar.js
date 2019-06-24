@@ -31,12 +31,16 @@ export default class Navbar extends Component {
         if (this.notifRef !== undefined) {
             this.notifRef.off('value')
             this.notifRef = null;
+        }
 
-            this.notifReadRef.off('value')
-            this.notifReadRef = null;
-
+        if (this.removeNotifRef !== undefined) {
             this.removeNotifRef.off('value')
             this.removeNotifRef = null;
+        }
+
+        if (this.notifReadRef !== undefined) {
+            this.notifReadRef.off('value')
+            this.notifReadRef = null;
         }
     }
 
