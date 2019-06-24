@@ -7,6 +7,8 @@ import AdvertisementList from './advertisement/AdvertisementList'
 import AdDetails from './advertisement/AdDetails'
 import PageNotFound from './PageNotFound'
 import NewAdvertisement from "./advertisement/NewAdvertisement"
+import TradeList from './trade/TradeList'
+
 
 class Home extends Component {
   constructor(props) {
@@ -16,8 +18,10 @@ class Home extends Component {
       user: {},
       usersList: {},
       advertisements: {},
+      sug: {},
       categories: {},
-      conditions: {}
+      conditions: {},
+      notifications: {}
     }
 
     this.getUser = this.getUser.bind(this)
@@ -25,6 +29,8 @@ class Home extends Component {
     this.getAdvertisements = this.getAdvertisements.bind(this)
     this.getCategories = this.getCategories.bind(this)
     this.getConditions = this.getConditions.bind(this)
+    this.search = this.search.bind(this);
+
   }
 
   componentDidMount() {
@@ -57,8 +63,11 @@ class Home extends Component {
     this.userBuyReqRef.off('value')
     this.userBuyReqRef = null;
 
-    this.userTradeReqRef.off('value')
-    this.userTradeReqRef = null;
+    this.userTradeReqRefSent.off('value')
+    this.userTradeReqRefSent = null;
+
+    this.userTradeReqRefReceived.off('value')
+    this.userTradeReqRefReceived = null;
   }
 
   getUser(user) {
@@ -74,7 +83,6 @@ class Home extends Component {
           user: stateObj
         })
       })
-
 
       this.userAdsRef = firebase.database().ref('advertisements').child(id)
       this.userAdsRef.on('value', snap => {
@@ -96,11 +104,29 @@ class Home extends Component {
         })
       })
 
-      this.userTradeReqRef = firebase.database().ref('trade-requests').child(id)
-      this.userTradeReqRef.on('value', snap => {
-        let val = snap.val();
+      this.userTradeReqRefSent = firebase.database().ref('trade-requests').child(id)
+      this.userTradeReqRefSent.on('value', snap => {
+        var data = [];
+        snap.forEach(ss => {
+          data.push(ss.val());
+        });
+
         let stateObj = this.state.user;
-        stateObj.tradeReq = val;
+        stateObj.tradeReq = data;
+        this.setState({
+          user: stateObj
+        })
+      });
+
+      this.userTradeReqRefReceived = firebase.database().ref('received-offers').child(id)
+      this.userTradeReqRefReceived.on('value', snap => {
+        var data = [];
+        snap.forEach(ss => {
+          data.push(ss.val());
+        });
+
+        let stateObj = this.state.user;
+        stateObj.receivedOffers = data;
         this.setState({
           user: stateObj
         })
@@ -148,9 +174,10 @@ class Home extends Component {
             ads.push(ad)
           })
         });
-        
+
         this.setState({
-          advertisements: ads
+          advertisements: ads,
+          sug: ads
         })
 
         if (this.state.advertisements.length !== undefined) {
@@ -182,13 +209,23 @@ class Home extends Component {
     })
   }
 
+  search(input) {
+    if (input.target.value.length === 0)
+      this.setState({ sug: this.state.advertisements })
+    else {
+      const regix = new RegExp(`${input.target.value}`, 'i')
+      this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) })
+    }
+  }
+
   render() {
     return (
       <React.Fragment>
-        <div className="container">
-          <Navbar user={this.state.user} />
+        <div className="container content">
+          <Navbar search={this.search} user={this.state.user} />
           <Switch>
             <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} user={this.state.user} />} />
+            <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
             <Route path="/adDetails/:id" component={AdDetails} />
             <Route path="/newAdvertisement" component={NewAdvertisement} />
             <Route component={PageNotFound} />

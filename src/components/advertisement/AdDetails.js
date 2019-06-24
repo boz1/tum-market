@@ -1,55 +1,159 @@
 import React, { Component } from 'react'
+import firebase from '../../config/firebaseConfig';
 import Title from '../Title'
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import Image from 'react-image-resizer';
+import Alert from 'react-bootstrap/Alert';
 
 export default class AdDetails extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            offeredItem : this.props.location.state.user.ads[1].title
+            offeredItem: this.props.location.state.user.ads[2].title + '-' + this.props.location.state.user.ads[2].id,
+            isOfferSubmitted: false,
+            showAlert: false,
+            isAlreadyOffered: false,
+            showModal: false
         }
 
+        this.showRequestModal = this.showRequestModal.bind(this)
+        this.handleClose = this.handleClose.bind(this)
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChange(event) {
-        this.setState({offeredItem: event.target.value});
+    componentDidMount() {
+        const tradeOffers = this.props.location.state.user.tradeReq;
+        const ad = this.props.location.state.ad;
+        let isOffered = false;
+
+        tradeOffers.forEach(function (trade) {
+            if (trade.targetItemId === ad.id) {
+                isOffered = true;
+            }
+        })
+
+        this.setState({
+            isAlreadyOffered: isOffered
+        })
     }
 
-    handleSubmit(event){
+    handleChange(event) {
+        const title = event.target.value
+        this.setState({ offeredItem: title });
+    }
+
+    handleSubmit(event) {
         event.preventDefault();
-        console.log(this.state.offeredItem)
+        const ad = this.props.location.state.ad;
+        const user = this.props.location.state.user;
+        const itemId = parseInt(this.state.offeredItem.split('-')[1]);
+
+        // Get a key for a new Post.
+        var newPostKey = firebase.database().ref('trade-requests').child(user.info.id).push().key;
+
+        // Get date
+        var today = new Date(),
+            date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+        const postDataBuyer = {
+            offeredItemId: itemId,
+            sellerId: ad.userId,
+            targetItemId: ad.id,
+            userId: user.info.id,
+            id: newPostKey,
+            status: '-',
+            date: date
+        };
+
+        const postDataSeller = {
+            receivedItemId: itemId,
+            userId: ad.userId,
+            sentItemId: ad.id,
+            buyerId: user.info.id,
+            id: newPostKey,
+            status: '-',
+            date: date
+        };
+
+        const notification = {
+            id: newPostKey,
+            message: "You have a new trade request from " + user.info.name + " for your " + ad.title + ".",
+            isRead: false
+        };
+
+        // Write the new post's data simultaneously in the posts list and the user's post list.
+        var updates = {};
+        updates['/trade-requests/' + user.info.id + '/' + newPostKey] = postDataBuyer;
+        updates['/received-offers/' + ad.userId + '/' + newPostKey] = postDataSeller;
+        updates['/notifications/' + user.info.id + '/' + newPostKey] = notification;
+
+
+        firebase.database().ref().update(updates);
+
+        this.setState({
+            isOfferSubmitted: true,
+            showAlert: true,
+            showModal: false
+        })
+    }
+
+    showRequestModal(e) {
+        this.setState({
+            showModal: true
+        })
+    }
+
+    handleClose() {
+        this.setState({ showModal: false });
     }
 
     render() {
         const ad = this.props.location.state.ad;
         const adOwner = ad.user;
         const user = this.props.location.state.user;
-        
-        let tradeRequest;
-        let items = user.ads.map((item) => <option key={item.id} value={item.title}>{item.title}</option>)
-        
-        // console.log(user.ads[1].title)
+        let tradeRequest, alert, modal;
 
-        if (ad.trade){ //&& user.info.id !== ad.userId) {
+        let items = user.ads.map((item) => <option key={item.id} value={item.title + '-' + item.id}>{item.title}</option>)
+
+        modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
+            <Modal.Header>
+                <Modal.Title className="text-title ">
+                    Trade Request Confirmation
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body style={{ fontSize: '16px' }}>
+                You are offering <strong>{this.state.offeredItem.split('-')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>.
+                Do you want to send this trade request?
+                  </Modal.Body>
+            <Modal.Footer>
+                <Button variant="danger" onClick={this.handleClose}>
+                    Close
+                </Button>
+                <Button variant="success" onClick={this.handleSubmit} value={this.state.offeredItem}>
+                    Confirm
+                </Button>
+            </Modal.Footer>
+        </Modal>
+
+        if (ad.trade && user.info.id !== ad.userId && !this.state.isOfferSubmitted && !this.state.isAlreadyOffered) {
             tradeRequest = <div className="mt-3">
                 <span className="text-sub-title">Trade Request</span>
                 <Card style={{ width: '18rem', background: 'whitesmoke' }} className="mt-2">
                     <Card.Body>
-                        <Form onSubmit={this.handleSubmit}>
+                        <Form>
                             <Form.Row>
                                 <Form.Group controlId="tradeItem">
-                                    <Form.Label style={{fontSize:"16px"}}>Your Items</Form.Label>
+                                    <Form.Label style={{ fontSize: "16px" }}>Your Items</Form.Label>
                                     <Form.Control as="select" value={this.state.offeredItem} onChange={this.handleChange}>
                                         {items}
                                     </Form.Control>
                                 </Form.Group>
                             </Form.Row>
-                            <Button type='submit'  variant="primary">
+                            <Button variant="primary" onClick={this.showRequestModal}>
                                 Offer
                              </Button>
                         </Form>
@@ -58,11 +162,22 @@ export default class AdDetails extends Component {
             </div>;
         }
 
+        if (this.state.showAlert) {
+            alert = <Alert variant={"success"} style={{ width: '18rem', marginTop: "10px" }} >
+                Your trade offer is sent.
+          </Alert>
+        }
+        else if (this.state.isAlreadyOffered) {
+            alert = <Alert variant={"info"} style={{ width: '18rem', marginTop: "10px" }} >
+                You have already sent a trade request for this item.
+          </Alert>
+        }
+
         return (
             <React.Fragment>
                 <div className="container">
                     <Title title={ad.title} />
-                    <hr></hr>
+                    <hr className="my-2"></hr>
                     <div className="row">
                         <div className="col-md-12 d-flex p-0">
                             <div className="col-md-8">
@@ -132,10 +247,11 @@ export default class AdDetails extends Component {
                                     </Card>
                                 </div>
                                 {tradeRequest}
+                                {alert}
                             </div>
                         </div>
+                        {modal}
                     </div>
-
                 </div>
             </React.Fragment>
         )

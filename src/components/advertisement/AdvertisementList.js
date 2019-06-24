@@ -16,6 +16,7 @@ export default class AdvertisementList extends Component {
         const user = this.props.user;
 
         return (
+
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
                     <div className="col-md-3 mt-5">
@@ -23,9 +24,9 @@ export default class AdvertisementList extends Component {
                     </div>
                     <div className="col-md-9">
                         <Title title="Marketplace" />
-                        <hr></hr>
+                        <hr className="my-2"></hr>
                         <CardDeck className="mb-5">
-                            {data.length > 0 ? data.map((ad) => <Advertisment key={ad.title} ad={ad} user={user}/>) : ""}
+                            {data.length > 0 ? data.map((ad) => <Advertisment key={ad.id} ad={ad} user={user}/>) : ""}
                         </CardDeck>
                     </div>
                 </div>

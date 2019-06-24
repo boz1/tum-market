@@ -21,7 +21,6 @@ class App extends Component {
 
   authListener() {
     firebase.auth().onAuthStateChanged((user) => {
-      // console.log(user);
       if (user) {
         this.setState({ user });
         localStorage.setItem('user', user.uid);
@@ -34,7 +33,7 @@ class App extends Component {
 
   render() {
     return (
-      <div>{this.state.user ? (<Home user={this.state.user}/>) : (<Login />)}</div>)
+      <div>{this.state.user ? (<Home user={this.state.user} />) : <Login/>}</div>)
   }
 }
 
