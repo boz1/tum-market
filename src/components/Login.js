@@ -79,16 +79,36 @@ class Login extends Component {
         <div className="mx-auto my-auto p-4 w-50 login-border">
           <h3 className="login-header">Student Singup</h3>
           <hr></hr>
+          <label htmlFor="exampleInputEmail1">Email</label>
           <form class="form-inline">
-  <div class="form-group mb-2">
-  <input type="text" class="form-control"  placeholder="Eamil"/>
-  </div>
-  <div class="form-group mx-sm-3 mb-2">
-  <input type="text" readonly class="form-control-plaintext"  value="@mytum.com"/>
-  </div>
-</form>
-</div>
-</div>  
+            <div class="form-group mb-2">
+              <input type="text" class="form-control"  placeholder="Eamil"/>
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text">@mytum.du</div>
+              </div>            
+            </div>
+          </form>
+          <label htmlFor="exampleInputEmail1">Password</label>
+            <div class="form-group mb-2">
+              <input type="text" class="form-control"  placeholder="Password"/>
+            </div>
+          <label htmlFor="exampleInputEmail1">Extra Inforamtion</label>
+          <div class="form-group mb-2">
+              <input type="text" class="form-control"  placeholder="Name"/>
+            </div>
+          <form class="form-inline">
+            <div class="form-group mb-2">
+              <input type="text" class="form-control"  placeholder="Address"/>
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+              <input type="text" readonly class="form-control" placeholder="Mobile" />
+            </div>
+          </form>
+          <button type="submit" onClick={this.signup} className="btn btn-primary">Signup</button> 
+          </div>  
+        </div>
         );
     }
   }
