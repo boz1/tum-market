@@ -13,6 +13,7 @@ class Login extends Component {
       singupBool:false
 
     };
+    this.signup = this.signup.bind(this);
     this.singupPage = this.singupPage.bind(this);
     this.login = this.login.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -37,6 +38,13 @@ class Login extends Component {
     this.setState({singupBool: true})
   }
 
+  signup(e){
+    e.preventDefault();
+    firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then((u)=>{
+    }).then((u)=>{console.log(u)})
+    .catch((error) => {
+        console.log(error);
+      })
   }
   render() {
     return (
