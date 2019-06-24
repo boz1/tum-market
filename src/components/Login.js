@@ -75,7 +75,20 @@ class Login extends Component {
     }
     else{
     return (
-
+      <div className="container mt-5">
+        <div className="mx-auto my-auto p-4 w-50 login-border">
+          <h3 className="login-header">Student Singup</h3>
+          <hr></hr>
+          <form class="form-inline">
+  <div class="form-group mb-2">
+  <input type="text" class="form-control"  placeholder="Eamil"/>
+  </div>
+  <div class="form-group mx-sm-3 mb-2">
+  <input type="text" readonly class="form-control-plaintext"  value="@mytum.com"/>
+  </div>
+</form>
+</div>
+</div>  
         );
     }
   }
