@@ -80,10 +80,6 @@ body{
   color: var(--mainWhite) !important;
 }
 
-.logo{
-  width: 55px;
-}
-
 .nav-back{
   background: var(--navGray)
 }

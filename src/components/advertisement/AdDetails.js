@@ -4,6 +4,7 @@ import Title from '../Title'
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import Image from 'react-image-resizer';
 import Alert from 'react-bootstrap/Alert';
 
@@ -14,26 +15,29 @@ export default class AdDetails extends Component {
             offeredItem: this.props.location.state.user.ads[2].title + '-' + this.props.location.state.user.ads[2].id,
             isOfferSubmitted: false,
             showAlert: false,
-            isAlreadyOffered: false
+            isAlreadyOffered: false,
+            showModal: false
         }
 
+        this.showRequestModal = this.showRequestModal.bind(this)
+        this.handleClose = this.handleClose.bind(this)
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    componentDidMount(){
+    componentDidMount() {
         const tradeOffers = this.props.location.state.user.tradeReq;
         const ad = this.props.location.state.ad;
         let isOffered = false;
 
-        tradeOffers.forEach(function(trade){
-            if(trade.targetItemId === ad.id){
+        tradeOffers.forEach(function (trade) {
+            if (trade.targetItemId === ad.id) {
                 isOffered = true;
             }
         })
 
         this.setState({
-            isAlreadyOffered : isOffered
+            isAlreadyOffered: isOffered
         })
     }
 
@@ -53,7 +57,7 @@ export default class AdDetails extends Component {
 
         // Get date
         var today = new Date(),
-        date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
         const postDataBuyer = {
             offeredItemId: itemId,
@@ -75,33 +79,72 @@ export default class AdDetails extends Component {
             date: date
         };
 
+        const notification = {
+            id: newPostKey,
+            message: "You have a new trade request from " + user.info.name + " for your " + ad.title + ".",
+            isRead: false
+        };
+
         // Write the new post's data simultaneously in the posts list and the user's post list.
         var updates = {};
         updates['/trade-requests/' + user.info.id + '/' + newPostKey] = postDataBuyer;
         updates['/received-offers/' + ad.userId + '/' + newPostKey] = postDataSeller;
+        updates['/notifications/' + user.info.id + '/' + newPostKey] = notification;
+
 
         firebase.database().ref().update(updates);
 
         this.setState({
             isOfferSubmitted: true,
-            showAlert: true
+            showAlert: true,
+            showModal: false
         })
+    }
+
+    showRequestModal(e) {
+        this.setState({
+            showModal: true
+        })
+    }
+
+    handleClose() {
+        this.setState({ showModal: false });
     }
 
     render() {
         const ad = this.props.location.state.ad;
         const adOwner = ad.user;
         const user = this.props.location.state.user;
-        let tradeRequest, alert;
+        let tradeRequest, alert, modal;
 
         let items = user.ads.map((item) => <option key={item.id} value={item.title + '-' + item.id}>{item.title}</option>)
+
+        modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
+            <Modal.Header>
+                <Modal.Title className="text-title ">
+                    Trade Request Confirmation
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body style={{ fontSize: '16px' }}>
+                You are offering <strong>{this.state.offeredItem.split('-')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>.
+                Do you want to send this trade request?
+                  </Modal.Body>
+            <Modal.Footer>
+                <Button variant="danger" onClick={this.handleClose}>
+                    Close
+                </Button>
+                <Button variant="success" onClick={this.handleSubmit} value={this.state.offeredItem}>
+                    Confirm
+                </Button>
+            </Modal.Footer>
+        </Modal>
 
         if (ad.trade && user.info.id !== ad.userId && !this.state.isOfferSubmitted && !this.state.isAlreadyOffered) {
             tradeRequest = <div className="mt-3">
                 <span className="text-sub-title">Trade Request</span>
                 <Card style={{ width: '18rem', background: 'whitesmoke' }} className="mt-2">
                     <Card.Body>
-                        <Form onSubmit={this.handleSubmit}>
+                        <Form>
                             <Form.Row>
                                 <Form.Group controlId="tradeItem">
                                     <Form.Label style={{ fontSize: "16px" }}>Your Items</Form.Label>
@@ -110,7 +153,7 @@ export default class AdDetails extends Component {
                                     </Form.Control>
                                 </Form.Group>
                             </Form.Row>
-                            <Button type='submit' variant="primary">
+                            <Button variant="primary" onClick={this.showRequestModal}>
                                 Offer
                              </Button>
                         </Form>
@@ -124,7 +167,7 @@ export default class AdDetails extends Component {
                 Your trade offer is sent.
           </Alert>
         }
-        else if (this.state.isAlreadyOffered){
+        else if (this.state.isAlreadyOffered) {
             alert = <Alert variant={"info"} style={{ width: '18rem', marginTop: "10px" }} >
                 You have already sent a trade request for this item.
           </Alert>
@@ -207,8 +250,8 @@ export default class AdDetails extends Component {
                                 {alert}
                             </div>
                         </div>
+                        {modal}
                     </div>
-
                 </div>
             </React.Fragment>
         )

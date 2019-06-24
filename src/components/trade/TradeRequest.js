@@ -172,7 +172,7 @@ export default class TradeRequest extends Component {
 
         deleteModal = <Modal show={this.state.showDeleteModal} onHide={this.handleClose}>
             <Modal.Body style={{ fontSize: '16px' }}>
-                Do you want to delete this offer?
+                Do you want to delete this request?
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="danger" onClick={this.handleDeleteClose}>

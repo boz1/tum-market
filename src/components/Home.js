@@ -20,7 +20,8 @@ class Home extends Component {
       advertisements: {},
       sug: {},
       categories: {},
-      conditions: {}
+      conditions: {},
+      notifications: {}
     }
 
     this.getUser = this.getUser.bind(this)
@@ -43,6 +44,9 @@ class Home extends Component {
   componentWillUnmount() {
     this.usersRef.off('value')
     this.usersRef = null;
+
+    this.notifRef.off('value')
+    this.notifRef = null;
 
     this.adsRef.off('value')
     this.adsRef = null;
@@ -82,7 +86,6 @@ class Home extends Component {
           user: stateObj
         })
       })
-
 
       this.userAdsRef = firebase.database().ref('advertisements').child(id)
       this.userAdsRef.on('value', snap => {
@@ -221,10 +224,10 @@ class Home extends Component {
   render() {
     return (
       <React.Fragment>
-        <div className="container">
+        <div className="container content">
           <Navbar search={this.search} user={this.state.user} />
           <Switch>
-            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} user={this.state.user} />} />
+            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user} />} />
             <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
             <Route path="/adDetails/:id" component={AdDetails} />
             <Route path="/newAdvertisement" component={NewAdvertisement} />
