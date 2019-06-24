@@ -14,7 +14,7 @@ class Login extends Component {
 
     };
     this.signup = this.signup.bind(this);
-    this.singupPage = this.singupPage.bind(this);
+    this.togglepage = this.togglepage.bind(this);
     this.login = this.login.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
@@ -34,8 +34,8 @@ class Login extends Component {
     });
   }
 
-  singupPage(){
-    this.setState({singupBool: true})
+  togglepage(){
+    this.setState({singupBool: !this.state.singupBool})
   }
 
   signup(e){
@@ -68,7 +68,7 @@ class Login extends Component {
             </Alert> : ''}
             <button type="submit" onClick={this.login} className="btn btn-primary">Login</button> 
           </form>
-          <h7>New here? </h7><strong onClick={this.singupPage}><a href="#" data-toggle="tooltip" data-placement="top" title="Create account!">Singup</a></strong>
+          <h7>New here? </h7><strong onClick={this.togglepage}><a href="#" data-toggle="tooltip" data-placement="top" title="Create account!">Singup</a></strong>
         </div>
       </div>
     );
@@ -77,7 +77,7 @@ class Login extends Component {
     return (
       <div className="container mt-5">
         <div className="mx-auto my-auto p-4 w-50 login-border">
-          <h3 className="login-header">Student Singup</h3>
+          <h3 className="login-header">Create new account</h3>
           <hr></hr>
           <label htmlFor="exampleInputEmail1">Email</label>
           <form class="form-inline">
@@ -107,6 +107,10 @@ class Login extends Component {
             </div>
           </form>
           <button type="submit" onClick={this.signup} className="btn btn-primary">Signup</button> 
+        <div>
+        <h7>you have an account? </h7><strong onClick={this.togglepage}><a href="#" data-toggle="tooltip" data-placement="top" title="Create account!">Login</a></strong>
+
+        </div>
           </div>  
         </div>
         );
