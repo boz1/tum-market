@@ -9,9 +9,11 @@ class Login extends Component {
     this.state = {
       email: '',
       password: '',
-      showAlert: false
-    };
+      showAlert: false,
+      singupBool:false
 
+    };
+    this.singupPage = this.singupPage.bind(this);
     this.login = this.login.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
@@ -31,6 +33,11 @@ class Login extends Component {
     });
   }
 
+  singupPage(){
+    this.setState({singupBool: true})
+  }
+
+  }
   render() {
     return (
       <div className="container mt-5">
@@ -52,9 +59,12 @@ class Login extends Component {
             </Alert> : ''}
             <button type="submit" onClick={this.login} className="btn btn-primary">Login</button> 
           </form>
+          <h7>New here? </h7><strong onClick={this.singupPage}><a href="#" data-toggle="tooltip" data-placement="top" title="Create account!">Singup</a></strong>
         </div>
       </div>
     );
+    }
+
   }
 }
 export default Login;
