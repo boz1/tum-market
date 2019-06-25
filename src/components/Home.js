@@ -9,6 +9,7 @@ import PageNotFound from './PageNotFound'
 import NewAdvertisement from "./advertisement/NewAdvertisement"
 import TradeList from './trade/TradeList'
 
+
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +20,8 @@ class Home extends Component {
       advertisements: {},
       sug: {},
       categories: {},
-      conditions: {}
+      conditions: {},
+      notifications: {}
     }
 
     this.getUser = this.getUser.bind(this)
@@ -81,7 +83,6 @@ class Home extends Component {
           user: stateObj
         })
       })
-
 
       this.userAdsRef = firebase.database().ref('advertisements').child(id)
       this.userAdsRef.on('value', snap => {
@@ -220,7 +221,7 @@ class Home extends Component {
   render() {
     return (
       <React.Fragment>
-        <div className="container">
+        <div className="container content">
           <Navbar search={this.search} user={this.state.user} />
           <Switch>
             <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} user={this.state.user} />} />
