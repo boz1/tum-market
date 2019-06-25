@@ -10,7 +10,10 @@ class Login extends Component {
       email: '',
       password: '',
       showAlert: false,
-      singupBool:false
+      singupBool:false,
+      name:'',
+      address:'',
+      mobile:''
 
     };
     this.signup = this.signup.bind(this);
