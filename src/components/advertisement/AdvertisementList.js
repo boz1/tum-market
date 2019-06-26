@@ -24,7 +24,13 @@ export default class AdvertisementList extends Component {
                     </div>
                     <div className="col-md-9">
                     <form className="form-inline">
-                        <Title title="Marketplace" /><span  style={{paddingLeft:"80%"}} onClick={data.reverse}><MaterialIcon icon="sort_by_alpha"  /></span>
+                        <Title title="Marketplace" />
+                        <span  style={{paddingLeft:"80%"}} onClick={data.reverse}>
+                            <i class="fa fa-sort-alpha-desc" aria-hidden="true"></i>
+                            </span>
+                            <span  style={{paddingLeft:"75%"}} onClick={data.reverse}>
+                            <i class="fa fa-sort-alpha-asc" aria-hidden="true"></i>
+                        </span>
                         </form>
                         <hr className="my-2"></hr>
                         <CardDeck className="mb-5">
