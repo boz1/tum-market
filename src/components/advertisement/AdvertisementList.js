@@ -3,7 +3,7 @@ import Advertisment from './Advertisement'
 import Title from '../Title'
 import CardDeck from 'react-bootstrap/CardDeck';
 import Colbar from '../Colbar'
-import MaterialIcon, {colorPalette} from 'material-icons-react';
+// import MaterialIcon, {colorPalette} from 'material-icons-react';
 
 export default class AdvertisementList extends Component {
     constructor(props) {
@@ -24,7 +24,7 @@ export default class AdvertisementList extends Component {
                     </div>
                     <div className="col-md-9">
                     <form className="form-inline">
-                        <Title title="Marketplace" /><span  style={{paddingLeft:"80%"}} onClick={data.reverse}><MaterialIcon icon="sort_by_alpha"  /></span>
+                        {/* <Title title="Marketplace" /><span  style={{paddingLeft:"80%"}} onClick={data.reverse}><MaterialIcon icon="sort_by_alpha"  /></span> */}
                         </form>
                         <hr className="my-2"></hr>
                         <CardDeck className="mb-5">
