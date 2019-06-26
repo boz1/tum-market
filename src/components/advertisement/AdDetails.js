@@ -89,7 +89,7 @@ export default class AdDetails extends Component {
         var updates = {};
         updates['/trade-requests/' + user.info.id + '/' + newPostKey] = postDataBuyer;
         updates['/received-offers/' + ad.userId + '/' + newPostKey] = postDataSeller;
-        updates['/notifications/' + user.info.id + '/' + newPostKey] = notification;
+        updates['/notifications/' + ad.userId + '/' + newPostKey] = notification;
 
 
         firebase.database().ref().update(updates);
