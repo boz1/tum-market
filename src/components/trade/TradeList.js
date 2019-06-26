@@ -26,10 +26,10 @@ export default class TradeList extends Component {
                         <hr className="my-2"></hr>
                         <div className="d-block mb-5">
                             <CardDeck>
-                                {receivedOffers !== undefined && receivedOffers !== null ? (receivedOffers.length > 0 ? receivedOffers.map((item) => <TradeRequest key={item.id} item={item} type="received" />) : "") : ""}
+                                {receivedOffers !== undefined && receivedOffers !== null ? (receivedOffers.length > 0 ? receivedOffers.map((item) => <TradeRequest key={item.id} item={item} user={this.props.user.info} type="received" />) : "") : ""}
                             </CardDeck>
                             <CardDeck>
-                                {sentOffers !== undefined && sentOffers !== null ? (sentOffers.length > 0 ? sentOffers.map((item) => <TradeRequest key={item.id} item={item} type="sent" />) : "") : ""}
+                                {sentOffers !== undefined && sentOffers !== null ? (sentOffers.length > 0 ? sentOffers.map((item) => <TradeRequest key={item.id} item={item} user={this.props.user.info} type="sent" />) : "") : ""}
                             </CardDeck>
                         </div>
 

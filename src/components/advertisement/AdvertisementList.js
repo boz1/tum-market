@@ -3,7 +3,7 @@ import Advertisment from './Advertisement'
 import Title from '../Title'
 import CardDeck from 'react-bootstrap/CardDeck';
 import Colbar from '../Colbar'
-import MaterialIcon, {colorPalette} from 'material-icons-react';
+// import MaterialIcon, {colorPalette} from 'material-icons-react';
 
 export default class AdvertisementList extends Component {
     constructor(props) {

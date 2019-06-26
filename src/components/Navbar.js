@@ -18,7 +18,8 @@ export default class Navbar extends Component {
         this.state = {
             notifications: [],
             notificationIds: [],
-            isRead: true
+            isRead: true,
+            notReadNotificationCount: 0
         }
 
         this.logout = this.logout.bind(this)
@@ -51,6 +52,10 @@ export default class Navbar extends Component {
                 let id = snap.val().id;
                 if (!this.state.notificationIds.includes(id)) {
                     let isRead = snap.val().isRead;
+                    let notReadNotifCount = this.state.notReadNotificationCount;
+                    if (!isRead) {
+                        notReadNotifCount++;
+                    }
                     let notification = snap.val();
                     let idObj = this.state.notificationIds;
                     let notifObj = this.state.notifications;
@@ -59,7 +64,8 @@ export default class Navbar extends Component {
                     this.setState({
                         notifications: notifObj,
                         notificationIds: idObj,
-                        isRead: isRead
+                        isRead: isRead,
+                        notReadNotificationCount: notReadNotifCount
                     })
                 }
             })
@@ -71,7 +77,7 @@ export default class Navbar extends Component {
         history.push('/')
     }
 
-    readNotifications() {
+    readNotifications(isShown) {
         if (this.props.user !== undefined && this.props.user.info !== undefined && !this.state.isRead) {
             this.notifReadRef = firebase.database().ref('notifications').child(this.props.user.info.id).orderByChild('isRead').equalTo(false)
             this.notifReadRef.on('value', function (snap) {
@@ -80,18 +86,48 @@ export default class Navbar extends Component {
                 });
             });
 
+            this.notifReadRef.off('value')
+            this.notifReadRef = null;
+
+            let notifications = this.state.notifications;
+            let isRead = this.state.isRead;
+
+            if (!isShown) {
+                notifications.forEach(function (notification) {
+                    if (!notification.isRead) {
+                        notification.isRead = true;
+                    }
+                })
+                isRead = true;
+            }
+
             this.setState({
-                isRead: true
+                isRead: isRead,
+                notReadNotificationCount: 0,
+                notifications: notifications
             })
         }
     }
 
     getNotification(notification) {
+        let notificationContainer;
+
+        if (notification.isRead) {
+            notificationContainer =
+                <Link to={{ pathname: '/tradeRequests' }} className="dropdown-item" style={{ padding: "0.75rem" }}>{notification.message}</Link>
+        }
+        else {
+            notificationContainer =
+                <Link to={{ pathname: '/tradeRequests' }} className="dropdown-item" style={{ padding: "0.75rem", background: "#C7DCF2" }}>{notification.message}</Link>
+        }
+
         return <span>
             <div className="d-flex" style={{ padding: "0.5rem" }}>
-                <Link to={{ pathname: '/tradeRequests' }} className="dropdown-item" style={{ padding: "0.75rem" }}>{notification.message} </Link>
-                <div className="m-auto">
-                    <span className="float-right offer-reject" style={{ cursor: "pointer" }} onClick={this.deleteNotification} data-notification={notification.id}><FontAwesomeIcon icon={faTimes} /></span>
+                {notificationContainer}
+                <div className="m-auto pl-2 pr-2">
+                    <span className="float-right offer-reject" style={{ cursor: "pointer" }} onClick={this.deleteNotification} data-notification={notification.id}>
+                        <FontAwesomeIcon icon={faTimes} />
+                    </span>
                 </div>
             </div>
             <hr style={{ margin: "0rem 0rem" }}></hr>
@@ -104,22 +140,28 @@ export default class Navbar extends Component {
             let ids = [];
             let notifications = [];
 
-            this.state.notificationIds.forEach(function(notifId){
-                if(notifId !== id){
+            this.state.notificationIds.forEach(function (notifId) {
+                if (notifId !== id) {
                     ids.push(notifId)
                 }
             })
 
-            this.state.notifications.forEach(function(notif){
-                if(notif.id !== id){
+            this.state.notifications.forEach(function (notif) {
+                if (notif.id !== id) {
                     notifications.push(notif)
                 }
             })
 
+            let notifCount = this.state.notReadNotificationCount - 1;
+
+            if (notifCount < 0) {
+                notifCount = 0;
+            }
 
             this.setState({
                 notificationIds: ids,
-                notifications: notifications
+                notifications: notifications,
+                notReadNotificationCount: notifCount
             })
 
             this.removeNotifRef = firebase.database().ref('notifications').child(this.props.user.info.id).child(id).remove();
@@ -129,17 +171,23 @@ export default class Navbar extends Component {
     render() {
         const user = this.props.user;
         let notifications = [];
-        let bell;
+        let bell, notificationCounter;
 
         if (!this.state.isRead) {
-            bell = <span style={{ fontSize: "18px", color: "crimson" }}><FontAwesomeIcon icon={faBell} /></span>
+            bell = <span style={{ fontSize: "18px" }}><FontAwesomeIcon icon={faBell} /></span>
+            notificationCounter = <span style={{ fontSize: "18px", color: "#EF233C" }}>
+                {this.state.notReadNotificationCount}
+            </span>
         }
         else {
             bell = <span style={{ fontSize: "18px" }}><FontAwesomeIcon icon={faBell} /></span>
+            notificationCounter = <span style={{ fontSize: "18px" }}>
+                {this.state.notReadNotificationCount}
+            </span>
         }
 
         if (this.state.notificationIds.length > 0) {
-            this.state.notifications.map((notif) => notifications.push(<span key={notif.id}>{this.getNotification(notif)}</span>))
+            this.state.notifications.slice(0).reverse().map((notif) => notifications.push(<span key={notif.id}>{this.getNotification(notif)}</span>))
         }
         else {
             notifications.push(<Dropdown.Item key={'no-notif-key'} disabled>No notifications.</Dropdown.Item>)
@@ -161,7 +209,9 @@ export default class Navbar extends Component {
                         <Button type="submit">Filter</Button>
                     </Form>
                 </div>
-                <span className="ml-auto">
+
+                <span className="ml-auto d-flex">
+                    {notificationCounter}
                     <Dropdown onToggle={this.readNotifications}>
                         <Dropdown.Toggle variant="info" id="dropdown-basic" >
                             {bell}

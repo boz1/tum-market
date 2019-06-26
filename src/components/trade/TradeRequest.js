@@ -21,7 +21,7 @@ export default class TradeRequest extends Component {
         }
 
         this.setItems = this.setItems.bind(this)
-       
+
         this.showStatusModal = this.showStatusModal.bind(this)
         this.handleClose = this.handleClose.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -115,6 +115,20 @@ export default class TradeRequest extends Component {
             showDeleteModal: false
         });
 
+        // Get a key for a new Post.
+        var newPostKey = firebase.database().ref('notifications').child(this.props.item.sellerId).push().key;
+
+        const notification = {
+            id: newPostKey,
+            message: this.props.user.name + " has deleted their trade request for your " + this.state.receivedItem.title + ".",
+            isRead: false
+        };
+
+        // Get a key for a new Post.
+        var updates = {};
+        updates['/notifications/' + this.props.item.sellerId + '/' + newPostKey] = notification;
+        firebase.database().ref().update(updates);
+
         this.removeTradeReqRef = firebase.database().ref('trade-requests').child(this.props.item.userId).child(this.props.item.id).remove();
         this.removeReceivedOffRef = firebase.database().ref('received-offers').child(this.props.item.sellerId).child(this.props.item.id).remove();
     }
@@ -136,9 +150,20 @@ export default class TradeRequest extends Component {
             status: e.target.value
         });
 
+        // Get a key for a new Post.
+        var newPostKey = firebase.database().ref('notifications').child(this.props.item.buyerId).push().key;
+
+        const notification = {
+            id: newPostKey,
+            message: this.props.user.name + " has " + this.state.statusAction.toLowerCase() + " your trade request for " + this.state.sentItem.title + ".",
+            isRead: false
+        };
+
+        // Get a key for a new Post.
         var updates = {};
         updates['/trade-requests/' + this.props.item.buyerId + '/' + this.props.item.id + '/status'] = e.target.value;
         updates['/received-offers/' + this.props.item.userId + '/' + this.props.item.id + '/status'] = e.target.value;
+        updates['/notifications/' + this.props.item.buyerId + '/' + newPostKey] = notification;
 
         firebase.database().ref().update(updates);
     }
@@ -148,13 +173,11 @@ export default class TradeRequest extends Component {
         const type = this.props.type;
         let request, receivedStatus, sentStatus, statusUpdateModal, deleteModal, statusAction;
 
-        if(this.state.statusAction === "Accepted"){
+        if (this.state.statusAction === "Accepted") {
             statusAction = "accept"
-        }else{
+        } else {
             statusAction = "reject"
         }
-
-        
 
         statusUpdateModal = <Modal show={this.state.showStatusModal} onHide={this.handleClose}>
             <Modal.Body style={{ fontSize: '16px' }}>
@@ -188,25 +211,25 @@ export default class TradeRequest extends Component {
             receivedStatus =
                 <span>
                     <span className="float-right offer-accept ml-3 accepted"><FontAwesomeIcon icon={faCheck} /></span>
-                    <span className="float-right offer-reject" style={{cursor:"pointer"}} onClick={this.showStatusModal} data-span="Rejected"><FontAwesomeIcon icon={faTimes} /></span>
+                    <span className="float-right offer-reject" style={{ cursor: "pointer" }} onClick={this.showStatusModal} data-span="Rejected"><FontAwesomeIcon icon={faTimes} /></span>
                 </span>
         }
         else if (this.state.status === "Rejected") {
             receivedStatus =
                 <span>
-                    <span className="float-right offer-accept ml-3" style={{cursor:"pointer"}} onClick={this.showStatusModal} data-span="Accepted"><FontAwesomeIcon icon={faCheck} /></span>
+                    <span className="float-right offer-accept ml-3" style={{ cursor: "pointer" }} onClick={this.showStatusModal} data-span="Accepted"><FontAwesomeIcon icon={faCheck} /></span>
                     <span className="float-right offer-reject rejected"><FontAwesomeIcon icon={faTimes} /></span>
                 </span>
         }
         else {
             receivedStatus =
                 <span>
-                    <span className="float-right offer-accept ml-3" style={{cursor:"pointer"}} onClick={this.showStatusModal} data-span="Accepted"><FontAwesomeIcon icon={faCheck} /></span>
-                    <span className="float-right offer-reject" style={{cursor:"pointer"}} onClick={this.showStatusModal} data-span="Rejected"><FontAwesomeIcon icon={faTimes} /></span>
+                    <span className="float-right offer-accept ml-3" style={{ cursor: "pointer" }} onClick={this.showStatusModal} data-span="Accepted"><FontAwesomeIcon icon={faCheck} /></span>
+                    <span className="float-right offer-reject" style={{ cursor: "pointer" }} onClick={this.showStatusModal} data-span="Rejected"><FontAwesomeIcon icon={faTimes} /></span>
                 </span>
         }
 
-        sentStatus = <span className="float-right offer-reject" style={{cursor:"pointer"}} onClick={this.showDeleteModal}><FontAwesomeIcon icon={faTimes} /></span>
+        sentStatus = <span className="float-right offer-reject" style={{ cursor: "pointer" }} onClick={this.showDeleteModal}><FontAwesomeIcon icon={faTimes} /></span>
 
         if (type === "received") {
             request = <Card className="w-100 h-auto">

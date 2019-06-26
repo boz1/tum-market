@@ -12,7 +12,7 @@ class Login extends Component {
       email: '',
       password: '',
       showAlert: false,
-      singupBool:false,
+      signupBool:false,
       name:'',
       address:'',
       mobile:''
@@ -35,8 +35,10 @@ class Login extends Component {
 
   login(e) {
     e.preventDefault();
-    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((u) => {
-    }).catch((error) => {
+    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+    .then((u) => {console.log(u)})
+    .catch((error) => {
+      console.log(error)
       this.setState({
         showAlert: true,
         password: ''
@@ -45,7 +47,7 @@ class Login extends Component {
   }
 
   togglePage() {
-    this.setState({ singupBool: !this.state.singupBool })
+    this.setState({ signupBool: !this.state.signupBool })
   }
 
   signup(e) {
@@ -58,7 +60,7 @@ class Login extends Component {
   }
 
   render() {
-    if (!this.state.singupBool) {
+    if (!this.state.signupBool) {
       return (
         <div className="container mt-5">
           <div className="mx-auto my-auto p-4 w-50 login-border">
