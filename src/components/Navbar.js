@@ -86,6 +86,9 @@ export default class Navbar extends Component {
                 });
             });
 
+            this.notifReadRef.off('value')
+            this.notifReadRef = null;
+
             let notifications = this.state.notifications;
             let isRead = this.state.isRead;
 

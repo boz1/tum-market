@@ -117,6 +117,7 @@ export default class TradeRequest extends Component {
 
         // Get a key for a new Post.
         var newPostKey = firebase.database().ref('notifications').child(this.props.item.sellerId).push().key;
+
         const notification = {
             id: newPostKey,
             message: this.props.user.name + " has deleted their trade request for your " + this.state.receivedItem.title + ".",
