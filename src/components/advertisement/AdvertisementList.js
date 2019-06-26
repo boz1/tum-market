@@ -13,14 +13,32 @@ export default class AdvertisementList extends Component {
         }
         this.sort=this.sort.bind(this)
         this.componentWillReceiveProps=this.componentWillReceiveProps.bind(this)
+        this.dynamicSort=this.dynamicSort.bind(this)
     }
     componentWillReceiveProps(){
-        this.setState({data:this.props.adsList})
+
+        this.setState({data:this.props.adsList})}
+    dynamicSort(property) {
+        var sortOrder = 1;
+    
+        if(property[0] === "-") {
+            sortOrder = -1;
+            property = property.substr(1);
+        }
+    
+        return function (a,b) {
+            if(sortOrder == -1){
+                return b[property].localeCompare(a[property]);
+            }else{
+                return a[property].localeCompare(b[property]);
+            }        
+        }
     }
     sort(){
-    
+        // this.setState({data:this.state.data.sort(this.dynamicSort("title"))})    
     }
     render() {
+        console.log(this.state.data)
         return (
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
@@ -36,7 +54,7 @@ export default class AdvertisementList extends Component {
                         <span  style={{paddingLeft:"80%"}} onClick={this.sort}>
                             <i class="fa fa-sort-alpha-desc" aria-hidden="true"></i>
                             </span>
-                            <span  style={{paddingLeft:"75%"}} onClick={this.state.data.reverse}>
+                            <span  style={{paddingLeft:"75%"}} onClick={this.sort}>
                             <i class="fa fa-sort-alpha-asc" aria-hidden="true"></i>
                         </span>
                         </form>
