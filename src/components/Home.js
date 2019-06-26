@@ -20,8 +20,7 @@ class Home extends Component {
       advertisements: {},
       sug: {},
       categories: {},
-      conditions: {},
-      notifications: {}
+      conditions: {}
     }
 
     this.getUser = this.getUser.bind(this)
