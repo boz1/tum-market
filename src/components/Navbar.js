@@ -2,14 +2,16 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import firebase from '../config/firebaseConfig';
 import logo from '../assests/logo.svg'
-import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
 import history from '../history'
+import Filter from './Filter'
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+
 
 
 export default class Navbar extends Component {
@@ -160,6 +162,7 @@ export default class Navbar extends Component {
                         <FormControl onChange={this.props.search} placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
                     </Form>
                 </div>
+                <Filter/>
                 <span className="ml-auto">
                     <Dropdown onToggle={this.readNotifications}>
                         <Dropdown.Toggle variant="info" id="dropdown-basic" >
