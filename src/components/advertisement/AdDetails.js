@@ -154,7 +154,7 @@ export default class AdDetails extends Component {
                                 </Form.Group>
                             </Form.Row>
                             <Button variant="primary" onClick={this.showRequestModal}>
-                                Offer
+                                Send Request
                              </Button>
                         </Form>
                     </Card.Body>
@@ -186,7 +186,7 @@ export default class AdDetails extends Component {
                                     <div className="col-sm-6">
                                         <Image className="mt-0"
                                             src={ad.image}
-                                            height={240}
+                                            height={270}
                                             width={300}
                                         />
                                     </div>
@@ -194,9 +194,11 @@ export default class AdDetails extends Component {
                                         <ul className="align-content-center category-list details-list">
                                             <li className="center-item"><span className="float-left">ID</span><strong>{ad.id}</strong></li>
                                             <hr></hr>
-                                            <li className="center-item"><span className="float-left">Main Category</span><strong>{ad.mainCategory}</strong></li>
+                                            <li className="center-item"><span className="float-left">Main Category</span><strong>{ad.mainCategory.title}</strong></li>
                                             <hr></hr>
-                                            <li className="center-item"><span className="float-left">Sub Category</span><strong>{ad.subCategory}</strong></li>
+                                            <li className="center-item"><span className="float-left">Sub Category</span><strong>{ad.subCategory.title}</strong></li>
+                                            <hr></hr>
+                                            <li className="center-item"><span className="float-left">Condition</span><strong>{ad.condition.title}</strong></li>
                                             <hr></hr>
                                             <li className="center-item"><span className="float-left">Trade</span><strong>{ad.trade ? "Yes" : "No"}</strong></li>
                                             <hr></hr>
