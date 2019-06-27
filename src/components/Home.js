@@ -224,7 +224,8 @@ class Home extends Component {
   }
 
   search(input) {
-    if (input.target.value.length === 0)
+    console.log(this.state.advertisements)
+    if (input.target.value.length == 0)
       this.setState({ sug: this.state.advertisements })
     else {
       const regix = new RegExp(`${input.target.value}`, 'i')
