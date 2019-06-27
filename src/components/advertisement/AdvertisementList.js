@@ -42,7 +42,7 @@ export default class AdvertisementList extends Component {
         this.setState({data:this.state.data.sort(this.dynamicSort("title"))})    
     }
     sortZA(){
-        this.setState({data:this.Numberstate.data.sort(this.dynamicSort("-title"))})    
+        this.setState({data:this.state.data.sort(this.dynamicSort("-title"))})    
     }
     pricesort(){
         this.setState({data:this.state.data.sort(function(obj1, obj2) {return Number (obj1.price) - Number(obj2.price)})})
@@ -51,7 +51,6 @@ export default class AdvertisementList extends Component {
         this.setState({data:this.state.data.sort(function(obj1, obj2) {return Number (obj1.date.replace('/','')) - Number(obj2.date.replace('/',''))})})
     }
     render() {
-        console.log(this.state.data)
         return (
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
