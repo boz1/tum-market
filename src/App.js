@@ -26,7 +26,7 @@ class App extends Component {
         this.setState({ user:us,mount:1 });
         localStorage.setItem('user', us.uid);
       } else {
-        this.setState({ user: "" });
+        this.setState({ user: "" ,mount:1});
         localStorage.removeItem('user');
       }
     });
