@@ -17,6 +17,7 @@ export default class AdvertisementList extends Component {
         this.componentWillReceiveProps=this.componentWillReceiveProps.bind(this)
         this.dynamicSort=this.dynamicSort.bind(this)
         this.pricesort=this.pricesort.bind(this)
+        this.datesort=this.datesort.bind(this)
     }
     componentWillReceiveProps(){
         this.setState({data:this.props.adsList})
@@ -44,7 +45,11 @@ export default class AdvertisementList extends Component {
         this.setState({data:this.Numberstate.data.sort(this.dynamicSort("-title"))})    
     }
     pricesort(){
-        this.setState({data:this.state.data.sort(function(obj1, obj2) {return Number (obj1.price) - Number(obj2.price)})})}
+        this.setState({data:this.state.data.sort(function(obj1, obj2) {return Number (obj1.price) - Number(obj2.price)})})
+    }
+    datesort(){
+        this.setState({data:this.state.data.sort(function(obj1, obj2) {return Number (obj1.date.replace('/','')) - Number(obj2.date.replace('/',''))})})
+    }
     render() {
         console.log(this.state.data)
         return (
@@ -63,7 +68,7 @@ export default class AdvertisementList extends Component {
                         <Dropdown.Item onClick={this.sortAZ}>A-Z</Dropdown.Item>
                         <Dropdown.Item onClick={this.sortZA}>Z-A</Dropdown.Item>
                         <Dropdown.Item onClick={this.pricesort}>Price</Dropdown.Item>
-                        <Dropdown.Item >Date</Dropdown.Item>
+                        <Dropdown.Item onClick={this.datesort}>Date</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
 </span>
