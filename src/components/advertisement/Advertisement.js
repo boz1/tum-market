@@ -23,7 +23,7 @@ export default class Advertisement extends Component {
                     <hr></hr>
                     <Card.Title className="text-ad-title">{this.props.ad.title}</Card.Title>
                     <Card.Text>
-                        {this.props.ad.mainCategory}
+                        {this.props.ad.mainCategory.title}
                     </Card.Text>
                     <Card.Text className="bold">
                         <span className="text-premium">{this.props.ad.price + " €"}</span>  {(this.props.ad.trade ? <span className="text-trade">Trade</span> : "")}
