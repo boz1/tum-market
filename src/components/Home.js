@@ -225,10 +225,10 @@ class Home extends Component {
 
   search(input) {
     if (input.target.value.length === 0)
-      this.setState({ sug: this.state.advertisements },() => this.forceUpdate())
+      this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
     else {
       const regix = new RegExp(`${input.target.value}`, 'i')
-      this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title))},() => this.forceUpdate())
+      this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
     }
 
   }
@@ -242,7 +242,7 @@ class Home extends Component {
             <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user} />} />
             <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
             <Route path="/adDetails/:id" component={AdDetails} />
-            <Route path="/newAdvertisement"  render={(props) => <NewAdvertisement {...props} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions}/>} />
+            <Route path="/newAdvertisement" render={(props) => <NewAdvertisement {...props} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />} />
             <Route component={PageNotFound} />
           </Switch>
           <Footer />

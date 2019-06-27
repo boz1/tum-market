@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import Title from '../Title'
 import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 import Colbar from '../Colbar'
 
 export default class NewAdvertisement extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            mainCategory: 'Common Goods',
+            mainCategory: '',
             subCategory: '',
             condition: '',
             title: '',
@@ -21,12 +22,15 @@ export default class NewAdvertisement extends Component {
         this.handleMainCatChange = this.handleMainCatChange.bind(this)
         this.getMainCatId = this.getMainCatId.bind(this)
         this.handleSubCatChange = this.handleSubCatChange.bind(this)
+        this.handleTitleChange = this.handleTitleChange.bind(this)
+        this.handleConditionChange = this.handleConditionChange.bind(this)
+        this.handlePriceChange = this.handlePriceChange.bind(this)
+        this.showResults = this.showResults.bind(this)
     }
 
 
     handleMainCatChange(event) {
         const mainCat = event.target.value
-        console.log(mainCat)
         this.setState({
             mainCategory: mainCat,
             showSub: true
@@ -36,14 +40,28 @@ export default class NewAdvertisement extends Component {
     handleSubCatChange(event) {
         const subCat = event.target.value
         this.setState({
-            subCategory: subCat,
+            subCategory: subCat
         });
     }
 
     handleConditionChange(event) {
         const condition = event.target.value
         this.setState({
-            condition: condition,
+            condition: condition
+        });
+    }
+
+    handleTitleChange(event) {
+        const title = event.target.value
+        this.setState({
+            title: title
+        });
+    }
+
+    handlePriceChange(event) {
+        const price = event.target.value
+        this.setState({
+            price: price
         });
     }
 
@@ -57,6 +75,10 @@ export default class NewAdvertisement extends Component {
         return id;
     }
 
+    showResults() {
+        console.log(this.state)
+    }
+
 
     render() {
         let mainCategories = [];
@@ -66,23 +88,26 @@ export default class NewAdvertisement extends Component {
         let mainCatContainer, subCatContainer, conditionsContainer;
 
         if (this.props.categories.length > 0) {
+            mainCategories.push(<option key="-1" disabled>Choose...</option>)
             this.props.categories.map((cat) => mainCategories.push(<option key={cat.id + cat.title}>{cat.title}</option>))
-            mainCatContainer = <Form.Control as="select" value={this.state.mainCategory} onChange={this.handleMainCatChange}>
+            mainCatContainer = <Form.Control as="select" defaultValue="Choose..." onChange={this.handleMainCatChange}>
                 {mainCategories}
             </Form.Control>
         }
 
         if (this.props.subCategories.length > 0 && this.state.showSub) {
             let id = this.getMainCatId();
+            subCategories.push(<option key="-1" disabled>Choose...</option>)
             this.props.subCategories[id].map((cat) => subCategories.push(<option key={cat.id + cat.title}>{cat.title}</option>))
-            subCatContainer = <Form.Control as="select" value={this.state.subCategory} onChange={this.handleSubCatChange}>
+            subCatContainer = <Form.Control as="select" defaultValue="Choose..." onChange={this.handleSubCatChange}>
                 {subCategories}
             </Form.Control>
         }
 
         if (this.props.conditions.length > 0) {
+            conditions.push(<option key="-1" disabled>Choose...</option>)
             this.props.conditions.map((con) => conditions.push(<option key={con.id + con.title}>{con.title}</option>))
-            conditionsContainer = <Form.Control as="select" value={this.state.condition} onChange={this.handleConditionChange}>
+            conditionsContainer = <Form.Control as="select" defaultValue="Choose..." onChange={this.handleConditionChange}>
                 {conditions}
             </Form.Control>
         }
@@ -119,7 +144,7 @@ export default class NewAdvertisement extends Component {
                                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                     Title
                                                  </Form.Label>
-                                                <Form.Control type="email" placeholder="Title" />
+                                                <Form.Control type="text" placeholder="Title" value={this.state.title} onChange={this.handleTitleChange} />
                                             </Form.Group>
 
                                             <Form.Group controlId="exampleForm.ControlSelect3">
@@ -131,7 +156,7 @@ export default class NewAdvertisement extends Component {
                                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                     Price
                                                  </Form.Label>
-                                                <Form.Control type="email" placeholder="€" />
+                                                <Form.Control type="number" placeholder="€" value={this.state.price} onChange={this.handlePriceChange} />
                                             </Form.Group>
 
                                         </div>
@@ -145,8 +170,12 @@ export default class NewAdvertisement extends Component {
                                 </div>
                                 <div className="col-md-3 d-block">
                                     <div>
-                                        <span className="text-sub-title" style={{ fontSize: "16px" }}>Contact</span>
-
+                                        <span className="text-sub-title" style={{ fontSize: "16px" }}>Preview</span>
+                                    </div>
+                                    <div>
+                                        <Button variant="primary" onClick={this.showResults}>
+                                            Complete
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
