@@ -17,14 +17,15 @@ class Login extends Component {
       signupBool:false,
       name:'',
       address:'',
-      mobile:''
-
+      mobile:'',
+      error:{}
     };
 
     this.signup = this.signup.bind(this);
     this.togglePage = this.togglePage.bind(this);
     this.login = this.login.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.validateForm = this.validateForm.bind(this);
   }
 
   componentDidMount() {
@@ -53,14 +54,79 @@ class Login extends Component {
     this.setState({ signupBool: !this.state.signupBool })
   }
 
+  validateForm() {
+
+    let errors = {};
+    let formIsValid = true;
+
+    if (!this.state.name) {
+      formIsValid = false;
+      errors["name"] = "*Please enter your username.";
+    }
+
+    if (typeof this.state.name !== "undefined") {
+      if (!this.state.name.match(/^[a-zA-Z ]*$/)) {
+        formIsValid = false;
+        errors["name"] = "*Please enter alphabet characters only.";
+      }
+    }
+
+    if (!this.state.email) {
+      formIsValid = false;
+      errors["email"] = "*Please enter your email-ID.";
+    }
+
+    if (typeof this.state.email !== "undefined") {
+      //regular expression for email validation
+      var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+      if (!pattern.test(this.state.email)) {
+        formIsValid = false;
+        errors["email"] = "*Please enter valid email-ID.";
+      }
+    }
+
+    if (!this.state.mobile) {
+      formIsValid = false;
+      errors["mobile"] = "*Please enter your mobile no.";
+    }
+
+    if (typeof this.state.mobile !== "undefined") {
+      if (!this.state.mobile.match(/^[0-9]{10}$/)) {
+        formIsValid = false;
+        errors["mobile"] = "*Please enter valid mobile no.";
+      }
+    }
+
+    if (!this.state.password) {
+      formIsValid = false;
+      errors["password"] = "*Please enter your password.";
+    }
+
+    if (typeof this.state.password !== "undefined") {
+      if (!this.state.password.match(/^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%&]).*$/)) {
+        formIsValid = false;
+        errors["password"] = "*Please enter secure and strong password.";
+      }
+    }
+    if (!this.state.address) {
+      formIsValid = false;
+      errors["address"] = "*Please enter your password.";
+    }
+    this.setState({
+      error: errors
+    });
+    console.log(errors)
+    return formIsValid;
+  }
   signup(e) {
+    if(this.validateForm()){
     e.preventDefault();
     firebase.auth().createUserWithEmailAndPassword(this.state.email+"@mytum.du", this.state.password).then((u) => {
     }).then((u) => { console.log(u) })
       .catch((error) => {
         console.log(error);
       })
-
+    }
   }
 
   render() {
@@ -109,6 +175,7 @@ class Login extends Component {
             <form className="form-inline">
               <div className="form-group mb-2">
                 <input name="email"  onChange={this.handleChange}value={this.state.email} type="text" className="form-control" placeholder="TUM Email" />
+                <div  >{this.state.error.email}</div>
               </div>
               <div className="form-group mx-sm-3 mb-2">
                 <div className="input-group-prepend">
@@ -135,7 +202,7 @@ class Login extends Component {
             <div className="d-flex mt-2">
               <div>
                 <button type="submit" onClick={this.signup} className="btn btn-primary">  
-                  <Link to={{ pathname: '/verify' }} className="dropdown-item">Sign Up</Link>
+                 {!this.state.error ? <Link to={{ pathname: '/verify' }} className="dropdown-item">Sign Up</Link> : "Sign Up"}
                 </button>
               </div>
               <div className="ml-auto mt-auto mb-auto  large-text">
