@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { storage } from '../../config/firebaseConfig';
+import firebase, { storage } from '../../config/firebaseConfig';
 import Title from '../Title'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-image-resizer';
 import Modal from 'react-bootstrap/Modal';
+import history from '../../history'
 
 export default class NewAdvertisement extends Component {
     constructor(props) {
@@ -23,7 +24,6 @@ export default class NewAdvertisement extends Component {
         }
 
         this.handleMainCatChange = this.handleMainCatChange.bind(this)
-        this.getMainCatId = this.getMainCatId.bind(this)
         this.handleSubCatChange = this.handleSubCatChange.bind(this)
         this.handleTitleChange = this.handleTitleChange.bind(this)
         this.handleConditionChange = this.handleConditionChange.bind(this)
@@ -34,25 +34,26 @@ export default class NewAdvertisement extends Component {
         this.handleSubmit = this.handleSubmit.bind(this)
         this.showRequestModal = this.showRequestModal.bind(this)
         this.handleClose = this.handleClose.bind(this)
+        this.getMainCatTitle = this.getMainCatTitle.bind(this)
     }
 
 
     handleMainCatChange(event) {
-        const mainCat = event.target.value
+        const mainCat = parseInt(this.refs.mainCat.value)
         this.setState({
             mainCategory: mainCat
         });
     }
 
     handleSubCatChange(event) {
-        const subCat = event.target.value
+        const subCat = parseInt(this.refs.subCat.value)
         this.setState({
             subCategory: subCat
         });
     }
 
     handleConditionChange(event) {
-        const condition = event.target.value
+        const condition = parseInt(this.refs.cond.value)
         this.setState({
             condition: condition
         });
@@ -93,23 +94,78 @@ export default class NewAdvertisement extends Component {
         }
     }
 
-    getMainCatId() {
-        let id;
-        this.props.categories.forEach(element => {
-            if (element.title === this.state.mainCategory) {
-                id = element.id
-            }
-        });
-        return id;
+    getMainCatTitle() {
+        let title;
+        if (Object.getOwnPropertyNames(this.props.categories).length !== 0) {
+            this.props.categories.forEach(element => {
+                if (element.id === this.state.mainCategory) {
+                    title = element.title
+                }
+            });
+        }
+        return title;
     }
 
     handleSubmit(event) {
         event.preventDefault();
 
-        // console.log(this.state)
-        // const { image } = this.state;
-        // const uploadTask = storage.ref(`images/${this.props.user.info.id}/${image.name}`).put(image);
-    
+        // Get a key for a new Post.
+        var newPostKey = firebase.database().ref('advertisements').child(this.props.user.info.id).push().key;
+
+        // Get date
+        var today = new Date(),
+            date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+        let trade;
+
+        if (this.state.trade === "On") {
+            trade = true
+        } else {
+            trade = false
+        }
+
+        // Upload Image
+        const { image } = this.state;
+        let imageUrl;
+        const uploadImage = storage.ref(`images/${this.props.user.info.id}/${newPostKey}/${image.name}`).put(image);
+
+        uploadImage.on('state_changed',
+            (snapshot) => {
+                // progrss function ....
+                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                console.log("progress " + progress)
+            },
+            (error) => {
+                // error function ....
+                console.log("error " + error);
+            },
+            () => {
+                // complete function ....
+                storage.ref(`images/${this.props.user.info.id}/${newPostKey}/${image.name}`).getDownloadURL().then(url => {
+                    imageUrl = url;
+                    // // Insert to databse
+                    const ad = {
+                        title: this.state.title,
+                        price: this.state.price,
+                        trade: trade,
+                        userId: this.props.user.info.id,
+                        id: newPostKey,
+                        image: imageUrl,
+                        description: this.state.description,
+                        mainCategoryId: this.state.mainCategory,
+                        subCategoryId: this.state.subCategory,
+                        conditionId: this.state.condition,
+                        date: date
+                    };
+
+                    var updates = {};
+                    updates['/advertisements/' + this.props.user.info.id + '/' + newPostKey] = ad;
+
+                    firebase.database().ref().update(updates);
+
+                    history.push('/')
+                })
+            });
     }
 
     showRequestModal(e) {
@@ -126,7 +182,6 @@ export default class NewAdvertisement extends Component {
 
 
     render() {
-        console.log(this.props.user)
         let mainCategories = [];
         let subCategories = [];
         let conditions = [];
@@ -135,27 +190,27 @@ export default class NewAdvertisement extends Component {
 
         if (this.props.categories.length > 0) {
             mainCategories.push(<option key="empty" disabled value={''}>Choose...</option>)
-            this.props.categories.map((cat) => mainCategories.push(<option key={cat.id + cat.title}>{cat.title}</option>))
-            mainCatContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleMainCatChange}>
+            this.props.categories.map((cat) => mainCategories.push(<option key={cat.id + cat.title} value={cat.id}>{cat.title}</option>))
+            mainCatContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleMainCatChange} ref="mainCat">
                 {mainCategories}
             </Form.Control>
         }
 
         if (this.props.subCategories.length > 0) {
-            let id = this.getMainCatId();
+            let id = this.state.mainCategory;
             subCategories.push(<option key="empty" disabled value={''}>Choose...</option>)
             if (this.state.mainCategory !== '') {
-                this.props.subCategories[id].map((cat) => subCategories.push(<option key={cat.id + cat.title}>{cat.title}</option>))
+                this.props.subCategories[id].map((cat) => subCategories.push(<option key={cat.id + cat.title} value={cat.id}>{cat.title}</option>))
             }
-            subCatContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleSubCatChange}>
+            subCatContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleSubCatChange} ref="subCat">
                 {subCategories}
             </Form.Control>
         }
 
         if (this.props.conditions.length > 0) {
             conditions.push(<option key="empty" disabled value={''}>Choose...</option>)
-            this.props.conditions.map((con) => conditions.push(<option key={con.id + con.title}>{con.title}</option>))
-            conditionsContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleConditionChange}>
+            this.props.conditions.map((con) => conditions.push(<option key={con.id + con.title} value={con.id}>{con.title}</option>))
+            conditionsContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleConditionChange} ref="cond">
                 {conditions}
             </Form.Control>
         }
@@ -166,7 +221,7 @@ export default class NewAdvertisement extends Component {
                     New Advertisement Confirmation
             </Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ fontSize: '16px' }}>
+            <Modal.Body style={{ fontSize: '18px' }}>
                 Are you sure to create this advertisement?
               </Modal.Body>
             <Modal.Footer>
@@ -215,7 +270,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Title
                                                  </Form.Label>
-                                            <Form.Control maxLength="40" required type="text" placeholder="Title" onChange={this.handleTitleChange} pattern="[a-zA-Z0-9]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain alphanumeric characters." />
+                                            <Form.Control maxLength="40" required type="text" placeholder="Title" onChange={this.handleTitleChange} pattern="[a-zA-Z0-9\s]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain alphanumeric characters." />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -273,10 +328,10 @@ export default class NewAdvertisement extends Component {
                                                 <hr></hr>
                                                 <Card.Title className="text-ad-title">{this.state.title}</Card.Title>
                                                 <Card.Text>
-                                                    {this.state.mainCategory}
+                                                    {this.getMainCatTitle()}
                                                 </Card.Text>
                                                 <Card.Text className="bold">
-                                                    <span className="text-premium">{this.state.price + " €"}</span>  {(this.state.trade ? <span className="text-trade">Trade</span> : "")}
+                                                    <span className="text-premium">{this.state.price + " €"}</span>  {(this.state.trade === "On" ? <span className="text-trade">Trade</span> : "")}
                                                 </Card.Text>
                                             </Card.Body>
                                         </Card>

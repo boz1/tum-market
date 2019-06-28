@@ -155,7 +155,7 @@ class Home extends Component {
         let data = snap.val();
         let ads = [];
         Object.keys(data).forEach(function (user) {
-          data[user].forEach(function (ad) {
+          Object.values(data[user]).forEach(function (ad) {
             const conRef = firebase.database().ref('conditions').child(ad.conditionId);
             conRef.on('value', cond => {
               ad.condition = cond.val()
