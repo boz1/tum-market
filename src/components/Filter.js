@@ -5,63 +5,42 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
-class Filter extends Component {
+
+export default class Filter extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            advertisements: {},
-            sug: {},
-            categories: {},
-            selectedCategory: "",
-            subCategories: {},
-            conditions: {},
+
+            mainCategory: '',
+            subCategory: '',
+            condition: '',
+            title: '',
+            price: 0,
+            trade: "On",
+        }
+    }
+    componentDidMount() {
+      }
+
+
+    render() { 
+
+        
+        let mainCategories = [];
+        let subCategories = [];
+        let conditions = [];
+
+        let mainCatContainer, subCatContainer, conditionsContainer;
+
+        if (this.props.categories.length > 0) {
+            mainCategories.push(<option key="empty" disabled value={''}>Choose...</option>)
+            this.props.categories.map((cat) => mainCategories.push(<option key={cat.id + cat.title} value={cat.id}>{cat.title}</option>))
+            mainCatContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleMainCatChange} ref="mainCat">
+                {mainCategories}
+            </Form.Control>
         }
 
 
-    this.getAdvertisements = this.getAdvertisements.bind(this)
-    this.getCategories = this.getCategories.bind(this)
-    this.getSubCategories = this.getSubCategories.bind(this)
-    this.getConditions = this.getConditions.bind(this)
-    }
-    componentDidMount() {
-        this.getCategories()
-        this.getSubCategories()
-        this.getConditions()
-        this.getAdvertisements()
-      }
-
-
-      getCategories() {
-        this.categoriesRef = firebase.database().ref('categories')
-        this.categoriesRef.on('value', snap => {
-          this.setState({
-            categories: snap.val()
-          })
-        })
-      }
-      getSubCategories() {
-        this.subCategoriesRef = firebase.database().ref('sub-categories')
-        this.subCategoriesRef.on('value', snap => {
-          this.setState({
-            subCategories: snap.val()
-          })
-        })
-      }
-    
-      getConditions() {
-        this.conditionsRef = firebase.database().ref('conditions')
-        this.conditionsRef.on('value', snap => {
-          this.setState({
-            conditions: snap.val()
-          })
-        })
-      }
-      getAdvertisements(){
-
-      }
-    render() { 
-
-            
         return (
                 <Dropdown className="ml-auto">
                     <Dropdown.Toggle variant="primary" id="dropdown-basic">
@@ -140,4 +119,3 @@ class Filter extends Component {
     }
 }
  
-export default Filter;
