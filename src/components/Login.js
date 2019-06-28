@@ -185,7 +185,7 @@ class Login extends Component {
             </form>
             <label htmlFor="exampleInputEmail1" className="large-text">Password</label>
             <div className="form-group mb-2">
-              <input name="password" onChange={this.handleChange} value={this.state.password} type="text" className="form-control" placeholder="Password" />
+              <input name="password" onChange={this.handleChange} value={this.state.password} type="password" className="form-control" placeholder="Password" />
             </div>
             <label htmlFor="exampleInputEmail1" className="large-text">Details</label>
             <div className="form-group mb-2">
