@@ -210,7 +210,7 @@ export default class Navbar extends Component {
                         <FormControl onChange={this.props.search} placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
                     </Form>
                 </div>
-                <Filter data={this.State.adlist}/>
+                <Filter categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
                 <span className="ml-auto d-flex">
                     {notificationCounter}
                     <Dropdown onToggle={this.readNotifications}>

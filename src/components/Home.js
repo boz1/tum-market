@@ -237,7 +237,7 @@ class Home extends Component {
     return (
       <React.Fragment>
         <div className="container">
-          <Navbar search={this.search} user={this.state.user} />
+          <Navbar search={this.search} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />
           <Switch>
             <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user} />} />
             <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
