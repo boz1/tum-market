@@ -25,13 +25,11 @@ export default class Filter extends Component {
 
     render() { 
 
-        
         let mainCategories = [];
         let subCategories = [];
         let conditions = [];
 
-        let mainCatContainer, subCatContainer, conditionsContainer;
-
+        let mainCatContainer, adsubCatContainer, conditionsContainer;
         if (this.props.categories.length > 0) {
             mainCategories.push(<option key="empty" disabled value={''}>Choose...</option>)
             this.props.categories.map((cat) => mainCategories.push(<option key={cat.id + cat.title} value={cat.id}>{cat.title}</option>))
