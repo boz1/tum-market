@@ -9,6 +9,7 @@ import PageNotFound from './PageNotFound'
 import NewAdvertisement from "./advertisement/NewAdvertisement"
 import TradeList from './trade/TradeList'
 
+import  Verification from './Verification'
 
 class Home extends Component {
   constructor(props) {
@@ -234,6 +235,8 @@ class Home extends Component {
   }
 
   render() {
+    const ver = firebase.auth().currentUser;
+    if(ver.emailVerified){
     return (
       <React.Fragment>
         <div className="container">
@@ -249,6 +252,8 @@ class Home extends Component {
         </div>
       </React.Fragment>
     );
+    }
+    else{return(<Verification></Verification>)}
   }
 }
 

@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import firebase from '../config/firebaseConfig';
 import Alert from 'react-bootstrap/Alert'
 import history from '../history'
-
+import { Link } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
+import Verification from './Verification'
 
 class Login extends Component {
   constructor(props) {
@@ -58,8 +60,7 @@ class Login extends Component {
       .catch((error) => {
         console.log(error);
       })
-      var user = firebase.auth().currentUser;
-      console.log(user)
+
   }
 
   render() {
@@ -98,6 +99,8 @@ class Login extends Component {
     }
     else {
       return (
+        <Switch>
+        <Route path="/verify" render={(props) => <Verification/>} />
         <div className="container mt-5">
           <div className="mx-auto my-auto p-4 w-50 login-border">
             <h3 className="login-header">Create New Account</h3>
@@ -131,7 +134,9 @@ class Login extends Component {
             </form>
             <div className="d-flex mt-2">
               <div>
-                <button type="submit" onClick={this.signup} className="btn btn-primary">Sign Up</button>
+                <button type="submit" onClick={this.signup} className="btn btn-primary">  
+                  <Link to={{ pathname: '/verify' }} className="dropdown-item">Sign Up</Link>
+                </button>
               </div>
               <div className="ml-auto mt-auto mb-auto  large-text">
                 <span>Already have an account? <strong style={{cursor:"pointer"}} onClick={this.togglePage} className="text-premium bold">Login!</strong></span>
@@ -139,8 +144,10 @@ class Login extends Component {
             </div>
           </div>
         </div>
+        </Switch>
+
       );
     }
   }
 }
-export default Login;
+export default Login;        
