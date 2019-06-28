@@ -72,10 +72,6 @@ class Filter extends Component {
                             <Form>
                                 <Form.Group controlId="exampleForm.ControlSelect1">
                                     <Form.Label>Main Category</Form.Label>
-                                    <select value={this.state.selectedCategory} 
-              onChange={(e) => this.setState({selectedCategory: e.target.value})}>
-        {this.state.categories((category) => <option key={category.value} value={category.value}>{category.display}</option>)}
-      </select>
                                 </Form.Group>
                                 <Form.Group controlId="exampleForm.ControlSelect2">
                                     <Form.Label>Sub Category</Form.Label>

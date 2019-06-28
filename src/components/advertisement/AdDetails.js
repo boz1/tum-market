@@ -85,12 +85,10 @@ export default class AdDetails extends Component {
             isRead: false
         };
 
-        // Write the new post's data simultaneously in the posts list and the user's post list.
         var updates = {};
         updates['/trade-requests/' + user.info.id + '/' + newPostKey] = postDataBuyer;
         updates['/received-offers/' + ad.userId + '/' + newPostKey] = postDataSeller;
-        updates['/notifications/' + user.info.id + '/' + newPostKey] = notification;
-
+        updates['/notifications/' + ad.userId + '/' + newPostKey] = notification;
 
         firebase.database().ref().update(updates);
 
@@ -117,7 +115,7 @@ export default class AdDetails extends Component {
         const user = this.props.location.state.user;
         let tradeRequest, alert, modal;
 
-        let items = user.ads.map((item) => <option key={item.id} value={item.title + '-' + item.id}>{item.title}</option>)
+        let items = Object.values(user.ads).map((item) => <option key={item.id} value={item.title + '-' + item.id}>{item.title}</option>)
 
         modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
             <Modal.Header>
@@ -125,7 +123,7 @@ export default class AdDetails extends Component {
                     Trade Request Confirmation
                 </Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ fontSize: '16px' }}>
+            <Modal.Body style={{ fontSize: '18px' }}>
                 You are offering <strong>{this.state.offeredItem.split('-')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>.
                 Do you want to send this trade request?
                   </Modal.Body>
@@ -154,7 +152,7 @@ export default class AdDetails extends Component {
                                 </Form.Group>
                             </Form.Row>
                             <Button variant="primary" onClick={this.showRequestModal}>
-                                Offer
+                                Send Request
                              </Button>
                         </Form>
                     </Card.Body>
@@ -186,7 +184,7 @@ export default class AdDetails extends Component {
                                     <div className="col-sm-6">
                                         <Image className="mt-0"
                                             src={ad.image}
-                                            height={240}
+                                            height={270}
                                             width={300}
                                         />
                                     </div>
@@ -194,9 +192,11 @@ export default class AdDetails extends Component {
                                         <ul className="align-content-center category-list details-list">
                                             <li className="center-item"><span className="float-left">ID</span><strong>{ad.id}</strong></li>
                                             <hr></hr>
-                                            <li className="center-item"><span className="float-left">Main Category</span><strong>{ad.mainCategory}</strong></li>
+                                            <li className="center-item"><span className="float-left">Main Category</span><strong>{ad.mainCategory.title}</strong></li>
                                             <hr></hr>
-                                            <li className="center-item"><span className="float-left">Sub Category</span><strong>{ad.subCategory}</strong></li>
+                                            <li className="center-item"><span className="float-left">Sub Category</span><strong>{ad.subCategory.title}</strong></li>
+                                            <hr></hr>
+                                            <li className="center-item"><span className="float-left">Condition</span><strong>{ad.condition.title}</strong></li>
                                             <hr></hr>
                                             <li className="center-item"><span className="float-left">Trade</span><strong>{ad.trade ? "Yes" : "No"}</strong></li>
                                             <hr></hr>

@@ -20,14 +20,15 @@ class Home extends Component {
       advertisements: {},
       sug: {},
       categories: {},
-      conditions: {},
-      notifications: {}
+      subCategories: {},
+      conditions: {}
     }
 
     this.getUser = this.getUser.bind(this)
     this.getUsers = this.getUsers.bind(this)
     this.getAdvertisements = this.getAdvertisements.bind(this)
     this.getCategories = this.getCategories.bind(this)
+    this.getSubCategories = this.getSubCategories.bind(this)
     this.getConditions = this.getConditions.bind(this)
     this.search = this.search.bind(this);
 
@@ -36,6 +37,7 @@ class Home extends Component {
   componentDidMount() {
     this.getUsers()
     this.getCategories()
+    this.getSubCategories()
     this.getConditions()
     this.getAdvertisements(this.props.user, this.getUser)
       .catch(function (err) { console.log(err) })
@@ -50,6 +52,9 @@ class Home extends Component {
 
     this.categoriesRef.off('value')
     this.categoriesRef = null;
+
+    this.subCategoriesRef.off('value')
+    this.subCategoriesRef = null;
 
     this.conditionsRef.off('value')
     this.conditionsRef = null;
@@ -150,7 +155,7 @@ class Home extends Component {
         let data = snap.val();
         let ads = [];
         Object.keys(data).forEach(function (user) {
-          data[user].forEach(function (ad) {
+          Object.values(data[user]).forEach(function (ad) {
             const conRef = firebase.database().ref('conditions').child(ad.conditionId);
             conRef.on('value', cond => {
               ad.condition = cond.val()
@@ -200,6 +205,15 @@ class Home extends Component {
     })
   }
 
+  getSubCategories() {
+    this.subCategoriesRef = firebase.database().ref('sub-categories')
+    this.subCategoriesRef.on('value', snap => {
+      this.setState({
+        subCategories: snap.val()
+      })
+    })
+  }
+
   getConditions() {
     this.conditionsRef = firebase.database().ref('conditions')
     this.conditionsRef.on('value', snap => {
@@ -211,23 +225,24 @@ class Home extends Component {
 
   search(input) {
     if (input.target.value.length === 0)
-      this.setState({ sug: this.state.advertisements })
+      this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
     else {
       const regix = new RegExp(`${input.target.value}`, 'i')
-      this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) })
+      this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
     }
+
   }
 
   render() {
     return (
       <React.Fragment>
-        <div className="container content">
+        <div className="container">
           <Navbar search={this.search} user={this.state.user} />
           <Switch>
-            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.advertisements} user={this.state.user} />} />
+            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user} />} />
             <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
             <Route path="/adDetails/:id" component={AdDetails} />
-            <Route path="/newAdvertisement" component={NewAdvertisement} />
+            <Route path="/newAdvertisement" render={(props) => <NewAdvertisement {...props} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />} />
             <Route component={PageNotFound} />
           </Switch>
           <Footer />

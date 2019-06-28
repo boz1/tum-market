@@ -12,7 +12,7 @@ class Login extends Component {
       email: '',
       password: '',
       showAlert: false,
-      singupBool:false,
+      signupBool:false,
       name:'',
       address:'',
       mobile:''
@@ -35,8 +35,10 @@ class Login extends Component {
 
   login(e) {
     e.preventDefault();
-    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((u) => {
-    }).catch((error) => {
+    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+    .then((u) => {console.log(u)})
+    .catch((error) => {
+      console.log(error)
       this.setState({
         showAlert: true,
         password: ''
@@ -45,20 +47,24 @@ class Login extends Component {
   }
 
   togglePage() {
-    this.setState({ singupBool: !this.state.singupBool })
+    this.setState({email:"",password:""})
+    this.setState({ signupBool: !this.state.signupBool })
   }
 
   signup(e) {
     e.preventDefault();
-    firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then((u) => {
+    firebase.auth().createUserWithEmailAndPassword(this.state.email+"@mytum.du", this.state.password).then((u) => {
     }).then((u) => { console.log(u) })
       .catch((error) => {
         console.log(error);
       })
+      var user = firebase.auth().currentUser;
+      console.log(user)
   }
 
   render() {
-    if (!this.state.singupBool) {
+
+    if (!this.state.signupBool) {
       return (
         <div className="container mt-5">
           <div className="mx-auto my-auto p-4 w-50 login-border">
@@ -99,7 +105,7 @@ class Login extends Component {
             <label htmlFor="exampleInputEmail1" className="large-text">Email</label>
             <form className="form-inline">
               <div className="form-group mb-2">
-                <input type="text" className="form-control" placeholder="TUM Email" />
+                <input name="email"  onChange={this.handleChange}value={this.state.email} type="text" className="form-control" placeholder="TUM Email" />
               </div>
               <div className="form-group mx-sm-3 mb-2">
                 <div className="input-group-prepend">
@@ -109,18 +115,18 @@ class Login extends Component {
             </form>
             <label htmlFor="exampleInputEmail1" className="large-text">Password</label>
             <div className="form-group mb-2">
-              <input type="text" className="form-control" placeholder="Password" />
+              <input name="password" onChange={this.handleChange} value={this.state.password} type="text" className="form-control" placeholder="Password" />
             </div>
             <label htmlFor="exampleInputEmail1" className="large-text">Details</label>
             <div className="form-group mb-2">
-              <input type="text" className="form-control" placeholder="Name" />
+              <input name="name" onChange={this.handleChange} value={this.state.name} type="text" className="form-control" placeholder="Name" />
             </div>
             <form className="form-inline">
               <div className="form-group mb-2">
-                <input type="text" className="form-control" placeholder="Address" />
+                <input name="address" onChange={this.handleChange} value={this.state.address} type="text" className="form-control" placeholder="Address" />
               </div>
               <div className="form-group mx-sm-3 mb-2">
-                <input type="text" readOnly className="form-control" placeholder="Mobile" />
+                <input name="mobile" onChange={this.handleChange} value={this.state.mobile} type="text" readOnly className="form-control" placeholder="Mobile" />
               </div>
             </form>
             <div className="d-flex mt-2">
