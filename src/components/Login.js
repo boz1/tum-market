@@ -205,7 +205,7 @@ class Login extends Component {
                  {!this.state.error ? <Link to={{ pathname: '/verify' }} className="dropdown-item">Sign Up</Link> : "Sign Up"}
                 </button>
               </div>
-              <div className="ml-auto mt-auto mb-auto  large-text">
+              <div className="ml-auto mt-auto mb-auto  large-login valdationtext">
                 <span>Already have an account? <strong style={{cursor:"pointer"}} onClick={this.togglePage} className="text-premium bold">Login!</strong></span>
               </div>
             </div>
