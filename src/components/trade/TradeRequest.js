@@ -159,7 +159,6 @@ export default class TradeRequest extends Component {
             isRead: false
         };
 
-        // Get a key for a new Post.
         var updates = {};
         updates['/trade-requests/' + this.props.item.buyerId + '/' + this.props.item.id + '/status'] = e.target.value;
         updates['/received-offers/' + this.props.item.userId + '/' + this.props.item.id + '/status'] = e.target.value;

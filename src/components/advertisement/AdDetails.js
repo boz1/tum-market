@@ -85,12 +85,10 @@ export default class AdDetails extends Component {
             isRead: false
         };
 
-        // Write the new post's data simultaneously in the posts list and the user's post list.
         var updates = {};
         updates['/trade-requests/' + user.info.id + '/' + newPostKey] = postDataBuyer;
         updates['/received-offers/' + ad.userId + '/' + newPostKey] = postDataSeller;
         updates['/notifications/' + ad.userId + '/' + newPostKey] = notification;
-
 
         firebase.database().ref().update(updates);
 
@@ -117,7 +115,7 @@ export default class AdDetails extends Component {
         const user = this.props.location.state.user;
         let tradeRequest, alert, modal;
 
-        let items = user.ads.map((item) => <option key={item.id} value={item.title + '-' + item.id}>{item.title}</option>)
+        let items = Object.values(user.ads).map((item) => <option key={item.id} value={item.title + '-' + item.id}>{item.title}</option>)
 
         modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
             <Modal.Header>
@@ -125,7 +123,7 @@ export default class AdDetails extends Component {
                     Trade Request Confirmation
                 </Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ fontSize: '16px' }}>
+            <Modal.Body style={{ fontSize: '18px' }}>
                 You are offering <strong>{this.state.offeredItem.split('-')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>.
                 Do you want to send this trade request?
                   </Modal.Body>

@@ -9,7 +9,8 @@ class App extends Component {
     super()
 
     this.state = {
-      user: null
+      user: null,
+      mount: 0
     }
 
     this.authListener = this.authListener.bind(this);
@@ -20,20 +21,25 @@ class App extends Component {
   }
 
   authListener() {
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.setState({ user });
-        localStorage.setItem('user', user.uid);
+    firebase.auth().onAuthStateChanged((us) => {
+      if (us) {
+        this.setState({ user: us, mount: 1 });
+        localStorage.setItem('user', us.uid);
       } else {
-        this.setState({ user: null });
+        this.setState({ user: "", mount: 1 });
         localStorage.removeItem('user');
       }
     });
   }
 
   render() {
-    return (
-      <div>{this.state.user ? (<Home user={this.state.user} />) : <Login/>}</div>)
+    if (this.state.mount) {
+      return (
+        <div>{this.state.user ? (<Home user={this.state.user} />) : <Login />}</div>)
+    }
+    else {
+      return (<div></div>)
+    }
   }
 }
 

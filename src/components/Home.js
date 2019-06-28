@@ -155,7 +155,7 @@ class Home extends Component {
         let data = snap.val();
         let ads = [];
         Object.keys(data).forEach(function (user) {
-          data[user].forEach(function (ad) {
+          Object.values(data[user]).forEach(function (ad) {
             const conRef = firebase.database().ref('conditions').child(ad.conditionId);
             conRef.on('value', cond => {
               ad.condition = cond.val()
@@ -224,13 +224,19 @@ class Home extends Component {
   }
 
   search(input) {
+<<<<<<< HEAD
     console.log(this.state.advertisements)
     if (input.target.value.length == 0)
       this.setState({ sug: this.state.advertisements })
+=======
+    if (input.target.value.length === 0)
+      this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
+>>>>>>> e97381c344c7b81bfd97bd896573cf4ac5cb60dd
     else {
       const regix = new RegExp(`${input.target.value}`, 'i')
-      this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) })
+      this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
     }
+
   }
 
   render() {
@@ -242,7 +248,7 @@ class Home extends Component {
             <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user} />} />
             <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
             <Route path="/adDetails/:id" component={AdDetails} />
-            <Route path="/newAdvertisement"  render={(props) => <NewAdvertisement {...props} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions}/>} />
+            <Route path="/newAdvertisement" render={(props) => <NewAdvertisement {...props} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />} />
             <Route component={PageNotFound} />
           </Switch>
           <Footer />
