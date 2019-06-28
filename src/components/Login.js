@@ -196,7 +196,7 @@ class Login extends Component {
                 <input name="address" onChange={this.handleChange} value={this.state.address} type="text" className="form-control" placeholder="Address" />
               </div>
               <div className="form-group mx-sm-3 mb-2">
-                <input name="mobile" onChange={this.handleChange} value={this.state.mobile} type="text" readOnly className="form-control" placeholder="Mobile" />
+                <input name="mobile" onChange={this.handleChange} value={this.state.mobile} type="text"  className="form-control" placeholder="Mobile" />
               </div>
             </form>
             <div className="d-flex mt-2">
