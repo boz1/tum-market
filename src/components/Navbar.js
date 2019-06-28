@@ -21,7 +21,7 @@ export default class Navbar extends Component {
             notifications: [],
             notificationIds: [],
             isRead: true,
-            notReadNotificationCount: 0
+            notReadNotificationCount: 0,
         }
 
         this.logout = this.logout.bind(this)
@@ -210,7 +210,7 @@ export default class Navbar extends Component {
                         <FormControl onChange={this.props.search} placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
                     </Form>
                 </div>
-                <Filter data={this.State.adlist}/>
+                <Filter categories={this.props.cat}/>
                 <span className="ml-auto d-flex">
                     {notificationCounter}
                     <Dropdown onToggle={this.readNotifications}>
