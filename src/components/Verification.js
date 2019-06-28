@@ -25,7 +25,7 @@ export default class Verification extends Component {
             <div>
                 <h1>Please verify your email address</h1>
                 <button onClick={this.verify}>Send verification</button>
-                <div>{this.state.text ? <h3> this.state.text</h3> : <div></div>}</div>
+                <div>{this.state.text ? <h3> {this.state.text}</h3> : <div></div>}</div>
             </div>
             
         )
