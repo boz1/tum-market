@@ -78,7 +78,7 @@ class Login extends Component {
 
     if (typeof this.state.email !== "undefined") {
       //regular expression for email validation
-      var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+      var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))/i);
       if (!pattern.test(this.state.email)) {
         formIsValid = false;
         errors["email"] = "*Please enter valid email-ID.";
@@ -93,7 +93,7 @@ class Login extends Component {
     if (typeof this.state.mobile !== "undefined") {
       if (!this.state.mobile.match(/^[0-9]{10}$/)) {
         formIsValid = false;
-        errors["mobile"] = "*Please enter valid mobile no.";
+        errors["mobile"] = "*Please enter valid Number.";
       }
     }
 
@@ -110,7 +110,7 @@ class Login extends Component {
     }
     if (!this.state.address) {
       formIsValid = false;
-      errors["address"] = "*Please enter your password.";
+      errors["address"] = "*Please enter your address.";
     }
     this.setState({
       error: errors
@@ -175,7 +175,6 @@ class Login extends Component {
             <form className="form-inline">
               <div className="form-group mb-2">
                 <input name="email"  onChange={this.handleChange}value={this.state.email} type="text" className="form-control" placeholder="TUM Email" />
-                <div  >{this.state.error.email}</div>
               </div>
               <div className="form-group mx-sm-3 mb-2">
                 <div className="input-group-prepend">
@@ -183,22 +182,31 @@ class Login extends Component {
                 </div>
               </div>
             </form>
+            <div style={{  color: "red"}}>{this.state.error.email}</div>
             <label htmlFor="exampleInputEmail1" className="large-text">Password</label>
             <div className="form-group mb-2">
               <input name="password" onChange={this.handleChange} value={this.state.password} type="password" className="form-control" placeholder="Password" />
             </div>
+            <div style={{  color: "red"}}>{this.state.error.password}</div>
             <label htmlFor="exampleInputEmail1" className="large-text">Details</label>
-            <div className="form-group mb-2">
+            <form className="form-inline">
+            <div className="form-group mx-sm-3 mb-2">
               <input name="name" onChange={this.handleChange} value={this.state.name} type="text" className="form-control" placeholder="Name" />
             </div>
+            <div style={{  color: "red"}}>{this.state.error.name}</div>
+            </form>
             <form className="form-inline">
-              <div className="form-group mb-2">
+              <div className="form-group mx-sm-3 mb-2">
                 <input name="address" onChange={this.handleChange} value={this.state.address} type="text" className="form-control" placeholder="Address" />
               </div>
+              <div style={{  color: "red"}}>{this.state.error.address}</div>
+              </form>
+              <form className="form-inline">
               <div className="form-group mx-sm-3 mb-2">
                 <input name="mobile" onChange={this.handleChange} value={this.state.mobile} type="text"  className="form-control" placeholder="Mobile" />
               </div>
-            </form>
+              <div style={{  color: "red"}}>{this.state.error.mobile}</div>
+              </form>
             <div className="d-flex mt-2">
               <div>
                 <button type="submit" onClick={this.signup} className="btn btn-primary">  
