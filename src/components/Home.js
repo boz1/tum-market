@@ -224,14 +224,8 @@ class Home extends Component {
   }
 
   search(input) {
-<<<<<<< HEAD
-    console.log(this.state.advertisements)
-    if (input.target.value.length == 0)
-      this.setState({ sug: this.state.advertisements })
-=======
     if (input.target.value.length === 0)
       this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
->>>>>>> e97381c344c7b81bfd97bd896573cf4ac5cb60dd
     else {
       const regix = new RegExp(`${input.target.value}`, 'i')
       this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
