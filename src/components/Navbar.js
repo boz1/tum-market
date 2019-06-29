@@ -21,7 +21,7 @@ export default class Navbar extends Component {
             notifications: [],
             notificationIds: [],
             isRead: true,
-            notReadNotificationCount: 0
+            notReadNotificationCount: 0,
         }
 
         this.logout = this.logout.bind(this)
