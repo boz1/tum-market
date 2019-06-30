@@ -203,3 +203,7 @@ a[aria-disabled="true"] {
   border-radius: 0.25rem;
   background: white
 }
+
+.premium {
+  border: 1px solid #006BD6 !important
+}

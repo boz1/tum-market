@@ -208,7 +208,7 @@ export default class AdDetails extends Component {
                                 <div className="my-3">
                                     <Card>
                                         <Card.Header><span className="text-sub-title">Description</span></Card.Header>
-                                        <Card.Body>
+                                        <Card.Body style={{fontSize:"16px"}}>
                                             <p>
                                                 {' '}
                                                 {ad.description}{' '}
