@@ -4,7 +4,6 @@ import Title from '../Title'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import Image from 'react-image-resizer';
 import Modal from 'react-bootstrap/Modal';
 import history from '../../history'
 import { css } from '@emotion/core';
@@ -268,7 +267,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Title
                                                  </Form.Label>
-                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9\s._]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain alphanumeric characters." />
+                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9\s.-_]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain alphanumeric characters." />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -319,11 +318,16 @@ export default class NewAdvertisement extends Component {
                                     <Form.Group className="pl-0">
                                         <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Preview</Form.Label>
                                         <Card style={{ width: 'auto', height: 'fit-content' }}>
-                                            <Image
-                                                src={'http://via.placeholder.com/400x300'}
-                                                height={150}
-                                                width="auto"
-                                            />
+                                            <div className="m-auto">
+                                                <img
+                                                    src={'http://via.placeholder.com/200x150'}
+                                                    style={{
+                                                        height: "auto", width: "auto", marginTop:"12px"
+                                                    }}
+                                                    alt="Product"
+                                                />
+                                            </div>
+
                                             <Card.Body className="p-2">
                                                 <hr></hr>
                                                 <Card.Title className="text-ad-title">{this.state.title}</Card.Title>

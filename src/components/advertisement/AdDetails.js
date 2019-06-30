@@ -49,7 +49,7 @@ export default class AdDetails extends Component {
         event.preventDefault();
         const ad = this.props.location.state.ad;
         const user = this.props.location.state.user;
-        const itemId = parseInt(this.state.offeredItem.split('-')[1]);
+        const itemId = this.state.offeredItem.split('&')[1];
 
         // Get a key for a new Post.
         var newPostKey = firebase.database().ref('trade-requests').child(user.info.id).push().key;
@@ -118,7 +118,7 @@ export default class AdDetails extends Component {
 
         let items = [];
         items.push(<option key="empty" disabled value={''}>Choose...</option>)
-        Object.values(user.ads).map((item) => items.push(<option key={item.id} value={item.title + '-' + item.id}>{item.title}</option>))
+        Object.values(user.ads).map((item) => items.push(<option key={item.id} value={item.title + '&' + item.id}>{item.title}</option>))
 
         modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
             <Modal.Header>
@@ -149,12 +149,12 @@ export default class AdDetails extends Component {
                             <Form.Row>
                                 <Form.Group controlId="tradeItem">
                                     <Form.Label style={{ fontSize: "16px" }}>Your Items</Form.Label>
-                                    <Form.Control required defaultValue={''} as="select" value={this.state.offeredItem} onChange={this.handleChange}>
+                                    <Form.Control required defaultValue={''} as="select" onChange={this.handleChange}>
                                         {items}
                                     </Form.Control>
                                 </Form.Group>
                             </Form.Row>
-                            <Button variant="primary">
+                            <Button variant="primary" type="submit">
                                 Send Request
                              </Button>
                         </Form>
