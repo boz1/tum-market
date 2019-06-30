@@ -14,7 +14,8 @@ export default class AdvertisementList extends Component {
             user: this.props.user,
             itemPerPage: 6,
             currentPage: 0,
-            pageCount: Math.ceil(this.props.adsList.length / 6)
+            pageCount: Math.ceil(this.props.adsList.length / 6),
+            sort: ''
         }
 
         this.sortAZ = this.sortAZ.bind(this)
@@ -66,11 +67,16 @@ export default class AdvertisementList extends Component {
     }
 
     datesort() {
-        this.setState({ data: this.state.data.sort(function (obj1, obj2) { return Number(obj1.date.replace('/', '')) - Number(obj2.date.replace('/', '')) }), sort: "Old to New" })
+        this.setState({
+            data: this.state.data.sort(function (obj1, obj2) {
+                return new Date(obj1.date) - new Date(obj2.date)
+            }),
+            sort: "Old to New"
+        })
     }
 
     datesortReverse() {
-        this.setState({ data: this.state.data.sort(function (obj1, obj2) { return Number(obj1.date.replace('/', '')) - Number(obj2.date.replace('/', '')) }).reverse(), sort: "New to Old" })
+        this.setState({ data: this.state.data.sort(function (obj1, obj2) { return new Date(obj2.date) - new Date(obj1.date) }), sort: "New to Old" })
     }
 
     handlePageClick = data => {
@@ -82,9 +88,11 @@ export default class AdvertisementList extends Component {
         const bottomLimit = this.state.currentPage * this.state.itemPerPage
         const topLimit = (this.state.currentPage + 1) * this.state.itemPerPage
         let pageData = this.state.data.slice(bottomLimit, topLimit)
-        pageData.sort(function (obj1, obj2) {
-            return (obj1.user.isPremium === obj2.user.isPremium) ? 0 : obj1 ? -1 : 1;
-        });
+        if(this.state.sort === ''){
+            pageData.sort(function (obj1, obj2) {
+                return (obj1.user.isPremium === obj2.user.isPremium) ? 0 : obj1 ? -1 : 1;
+            });
+        }
         return pageData.map((ad) => <Advertisment key={ad.id} ad={ad} user={this.state.user} />)
     }
 
@@ -108,8 +116,8 @@ export default class AdvertisementList extends Component {
                                             <Dropdown.Item onClick={this.sortZA}>Z-A</Dropdown.Item>
                                             <Dropdown.Item onClick={this.pricesort}>€-€€€</Dropdown.Item>
                                             <Dropdown.Item onClick={this.pricesortReverse}>€€€-€</Dropdown.Item>
-                                            <Dropdown.Item onClick={this.datesort}>Old to New</Dropdown.Item>
                                             <Dropdown.Item onClick={this.datesortReverse}>New to Old</Dropdown.Item>
+                                            <Dropdown.Item onClick={this.datesort}>Old to New</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </div>
@@ -118,7 +126,7 @@ export default class AdvertisementList extends Component {
                         </form>
                         <hr className="my-2"></hr>
                         <CardDeck className="mb-5 row">
-                            {this.state.data.length > 0 ? this.getData() : <div style={{textAlign:'center', fontSize:"16px", margin:"auto"}}>No advertisements found.</div>}
+                            {this.state.data.length > 0 ? this.getData() : <div style={{ textAlign: 'center', fontSize: "16px", margin: "auto" }}>No advertisements found.</div>}
                         </CardDeck>
                         {this.state.data.length > 0 ?
                             <div className="my-2" style={{ background: "#D0E4F7" }}>
