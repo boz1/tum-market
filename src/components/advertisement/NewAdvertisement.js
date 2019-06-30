@@ -7,6 +7,14 @@ import Card from 'react-bootstrap/Card';
 import Image from 'react-image-resizer';
 import Modal from 'react-bootstrap/Modal';
 import history from '../../history'
+import { css } from '@emotion/core';
+import { RingLoader } from 'react-spinners';
+
+const override = css`
+    display: block;
+    margin: 0 auto;
+    border-color: red;
+`;
 
 export default class NewAdvertisement extends Component {
     constructor(props) {
@@ -20,7 +28,8 @@ export default class NewAdvertisement extends Component {
             description: '',
             image: null,
             trade: "On",
-            showModal: false
+            showModal: false,
+            loading: false
         }
 
         this.handleMainCatChange = this.handleMainCatChange.bind(this)
@@ -58,7 +67,7 @@ export default class NewAdvertisement extends Component {
 
     handleChange(e) {
         this.setState({ [e.target.name]: e.target.value });
-      }
+    }
 
     handleImageChange(event) {
         if (event.target.files[0]) {
@@ -81,8 +90,11 @@ export default class NewAdvertisement extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
+        this.setState({
+            loading: true,
+            showModal: false
+        })
 
-        // Get a key for a new Post.
         var newPostKey = firebase.database().ref('advertisements').child(this.props.user.info.id).push().key;
 
         // Get date
@@ -188,6 +200,20 @@ export default class NewAdvertisement extends Component {
             </Form.Control>
         }
 
+        let loading = <Modal show={this.state.loading}>
+            <Modal.Body>
+                <RingLoader
+                    css={override}
+                    sizeUnit={"px"}
+                    size={100}
+                    color={'#006BD6'}
+                    loading={this.state.loading}
+                />
+            </Modal.Body>
+        </Modal>
+
+
+
         let modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
             <Modal.Header>
                 <Modal.Title className="text-title ">
@@ -242,7 +268,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Title
                                                  </Form.Label>
-                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9\s]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain alphanumeric characters." />
+                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9\s._]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain alphanumeric characters." />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -320,6 +346,7 @@ export default class NewAdvertisement extends Component {
                         </div>
                     </Form>
                     {modal}
+                    {loading}
                 </div>
             </React.Fragment>
         )

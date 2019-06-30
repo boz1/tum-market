@@ -115,7 +115,6 @@ export default class TradeRequest extends Component {
             showDeleteModal: false
         });
 
-        // Get a key for a new Post.
         var newPostKey = firebase.database().ref('notifications').child(this.props.item.sellerId).push().key;
 
         const notification = {
@@ -124,7 +123,6 @@ export default class TradeRequest extends Component {
             isRead: false
         };
 
-        // Get a key for a new Post.
         var updates = {};
         updates['/notifications/' + this.props.item.sellerId + '/' + newPostKey] = notification;
         firebase.database().ref().update(updates);

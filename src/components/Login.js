@@ -16,7 +16,8 @@ class Login extends Component {
       signupBool: false,
       name: '',
       address: '',
-      mobile: ''
+      mobile: '',
+      showVerify: false
       // error: {}
     };
 
@@ -38,11 +39,23 @@ class Login extends Component {
   login(e) {
     e.preventDefault();
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-      .then((u) => { console.log(u) })
+      .then((u) => {
+        if (!u.user.emailVerified) {
+          this.setState({
+            showVerify: true,
+            showAlert: false,
+            password: ''
+          })
+        }
+        else {
+          this.props.verify()
+        }
+      })
       .catch((error) => {
         console.log(error)
         this.setState({
           showAlert: true,
+          showVerify: false,
           password: ''
         })
       });
@@ -121,10 +134,24 @@ class Login extends Component {
   signup(e) {
     // if (this.validateForm()) {
     e.preventDefault();
-    firebase.auth().createUserWithEmailAndPassword(this.state.email + "@mytum.du", this.state.password).then((u) => {
-    }).then((u) => {
-      history.push('/verify')
-    })
+    firebase.auth().createUserWithEmailAndPassword(this.state.email  + '@mytum.de', this.state.password)
+      .then((u) => {
+        const userId = u.user.uid;
+        const newUser = {
+          address: this.state.address,
+          telephone: this.state.mobile,
+          isPremium: false,
+          id: userId,
+          email: this.state.email + '@mytum.de',
+          name: this.state.name
+        };
+
+        var updates = {};
+        updates['/users/' + userId] = newUser;
+
+        firebase.database().ref().update(updates);
+        history.push('/verify')
+      })
       .catch((error) => {
         console.log(error);
       })
@@ -141,21 +168,23 @@ class Login extends Component {
             <form>
               <div className="form-group text-sub-title" >
                 <label >Email</label>
-                <input value={this.state.email} onChange={this.handleChange} type="email" name="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email address" />
-                {/* <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small> */}
+                <input value={this.state.email} onChange={this.handleChange} type="email" name="email" className="form-control" aria-describedby="emailHelp" placeholder="Enter email address" />
               </div>
               <div className="form-group text-sub-title">
                 <label htmlFor="exampleInputPassword1">Password</label>
-                <input value={this.state.password} onChange={this.handleChange} type="password" name="password" className="form-control" id="exampleInputPassword1" placeholder="Enter password" />
+                <input value={this.state.password} onChange={this.handleChange} type="password" name="password" className="form-control" placeholder="Enter password" />
               </div>
-              {this.state.showAlert ? <Alert variant={"danger"} >
+              <Alert show={this.state.showAlert} variant={"danger"} >
                 Wrong password or email, please try again.
-            </Alert> : ''}
+            </Alert>
+              <Alert show={this.state.showVerify} variant={"warning"} >
+                Email not verified, please check your inbox.
+            </Alert>
               <div className="d-flex">
                 <div>
                   <button type="submit" onClick={this.login} className="btn btn-primary">Login</button>
                 </div>
-                <div className="ml-auto mt-auto mb-auto  large-text">
+                <div className="ml-auto mt-auto mb-auto large-text">
                   <span>New here? <strong style={{ cursor: "pointer" }} onClick={this.togglePage} className="text-premium bold">Sign Up!</strong></span>
                 </div>
               </div>
@@ -177,7 +206,7 @@ class Login extends Component {
                 <form onSubmit={e => this.signup(e)}>
                   <div className="d-flex">
                     <div className="form-group mb-2">
-                      <input required name="email" onChange={this.handleChange} type="text" className="form-control  w-100" placeholder="TUM Email" />
+                      <input required name="email" pattern="[a-zA-Z0-9._%+-]{1,40}" title="Please enter only the first part of your TUM mail." onChange={this.handleChange} type="text" className="form-control w-100" placeholder="TUM Email" />
                     </div>
                     <div className="form-group mx-sm-3 mb-2">
                       <div className="input-group-prepend">
@@ -212,7 +241,7 @@ class Login extends Component {
                         Sign Up
                     </button>
                     </div>
-                    <div className="ml-auto mt-auto mb-auto  large-login valdationtext">
+                    <div className="ml-auto mt-auto mb-auto large-login large-text">
                       <span>Already have an account? <strong style={{ cursor: "pointer" }} onClick={this.togglePage} className="text-premium bold">Login!</strong></span>
                     </div>
                   </div>
