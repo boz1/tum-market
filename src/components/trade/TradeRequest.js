@@ -237,10 +237,16 @@ export default class TradeRequest extends Component {
                 </Card.Header>
                 <Card.Body style={{ background: "#FFE7DF" }}>
                     <Card.Text>
-                        You Receive: <strong>{this.state.receivedItem.title} - ID {this.state.receivedItem.id}</strong>
+                        Receive Item: <strong>{this.state.receivedItem.title}</strong>
                     </Card.Text>
                     <Card.Text>
-                        You Send: <strong>{this.state.sentItem.title}  - ID {this.state.sentItem.id}</strong>
+                        Received Item Id: <strong>{this.state.receivedItem.id}</strong>
+                    </Card.Text>
+                    <Card.Text>
+                        Sent Item: <strong>{this.state.sentItem.title}</strong>
+                    </Card.Text>
+                    <Card.Text>
+                        Sent Item Id: <strong>{this.state.sentItem.id}</strong>
                     </Card.Text>
                     <Card.Text>
                         From: <strong>{this.state.otherParty.name} - {this.state.otherParty.email}</strong>
@@ -263,10 +269,16 @@ export default class TradeRequest extends Component {
                 </Card.Header>
                 <Card.Body style={{ background: "#DBEDEC" }}>
                     <Card.Text>
-                        You Receive: <strong>{this.state.receivedItem.title} - ID {this.state.receivedItem.id}</strong>
+                        Received Item: <strong>{this.state.receivedItem.title}</strong>
                     </Card.Text>
                     <Card.Text>
-                        You Send: <strong>{this.state.sentItem.title}  - ID {this.state.sentItem.id}</strong>
+                        Received Item Id: <strong>{this.state.receivedItem.id}</strong>
+                    </Card.Text>
+                    <Card.Text>
+                        Sent Item: <strong>{this.state.sentItem.title}</strong>
+                    </Card.Text>
+                    <Card.Text>
+                        Sent Item Id: <strong>{this.state.sentItem.id}</strong>
                     </Card.Text>
                     <Card.Text>
                         To: <strong>{this.state.otherParty.name} - {this.state.otherParty.email}</strong>
