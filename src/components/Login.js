@@ -165,14 +165,14 @@ class Login extends Component {
           <div className="mx-auto my-auto p-4 w-50 login-border">
             <h3 className="login-header">Student Login</h3>
             <hr></hr>
-            <form>
+            <form onSubmit={e => this.login(e)}>
               <div className="form-group text-sub-title" >
                 <label >Email</label>
-                <input value={this.state.email} onChange={this.handleChange} type="email" name="email" className="form-control" aria-describedby="emailHelp" placeholder="Enter email address" />
+                <input required value={this.state.email} onChange={this.handleChange} type="email" name="email" className="form-control" aria-describedby="emailHelp" placeholder="Enter email address" />
               </div>
               <div className="form-group text-sub-title">
                 <label htmlFor="exampleInputPassword1">Password</label>
-                <input value={this.state.password} onChange={this.handleChange} type="password" name="password" className="form-control" placeholder="Enter password" />
+                <input required value={this.state.password} onChange={this.handleChange} type="password" name="password" className="form-control" placeholder="Enter password" />
               </div>
               <Alert show={this.state.showAlert} variant={"danger"} >
                 Wrong password or email, please try again.
@@ -182,7 +182,7 @@ class Login extends Component {
             </Alert>
               <div className="d-flex">
                 <div>
-                  <button type="submit" onClick={this.login} className="btn btn-primary">Login</button>
+                  <button type="submit" className="btn btn-primary">Login</button>
                 </div>
                 <div className="ml-auto mt-auto mb-auto large-text">
                   <span>New here? <strong style={{ cursor: "pointer" }} onClick={this.togglePage} className="text-premium bold">Sign Up!</strong></span>

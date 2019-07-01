@@ -6,7 +6,7 @@ import Colbar from '../Colbar'
 import Dropdown from 'react-bootstrap/Dropdown';
 import ReactPaginate from 'react-paginate';
 
-export default class AdvertisementList extends Component {
+export default class MyAds extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -105,7 +105,7 @@ export default class AdvertisementList extends Component {
                     </div>
                     <div className="col-md-9">
                         <form className="form-inline">
-                            <Title title="Marketplace" />
+                            <Title title="My Advertisements" />
                             <div className="row mt-2 ml-auto">
                                 <div className="col-12">
                                     <span style={{ fontSize: "16px", paddingTop: "7px", color: "#2A2525" }}>{this.state.sort}</span>

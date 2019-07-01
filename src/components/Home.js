@@ -8,8 +8,7 @@ import AdDetails from './advertisement/AdDetails'
 import PageNotFound from './PageNotFound'
 import NewAdvertisement from "./advertisement/NewAdvertisement"
 import TradeList from './trade/TradeList'
-
-import Verification from './Verification'
+import MyAds from './advertisement/MyAds'
 
 class Home extends Component {
   constructor(props) {
@@ -22,7 +21,8 @@ class Home extends Component {
       sug: {},
       categories: {},
       subCategories: {},
-      conditions: {}
+      conditions: {},
+      userAds: {}
     }
 
     this.getUser = this.getUser.bind(this)
@@ -32,7 +32,6 @@ class Home extends Component {
     this.getSubCategories = this.getSubCategories.bind(this)
     this.getConditions = this.getConditions.bind(this)
     this.search = this.search.bind(this);
-
   }
 
   componentDidMount() {
@@ -137,6 +136,8 @@ class Home extends Component {
           user: stateObj
         })
       });
+
+      this.filterUserAds()
     }
   }
 
@@ -236,26 +237,36 @@ class Home extends Component {
 
   }
 
-  render() {
-    const ver = firebase.auth().currentUser;
-    if (ver.emailVerified) {
-      return (
-        <React.Fragment>
-          <div className="container" style={{ background: "#e9ebee" }}>
-            <Navbar search={this.search} user={this.state.user} />
-            <Switch>
-              <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user} />} />
-              <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
-              <Route path="/adDetails/:id" component={AdDetails} />
-              <Route path="/newAdvertisement" render={(props) => <NewAdvertisement {...props} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />} />
-              <Route component={PageNotFound} />
-            </Switch>
-            <Footer />
-          </div>
-        </React.Fragment>
-      );
+  filterUserAds = () => {
+    if (this.state.user !== undefined) {
+      const id = this.state.user.info.id
+      let ads = Object.values(this.state.advertisements).filter(function (ad) {
+        return ad.userId === id;
+      });
+
+      this.setState({
+        userAds: ads
+      })
     }
-    else { return (<Verification></Verification>) }
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        <div className="container" style={{ background: "#e9ebee" }}>
+          <Navbar search={this.search} user={this.state.user} />
+          <Switch>
+            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user} />} />
+            <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
+            <Route path="/myAds" render={(props) => <MyAds {...props} user={this.state.user} adsList={this.state.userAds} />} />
+            <Route path="/adDetails/:id" component={AdDetails} />
+            <Route path="/newAdvertisement" render={(props) => <NewAdvertisement {...props} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />} />
+            <Route component={PageNotFound} />
+          </Switch>
+          <Footer />
+        </div>
+      </React.Fragment>
+    );
   }
 }
 

@@ -127,7 +127,7 @@ export default class AdDetails extends Component {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body style={{ fontSize: '18px' }}>
-                You are offering <strong>{this.state.offeredItem.split('-')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>.
+                You are offering <strong>{this.state.offeredItem.split('&')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>.
                 Do you want to send this trade request?
                   </Modal.Body>
             <Modal.Footer>
