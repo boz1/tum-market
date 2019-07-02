@@ -4,9 +4,16 @@ import Title from '../Title'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import Image from 'react-image-resizer';
 import Modal from 'react-bootstrap/Modal';
 import history from '../../history'
+import { css } from '@emotion/core';
+import { RingLoader } from 'react-spinners';
+
+const override = css`
+    display: block;
+    margin: 0 auto;
+    border-color: red;
+`;
 
 export default class NewAdvertisement extends Component {
     constructor(props) {
@@ -20,16 +27,14 @@ export default class NewAdvertisement extends Component {
             description: '',
             image: null,
             trade: "On",
-            showModal: false
+            showModal: false,
+            loading: false
         }
 
         this.handleMainCatChange = this.handleMainCatChange.bind(this)
         this.handleSubCatChange = this.handleSubCatChange.bind(this)
-        this.handleTitleChange = this.handleTitleChange.bind(this)
         this.handleConditionChange = this.handleConditionChange.bind(this)
-        this.handlePriceChange = this.handlePriceChange.bind(this)
-        this.handleTradeChange = this.handleTradeChange.bind(this)
-        this.handleDescriptionChange = this.handleDescriptionChange.bind(this)
+        this.handleChange = this.handleChange.bind(this)
         this.handleImageChange = this.handleImageChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
         this.showRequestModal = this.showRequestModal.bind(this)
@@ -59,32 +64,8 @@ export default class NewAdvertisement extends Component {
         });
     }
 
-    handleTitleChange(event) {
-        const title = event.target.value
-        this.setState({
-            title: title
-        });
-    }
-
-    handlePriceChange(event) {
-        const price = event.target.value
-        this.setState({
-            price: price
-        });
-    }
-
-    handleTradeChange(event) {
-        const trade = event.target.value
-        this.setState({
-            trade: trade
-        });
-    }
-
-    handleDescriptionChange(event) {
-        const description = event.target.value
-        this.setState({
-            description: description
-        });
+    handleChange(e) {
+        this.setState({ [e.target.name]: e.target.value });
     }
 
     handleImageChange(event) {
@@ -108,8 +89,11 @@ export default class NewAdvertisement extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
+        this.setState({
+            loading: true,
+            showModal: false
+        })
 
-        // Get a key for a new Post.
         var newPostKey = firebase.database().ref('advertisements').child(this.props.user.info.id).push().key;
 
         // Get date
@@ -215,6 +199,20 @@ export default class NewAdvertisement extends Component {
             </Form.Control>
         }
 
+        let loading = <Modal show={this.state.loading}>
+            <Modal.Body>
+                <RingLoader
+                    css={override}
+                    sizeUnit={"px"}
+                    size={100}
+                    color={'#006BD6'}
+                    loading={this.state.loading}
+                />
+            </Modal.Body>
+        </Modal>
+
+
+
         let modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
             <Modal.Header>
                 <Modal.Title className="text-title ">
@@ -233,7 +231,6 @@ export default class NewAdvertisement extends Component {
             </Button>
             </Modal.Footer>
         </Modal>
-
 
         return (
             <React.Fragment>
@@ -270,7 +267,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Title
                                                  </Form.Label>
-                                            <Form.Control maxLength="40" required type="text" placeholder="Title" onChange={this.handleTitleChange} pattern="[a-zA-Z0-9\s]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain alphanumeric characters." />
+                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9\s.-_]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain alphanumeric characters." />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -282,7 +279,8 @@ export default class NewAdvertisement extends Component {
                                                         type="radio"
                                                         value="On"
                                                         checked={this.state.trade === "On"}
-                                                        onChange={this.handleTradeChange}
+                                                        onChange={this.handleChange}
+                                                        name="trade"
                                                     />
                                                     <span style={{ marginLeft: "5px" }}>On</span>
                                                 </label>
@@ -291,7 +289,8 @@ export default class NewAdvertisement extends Component {
                                                         type="radio"
                                                         value="Off"
                                                         checked={this.state.trade === "Off"}
-                                                        onChange={this.handleTradeChange}
+                                                        onChange={this.handleChange}
+                                                        name="trade"
                                                     />
                                                     <span style={{ marginLeft: "5px" }}>Off</span>
                                                 </label>
@@ -302,7 +301,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Price (€)
                                                  </Form.Label>
-                                            <Form.Control required type="number" placeholder="€" onChange={this.handlePriceChange} min={0} />
+                                            <Form.Control name="price" required type="number" placeholder="€" onChange={this.handleChange} min={0} />
                                         </Form.Group>
 
                                     </div>
@@ -310,7 +309,7 @@ export default class NewAdvertisement extends Component {
                                 <div className="mb-1">
                                     <Form.Group className="pl-0">
                                         <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 250 characters)</span></Form.Label>
-                                        <Form.Control required as="textarea" rows="3" onChange={this.handleDescriptionChange} maxLength="250" placeholder="Descibe your product..." />
+                                        <Form.Control name="description" required as="textarea" rows="3" onChange={this.handleChange} maxLength="250" placeholder="Descibe your product..." />
                                     </Form.Group>
                                 </div>
                             </div>
@@ -319,11 +318,16 @@ export default class NewAdvertisement extends Component {
                                     <Form.Group className="pl-0">
                                         <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Preview</Form.Label>
                                         <Card style={{ width: 'auto', height: 'fit-content' }}>
-                                            <Image
-                                                src={'http://via.placeholder.com/400x300'}
-                                                height={150}
-                                                width="auto"
-                                            />
+                                            <div className="m-auto">
+                                                <img
+                                                    src={'http://via.placeholder.com/200x150'}
+                                                    style={{
+                                                        height: "auto", width: "auto", marginTop:"12px"
+                                                    }}
+                                                    alt="Product"
+                                                />
+                                            </div>
+
                                             <Card.Body className="p-2">
                                                 <hr></hr>
                                                 <Card.Title className="text-ad-title">{this.state.title}</Card.Title>
@@ -346,6 +350,7 @@ export default class NewAdvertisement extends Component {
                         </div>
                     </Form>
                     {modal}
+                    {loading}
                 </div>
             </React.Fragment>
         )

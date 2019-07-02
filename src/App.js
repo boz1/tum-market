@@ -10,7 +10,8 @@ class App extends Component {
 
     this.state = {
       user: null,
-      mount: 0
+      mount: 0,
+      verified: false
     }
 
     this.authListener = this.authListener.bind(this);
@@ -22,7 +23,7 @@ class App extends Component {
 
   authListener() {
     firebase.auth().onAuthStateChanged((us) => {
-      if (us) {
+      if (us && us.emailVerified) {
         this.setState({ user: us, mount: 1 });
         localStorage.setItem('user', us.uid);
       } else {
@@ -35,7 +36,7 @@ class App extends Component {
   render() {
     if (this.state.mount) {
       return (
-        <div>{this.state.user ? (<Home user={this.state.user} />) : <Login />}</div>)
+        <div>{this.state.user ? (<Home user={this.state.user} />) : <Login verify={this.authListener}/>}</div>)
     }
     else {
       return (<div></div>)
