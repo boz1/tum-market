@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
+import history from '../../history'
 
 export default class AdDetails extends Component {
     constructor(props) {
@@ -15,7 +16,8 @@ export default class AdDetails extends Component {
             isOfferSubmitted: false,
             showAlert: false,
             isAlreadyOffered: false,
-            showModal: false
+            showModal: false,
+            showDeleteModal: false
         }
 
         this.showRequestModal = this.showRequestModal.bind(this)
@@ -38,6 +40,18 @@ export default class AdDetails extends Component {
         this.setState({
             isAlreadyOffered: isOffered
         })
+    }
+
+    componentWillUnmount() {
+        if (this.checkTradeReqRef !== undefined) {
+            this.checkTradeReqRef.off('value')
+            this.checkTradeReqRef = null;
+        }
+
+        if (this.checkReceivedReqRef !== undefined) {
+            this.checkReceivedReqRef.off('value')
+            this.checkReceivedReqRef = null;
+        }
     }
 
     handleChange(event) {
@@ -106,19 +120,85 @@ export default class AdDetails extends Component {
         })
     }
 
+    handleDelete = (event) => {
+        event.preventDefault()
+        const ad = this.props.location.state.ad;
+        this.checkTradeReqRef = firebase.database().ref('trade-requests').child(ad.userId).orderByChild("offeredItemId").equalTo(ad.id)
+        this.checkTradeReqRef.on('value', snap => {
+            if (snap.val() !== null) {
+                const reqs = Object.values(snap.val())
+                reqs.forEach((req) => {
+                    firebase.database().ref('trade-requests').child(ad.userId).child(req.id).remove()
+                    firebase.database().ref('received-offers').child(req.sellerId).child(req.id).remove()
+
+                    var newPostKey = firebase.database().ref('notifications').child(req.sellerId).push().key;
+
+                    const notification = {
+                        id: newPostKey,
+                        message: ad.user.name + " has deleted their " + ad.title + " advertisement. The trade offer sent to you is also deleted.",
+                        isRead: false
+                    };
+
+                    var updates = {};
+                    updates['/notifications/' + req.sellerId + '/' + newPostKey] = notification;
+                    firebase.database().ref().update(updates);
+                })
+            }
+        })
+
+        this.checkReceivedReqRef = firebase.database().ref('received-offers').child(ad.userId).orderByChild("sentItemId").equalTo(ad.id)
+        this.checkReceivedReqRef.on('value', snap => {
+            if (snap.val() !== null) {
+                const reqs = Object.values(snap.val())
+                reqs.forEach((req) => {
+                    firebase.database().ref('received-offers').child(ad.userId).child(req.id).remove()
+                    firebase.database().ref('trade-requests').child(req.buyerId).child(req.id).remove()
+
+                    var newPostKey = firebase.database().ref('notifications').child(req.buyerId).push().key;
+
+                    const notification = {
+                        id: newPostKey,
+                        message: ad.user.name + " has deleted their " + ad.title + " advertisement. The trade offer you sent is also deleted.",
+                        isRead: false
+                    };
+
+                    var updates = {};
+                    updates['/notifications/' + req.buyerId + '/' + newPostKey] = notification;
+                    firebase.database().ref().update(updates);
+                })
+            }
+        })
+
+        this.removeAdRef = firebase.database().ref('advertisements').child(ad.userId).child(ad.id).remove();
+
+        this.setState({
+            showDeleteModal: false
+        })
+
+        history.push('/')
+    }
+
+    showDeleteModal = (e) => {
+        e.preventDefault();
+        this.setState({ showDeleteModal: true })
+    }
+
     handleClose() {
-        this.setState({ showModal: false });
+        this.setState({ showModal: false, showDeleteModal: false });
     }
 
     render() {
         const ad = this.props.location.state.ad;
         const adOwner = ad.user;
         const user = this.props.location.state.user;
-        let tradeRequest, alert, modal;
+        let actionField, requestSentAlert, alreadyAlert, modal, deleteModal;
 
         let items = [];
         items.push(<option key="empty" disabled value={''}>Choose...</option>)
-        Object.values(user.ads).map((item) => items.push(<option key={item.id} value={item.title + '&' + item.id}>{item.title}</option>))
+
+        if (user.ads !== null & user.ads !== undefined) {
+            Object.values(user.ads).map((item) => items.push(<option key={item.id} value={item.title + '&' + item.id}>{item.title}</option>))
+        }
 
         modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
             <Modal.Header>
@@ -140,8 +220,29 @@ export default class AdDetails extends Component {
             </Modal.Footer>
         </Modal>
 
+        deleteModal = <Modal show={this.state.showDeleteModal} onHide={this.handleClose}>
+            <Modal.Header>
+                <Modal.Title className="text-title ">
+                    Delete Advertisement Confirmation
+            </Modal.Title>
+            </Modal.Header>
+            <Modal.Body style={{ fontSize: '18px' }}>
+                Deleting this advertisement will also <strong>delete any trade request this item has been used</strong>.
+                Are you sure to delete this advertisement?
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="danger" onClick={this.handleClose}>
+                    Close
+                </Button>
+                <span></span>
+                <Button variant="success" onClick={this.handleDelete}>
+                    Confirm
+                </Button>
+            </Modal.Footer>
+        </Modal>
+
         if (ad.trade && user.info.id !== ad.userId && !this.state.isOfferSubmitted && !this.state.isAlreadyOffered) {
-            tradeRequest = <div className="mt-3">
+            actionField = <div className="mt-3">
                 <span className="text-sub-title">Trade Request</span>
                 <Card style={{ width: '18rem', background: 'whitesmoke' }} className="mt-2">
                     <Card.Body>
@@ -154,25 +255,42 @@ export default class AdDetails extends Component {
                                     </Form.Control>
                                 </Form.Group>
                             </Form.Row>
-                            <Button variant="primary" type="submit">
-                                Send Request
+                            <div style={{ marginLeft: "-5px" }}>
+                                <Button variant="primary" type="submit" onClick={this.showModal}>
+                                    Send Request
                              </Button>
+                            </div>
                         </Form>
+                    </Card.Body>
+                </Card>
+            </div >;
+        }
+        else if (user.info.id === ad.userId) {
+            actionField = <div className="mt-3">
+                <Card style={{ width: '18rem', background: 'whitesmoke' }} className="mt-2">
+                    <Card.Body className="d-flex m-auto">
+                        <div className="mr-5">
+                            <Button variant="primary" type="submit" className="m-auto">
+                                Edit
+                            </Button>
+                        </div>
+                        <div>
+                            <Button variant="danger" type="submit" className="m-auto" onClick={this.showDeleteModal}>
+                                Delete
+                            </Button>
+                        </div>
                     </Card.Body>
                 </Card>
             </div>;
         }
 
-        if (this.state.showAlert) {
-            alert = <Alert variant={"success"} style={{ width: '18rem', marginTop: "10px" }} >
-                Your trade offer is sent.
+        requestSentAlert = <Alert show={this.state.showAlert} variant={"success"} style={{ width: '18rem', marginTop: "10px" }} >
+            Your trade offer is sent.
           </Alert>
-        }
-        else if (this.state.isAlreadyOffered) {
-            alert = <Alert variant={"info"} style={{ width: '18rem', marginTop: "10px" }} >
-                You have already sent a trade request for this item.
+
+        alreadyAlert = <Alert show={this.state.isAlreadyOffered} variant={"info"} style={{ width: '18rem', marginTop: "10px" }} >
+            You have already sent a trade request for this item.
           </Alert>
-        }
 
         return (
             <React.Fragment>
@@ -185,7 +303,7 @@ export default class AdDetails extends Component {
                                 <span className="text-sub-title">Details</span>
                                 <div className="d-flex mt-2 col-sm-12 p-0 detail-div">
                                     <div className="col-sm-6 m-auto">
-                                            <img src={ad.image} style={{ height: "290px", width: "300px", marginLeft:"12px" }} alt="Product"/>
+                                        <img src={ad.image} style={{ height: "290px", width: "300px", marginLeft: "12px" }} alt="Product" />
                                     </div>
                                     <div className="col-sm-6 my-3">
                                         <ul className="align-content-center category-list details-list">
@@ -208,7 +326,7 @@ export default class AdDetails extends Component {
                                 <div className="my-3">
                                     <Card>
                                         <Card.Header><span className="text-sub-title">Description</span></Card.Header>
-                                        <Card.Body style={{fontSize:"16px"}}>
+                                        <Card.Body style={{ fontSize: "16px" }}>
                                             <p>
                                                 {' '}
                                                 {ad.description}{' '}
@@ -246,11 +364,13 @@ export default class AdDetails extends Component {
                                         </Card.Body>
                                     </Card>
                                 </div>
-                                {tradeRequest}
-                                {alert}
+                                {actionField}
+                                {requestSentAlert}
+                                {alreadyAlert}
                             </div>
                         </div>
                         {modal}
+                        {deleteModal}
                     </div>
                 </div>
             </React.Fragment>

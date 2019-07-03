@@ -211,7 +211,12 @@ export default class NewAdvertisement extends Component {
             </Modal.Body>
         </Modal>
 
-
+        let isPremium =false;
+        if (this.props.user.info !== undefined) {
+            if(this.props.user.info.isPremium){
+                isPremium = true;
+            }
+        }
 
         let modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
             <Modal.Header>
@@ -317,17 +322,16 @@ export default class NewAdvertisement extends Component {
                                 <div className="mb-2">
                                     <Form.Group className="pl-0">
                                         <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Preview</Form.Label>
-                                        <Card style={{ width: 'auto', height: 'fit-content' }}>
+                                        <Card style={{ width: 'auto', height: 'fit-content' }} className={isPremium ? "premium" : ""}>
                                             <div className="m-auto">
                                                 <img
                                                     src={'http://via.placeholder.com/200x150'}
                                                     style={{
-                                                        height: "auto", width: "auto", marginTop:"12px"
+                                                        height: "auto", width: "auto", marginTop: "12px"
                                                     }}
                                                     alt="Product"
                                                 />
                                             </div>
-
                                             <Card.Body className="p-2">
                                                 <hr></hr>
                                                 <Card.Title className="text-ad-title">{this.state.title}</Card.Title>

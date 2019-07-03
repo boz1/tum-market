@@ -10,11 +10,11 @@ export default class MyAds extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: this.props.adsList,
+            data: this.props.getAds(),
             user: this.props.user,
             itemPerPage: 6,
             currentPage: 0,
-            pageCount: Math.ceil(this.props.adsList.length / 6),
+            pageCount: Math.ceil(this.props.getAds().length / 6),
             sort: ''
         }
 
@@ -30,7 +30,7 @@ export default class MyAds extends Component {
     }
 
     componentWillReceiveProps() {
-        this.setState({ data: this.props.adsList, pageCount: Math.ceil(this.props.adsList.length / this.state.itemPerPage) })
+        this.setState({ data: this.props.getAds(), pageCount: Math.ceil(this.props.getAds().length / this.state.itemPerPage) })
     }
 
     dynamicSort(property) {

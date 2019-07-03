@@ -127,8 +127,8 @@ export default class TradeRequest extends Component {
         updates['/notifications/' + this.props.item.sellerId + '/' + newPostKey] = notification;
         firebase.database().ref().update(updates);
 
-        this.removeTradeReqRef = firebase.database().ref('trade-requests').child(this.props.item.userId).child(this.props.item.id).remove();
-        this.removeReceivedOffRef = firebase.database().ref('received-offers').child(this.props.item.sellerId).child(this.props.item.id).remove();
+        firebase.database().ref('trade-requests').child(this.props.item.userId).child(this.props.item.id).remove();
+        firebase.database().ref('received-offers').child(this.props.item.sellerId).child(this.props.item.id).remove();
     }
 
     showStatusModal(e) {

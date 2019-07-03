@@ -21,8 +21,7 @@ class Home extends Component {
       sug: {},
       categories: {},
       subCategories: {},
-      conditions: {},
-      userAds: {}
+      conditions: {}
     }
 
     this.getUser = this.getUser.bind(this)
@@ -136,8 +135,6 @@ class Home extends Component {
           user: stateObj
         })
       });
-
-      this.filterUserAds()
     }
   }
 
@@ -238,16 +235,16 @@ class Home extends Component {
   }
 
   filterUserAds = () => {
-    if (this.state.user !== undefined) {
+    let ads = [];
+
+    if (this.state.user !== undefined && Object.values(this.state.user).length !== 0) {
       const id = this.state.user.info.id
-      let ads = Object.values(this.state.advertisements).filter(function (ad) {
+      ads=Object.values(this.state.advertisements).filter(function (ad) {
         return ad.userId === id;
       });
-
-      this.setState({
-        userAds: ads
-      })
     }
+    return ads;
+
   }
 
   render() {
@@ -258,7 +255,7 @@ class Home extends Component {
           <Switch>
             <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user} />} />
             <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
-            <Route path="/myAds" render={(props) => <MyAds {...props} user={this.state.user} adsList={this.state.userAds} />} />
+            <Route path="/myAds" render={(props) => <MyAds {...props} user={this.state.user} getAds={this.filterUserAds}/>} />
             <Route path="/adDetails/:id" component={AdDetails} />
             <Route path="/newAdvertisement" render={(props) => <NewAdvertisement {...props} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />} />
             <Route component={PageNotFound} />
