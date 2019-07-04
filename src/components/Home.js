@@ -153,31 +153,33 @@ class Home extends Component {
       this.adsRef.on('value', snap => {
         let data = snap.val();
         let ads = [];
-        Object.keys(data).forEach(function (user) {
-          Object.values(data[user]).forEach(function (ad) {
-            const conRef = firebase.database().ref('conditions').child(ad.conditionId);
-            conRef.on('value', cond => {
-              ad.condition = cond.val()
-            })
-
-            const ownerRef = firebase.database().ref('users').child(ad.userId);
-            ownerRef.on('value', user => {
-              ad.user = user.val()
-            })
-
-            const mainCatRef = firebase.database().ref('categories').child(ad.mainCategoryId);
-            mainCatRef.on('value', cat => {
-              const mainCat = cat.val()
-              ad.mainCategory = mainCat;
-              const subCatRef = firebase.database().ref('sub-categories').child(ad.mainCategoryId).child(ad.subCategoryId);
-              subCatRef.on('value', sub => {
-                const subCat = sub.val();
-                ad.subCategory = subCat;
+        if (data !== null && data !== undefined) {
+          Object.keys(data).forEach(function (user) {
+            Object.values(data[user]).forEach(function (ad) {
+              const conRef = firebase.database().ref('conditions').child(ad.conditionId);
+              conRef.on('value', cond => {
+                ad.condition = cond.val()
               })
+
+              const ownerRef = firebase.database().ref('users').child(ad.userId);
+              ownerRef.on('value', user => {
+                ad.user = user.val()
+              })
+
+              const mainCatRef = firebase.database().ref('categories').child(ad.mainCategoryId);
+              mainCatRef.on('value', cat => {
+                const mainCat = cat.val()
+                ad.mainCategory = mainCat;
+                const subCatRef = firebase.database().ref('sub-categories').child(ad.mainCategoryId).child(ad.subCategoryId);
+                subCatRef.on('value', sub => {
+                  const subCat = sub.val();
+                  ad.subCategory = subCat;
+                })
+              })
+              ads.push(ad)
             })
-            ads.push(ad)
-          })
-        });
+          });
+        }
 
         this.setState({
           advertisements: ads,
