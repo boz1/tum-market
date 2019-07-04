@@ -13,7 +13,7 @@ export default class AdDetails extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            offeredItem: this.props.location.state.user.ads[2].title + '-' + this.props.location.state.user.ads[2].id,
+            offeredItem: '',
             isOfferSubmitted: false,
             showAlert: false,
             isAlreadyOffered: false,
@@ -66,7 +66,7 @@ export default class AdDetails extends Component {
         event.preventDefault();
         const ad = this.props.location.state.ad;
         const user = this.props.location.state.user;
-        const itemId = parseInt(this.state.offeredItem.split('-')[1]);
+        const itemId = this.state.offeredItem.split('&')[1];
 
         // Get a key for a new Post.
         var newPostKey = firebase.database().ref('trade-requests').child(user.info.id).push().key;
@@ -116,6 +116,8 @@ export default class AdDetails extends Component {
     }
 
     showRequestModal(e) {
+        e.preventDefault();
+
         this.setState({
             showModal: true
         })
@@ -276,11 +278,11 @@ export default class AdDetails extends Component {
                 <span className="text-sub-title">Trade Request</span>
                 <Card style={{ width: '18rem', background: 'whitesmoke' }} className="mt-2">
                     <Card.Body>
-                        <Form>
+                        <Form onSubmit={e => this.showRequestModal(e)}>
                             <Form.Row>
                                 <Form.Group controlId="tradeItem">
                                     <Form.Label style={{ fontSize: "16px" }}>Your Items</Form.Label>
-                                    <Form.Control as="select" value={this.state.offeredItem} onChange={this.handleChange}>
+                                    <Form.Control required defaultValue={''} as="select" onChange={this.handleChange}>
                                         {items}
                                     </Form.Control>
                                 </Form.Group>
@@ -336,7 +338,7 @@ export default class AdDetails extends Component {
                                     <div className="col-sm-6 m-auto">
                                         <img src={ad.image} style={{ height: "290px", width: "300px", marginLeft: "12px" }} alt="Product" />
                                     </div>
-                                    <div className="col-sm-6 p-0 mt-3">
+                                    <div className="col-sm-6 my-3">
                                         <ul className="align-content-center category-list details-list">
                                             <li className="center-item"><span className="float-left">ID</span><strong>{ad.id}</strong></li>
                                             <hr></hr>
@@ -384,12 +386,11 @@ export default class AdDetails extends Component {
                                                     {adOwner.address}
                                                 </Card.Text>
                                             </div>
-                                            <br></br>
-                                            <div className="d-flex bold">
+                                            <div className="d-block">
                                                 <div>
                                                     {adOwner.telephone}
                                                 </div>
-                                                <div className="ml-auto">
+                                                <div>
                                                     {adOwner.email}
                                                 </div>
                                             </div>
