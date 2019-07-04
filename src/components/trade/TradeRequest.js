@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import firebase from '../../config/firebaseConfig';
 import Card from 'react-bootstrap/Card';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import ConfirmationModal from '../ConfirmationModal' 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'

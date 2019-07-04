@@ -130,7 +130,7 @@ export default class NewAdvertisement extends Component {
                         mainCategoryId: this.state.mainCategory,
                         subCategoryId: this.state.subCategory,
                         conditionId: this.state.condition,
-                        date: date
+                        dateAdded: date
                     };
 
                     var updates = {};
@@ -155,6 +155,9 @@ export default class NewAdvertisement extends Component {
         this.setState({ showModal: false });
     }
 
+    goHome = () => {
+        history.push('/')
+    }
 
     render() {
         let mainCatContainer, subCatContainer, conditionsContainer;
@@ -224,7 +227,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Title
                                                  </Form.Label>
-                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9\s.-_]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain alphanumeric characters." />
+                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+." />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -252,15 +255,13 @@ export default class NewAdvertisement extends Component {
                                                     <span style={{ marginLeft: "5px" }}>Off</span>
                                                 </label>
                                             </div>
-
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Price (€)
                                                  </Form.Label>
-                                            <Form.Control name="price" required type="number" placeholder="€" onChange={this.handleChange} min={0} />
+                                            <Form.Control name="price" required type="number" placeholder="€" onChange={this.handleChange} min={0} step="0.01" />
                                         </Form.Group>
-
                                     </div>
                                 </div>
                                 <div className="mb-1">
@@ -298,7 +299,10 @@ export default class NewAdvertisement extends Component {
                                     </Form.Group>
                                 </div>
                                 <div>
-                                    <Button variant="primary" type="submit">
+                                    <Button variant="danger" onClick={this.goHome}>
+                                        Cancel
+                                        </Button>
+                                    <Button variant="primary" type="submit" className="float-right">
                                         Complete
                                         </Button>
                                 </div>

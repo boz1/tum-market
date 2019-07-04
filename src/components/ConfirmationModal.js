@@ -12,7 +12,7 @@ export default class ConfirmationModal extends Component {
 
     render() {
         return (
-            <Modal show={this.props.show} onHide={this.props.onHide}>
+            <Modal show={this.props.show} onHide={this.props.onHide} backdrop="static" keyboard={false}>
                 <Modal.Header>
                     <Modal.Title className="text-title ">
                         {this.props.title}

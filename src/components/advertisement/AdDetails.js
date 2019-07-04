@@ -19,7 +19,8 @@ export default class AdDetails extends Component {
             isAlreadyOffered: false,
             showModal: false,
             showDeleteModal: false,
-            showEditModal: false
+            showEditModal: false,
+            isEditable: true
         }
 
         this.showRequestModal = this.showRequestModal.bind(this)
@@ -125,50 +126,47 @@ export default class AdDetails extends Component {
     handleDelete = (event) => {
         event.preventDefault()
         const ad = this.props.location.state.ad;
-        this.checkTradeReqRef = firebase.database().ref('trade-requests').child(ad.userId).orderByChild("offeredItemId").equalTo(ad.id)
-        this.checkTradeReqRef.on('value', snap => {
-            if (snap.val() !== null) {
-                const reqs = Object.values(snap.val())
-                reqs.forEach((req) => {
-                    firebase.database().ref('trade-requests').child(ad.userId).child(req.id).remove()
-                    firebase.database().ref('received-offers').child(req.sellerId).child(req.id).remove()
 
-                    var newPostKey = firebase.database().ref('notifications').child(req.sellerId).push().key;
+        this.checkAdSentReq(ad).then(reqs => {
+            reqs.forEach((req) => {
+                firebase.database().ref('trade-requests').child(ad.userId).child(req.id).remove()
+                firebase.database().ref('received-offers').child(req.sellerId).child(req.id).remove()
 
-                    const notification = {
-                        id: newPostKey,
-                        message: ad.user.name + " has deleted their " + ad.title + " advertisement. The trade offer sent to you is also deleted.",
-                        isRead: false
-                    };
+                var newPostKey = firebase.database().ref('notifications').child(req.sellerId).push().key;
 
-                    var updates = {};
-                    updates['/notifications/' + req.sellerId + '/' + newPostKey] = notification;
-                    firebase.database().ref().update(updates);
-                })
-            }
+                const notification = {
+                    id: newPostKey,
+                    message: ad.user.name + " has deleted their " + ad.title + " advertisement. The trade offer sent to you is also deleted.",
+                    isRead: false
+                };
+
+                var updates = {};
+                updates['/notifications/' + req.sellerId + '/' + newPostKey] = notification;
+                firebase.database().ref().update(updates);
+            })
+        }).catch(er => {
+            console.log(er)
         })
 
-        this.checkReceivedReqRef = firebase.database().ref('received-offers').child(ad.userId).orderByChild("sentItemId").equalTo(ad.id)
-        this.checkReceivedReqRef.on('value', snap => {
-            if (snap.val() !== null) {
-                const reqs = Object.values(snap.val())
-                reqs.forEach((req) => {
-                    firebase.database().ref('received-offers').child(ad.userId).child(req.id).remove()
-                    firebase.database().ref('trade-requests').child(req.buyerId).child(req.id).remove()
+        this.checkAdReceivedReq(ad).then(reqs => {
+            reqs.forEach((req) => {
+                firebase.database().ref('received-offers').child(ad.userId).child(req.id).remove()
+                firebase.database().ref('trade-requests').child(req.buyerId).child(req.id).remove()
 
-                    var newPostKey = firebase.database().ref('notifications').child(req.buyerId).push().key;
+                var newPostKey = firebase.database().ref('notifications').child(req.buyerId).push().key;
 
-                    const notification = {
-                        id: newPostKey,
-                        message: ad.user.name + " has deleted their " + ad.title + " advertisement. The trade offer you sent is also deleted.",
-                        isRead: false
-                    };
+                const notification = {
+                    id: newPostKey,
+                    message: ad.user.name + " has deleted their " + ad.title + " advertisement. The trade offer you sent is also deleted.",
+                    isRead: false
+                };
 
-                    var updates = {};
-                    updates['/notifications/' + req.buyerId + '/' + newPostKey] = notification;
-                    firebase.database().ref().update(updates);
-                })
-            }
+                var updates = {};
+                updates['/notifications/' + req.buyerId + '/' + newPostKey] = notification;
+                firebase.database().ref().update(updates);
+            })
+        }).catch(er => {
+            console.log(er)
         })
 
         this.removeAdRef = firebase.database().ref('advertisements').child(ad.userId).child(ad.id).remove();
@@ -180,6 +178,38 @@ export default class AdDetails extends Component {
         history.push('/')
     }
 
+    checkAdSentReq = (ad) => {
+        return new Promise(function (res, rej) {
+            const checkTradeReqRef = firebase.database().ref('trade-requests').child(ad.userId).orderByChild("offeredItemId").equalTo(ad.id)
+            checkTradeReqRef.once('value').then(snap => {
+                if (snap.val() !== null) {
+                    const reqs = Object.values(snap.val())
+                    res(reqs);
+                } else {
+                    res([]);
+                }
+            }).catch(er => {
+                rej(er)
+            })
+        })
+    }
+
+    checkAdReceivedReq = (ad) => {
+        return new Promise(function (res, rej) {
+            const checkReceivedReqRef = firebase.database().ref('received-offers').child(ad.userId).orderByChild("sentItemId").equalTo(ad.id)
+            checkReceivedReqRef.once('value').then(snap => {
+                if (snap.val() !== null) {
+                    const reqs = Object.values(snap.val())
+                    res(reqs);
+                } else {
+                    res([]);
+                }
+            }).catch(er => {
+                rej(er)
+            })
+        })
+    }
+
     showDeleteModal = (e) => {
         e.preventDefault();
         this.setState({ showDeleteModal: true })
@@ -187,7 +217,32 @@ export default class AdDetails extends Component {
 
     showEditModal = (e) => {
         e.preventDefault();
-        this.setState({ showEditModal: true })
+        const ad = this.props.location.state.ad;
+
+        const req = this.checkAdSentReq(ad)
+        req.then(reqs => {
+            if (reqs.length > 0) {
+                this.setState({
+                    isEditable: false
+                })
+            } else {
+                const req2 = this.checkAdReceivedReq(ad);
+                req2.then(reqs => {
+                    if (reqs.length > 0) {
+                        this.setState({
+                            isEditable: false
+                        })
+                    }
+                    else {
+                        this.setState({
+                            showEditModal: true
+                        })
+                    }
+                })
+            }
+        }).catch(er => {
+            console.log(er)
+        })
     }
 
     handleClose() {
@@ -198,7 +253,7 @@ export default class AdDetails extends Component {
         const ad = this.props.location.state.ad;
         const adOwner = ad.user;
         const user = this.props.location.state.user;
-        let actionField, requestSentAlert, alreadyAlert, modal, deleteModal, editModal;
+        let actionField;
 
         let items = [];
         items.push(<option key="empty" disabled value={''}>Choose...</option>)
@@ -207,16 +262,16 @@ export default class AdDetails extends Component {
             Object.values(user.ads).map((item) => items.push(<option key={item.id} value={item.title + '&' + item.id}>{item.title}</option>))
         }
 
-        const confTxt = <span>You are offering <strong>{this.state.offeredItem.split('&')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>.  Do you want to send this trade request?"</span>
+        const confTxt = <span>You are offering <strong>{this.state.offeredItem.split('&')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>. Do you want to send this trade request?"</span>
+        const modal = <ConfirmationModal show={this.state.showModal} onHide={this.handleClose} title="Trade Request" txt={confTxt} onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
 
-        modal = <ConfirmationModal show={this.state.showModal} onHide={this.handleClose} title="Trade Request" txt={confTxt} onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
+        const delTxt = <span>Deleting this advertisement will also <strong>delete any trade request this item has been used</strong>. Are you sure to delete this advertisement?</span>
+        const deleteModal = <ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Advertisement" txt={delTxt} onClickClose={this.handleClose} onClickConfirm={this.handleDelete} />
 
-        const delTxt = <span>Deleting this advertisement will also <strong>delete any trade request this item has been used</strong>.
-        Are you sure to delete this advertisement?</span>
-
-        deleteModal = <ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Advertisement" txt={delTxt} onClickClose={this.handleClose} onClickConfirm={this.handleDelete} />
-
-        editModal = <Edit show={this.state.showEditModal} close={this.handleClose} categories={this.props.location.state.categories} subCategories={this.props.location.state.subCategories} conditions={this.props.location.state.conditions} />
+        const editModal = <Edit show={this.state.showEditModal} close={this.handleClose} user={this.props.location.state.user} ad={this.props.location.state.ad} categories={this.props.location.state.categories} subCategories={this.props.location.state.subCategories} conditions={this.props.location.state.conditions} />
+        const editAlert = <Alert show={!this.state.isEditable} variant={"danger"} style={{ marginTop: "10px" }} >
+            This item can't be edited since it is used in a trade request.
+        </Alert>
 
         if (ad.trade && user.info.id !== ad.userId && !this.state.isOfferSubmitted && !this.state.isAlreadyOffered) {
             actionField = <div className="mt-3">
@@ -245,15 +300,16 @@ export default class AdDetails extends Component {
         else if (user.info.id === ad.userId) {
             actionField = <div className="mt-3">
                 <Card style={{ width: '18rem', background: 'whitesmoke' }} className="mt-2">
-                    <Card.Body className="d-flex m-auto">
-                        <div className="mr-5">
-                            <Button variant="primary" type="submit" className="m-auto" onClick={this.showEditModal}>
-                                Edit
-                            </Button>
+                    <Card.Body className="d-block m-auto">
+                        <div>
+                            {editAlert}
                         </div>
                         <div>
-                            <Button variant="danger" type="submit" className="m-auto" onClick={this.showDeleteModal}>
+                            <Button variant="danger" type="submit" onClick={this.showDeleteModal}>
                                 Delete
+                            </Button>
+                            <Button variant="primary" type="submit" className="float-right ml-5" onClick={this.showEditModal} disabled={!this.state.isEditable}>
+                                Edit
                             </Button>
                         </div>
                     </Card.Body>
@@ -261,11 +317,11 @@ export default class AdDetails extends Component {
             </div>;
         }
 
-        requestSentAlert = <Alert show={this.state.showAlert} variant={"success"} style={{ width: '18rem', marginTop: "10px" }} >
+        const requestSentAlert = <Alert show={this.state.showAlert} variant={"success"} style={{ width: '18rem', marginTop: "10px" }} >
             Your trade offer is sent.
           </Alert>
 
-        alreadyAlert = <Alert show={this.state.isAlreadyOffered} variant={"info"} style={{ width: '18rem', marginTop: "10px" }} >
+        const alreadyAlert = <Alert show={this.state.isAlreadyOffered} variant={"info"} style={{ width: '18rem', marginTop: "10px" }} >
             You have already sent a trade request for this item.
           </Alert>
 
@@ -286,7 +342,7 @@ export default class AdDetails extends Component {
                                         <ul className="align-content-center category-list details-list">
                                             <li className="center-item"><span className="float-left">ID</span><strong>{ad.id}</strong></li>
                                             <hr></hr>
-                                            <li className="center-item"><span className="float-left">Date</span><strong>{ad.date.split(' ')[0]}</strong></li>
+                                            <li className="center-item"><span className="float-left">Date Added</span><strong>{ad.dateAdded.split(' ')[0]}</strong></li>
                                             <hr></hr>
                                             <li className="center-item"><span className="float-left">Main Category</span><strong>{ad.mainCategory.title}</strong></li>
                                             <hr></hr>

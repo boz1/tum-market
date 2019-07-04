@@ -69,14 +69,14 @@ export default class AdvertisementList extends Component {
     datesort() {
         this.setState({
             data: this.state.data.sort(function (obj1, obj2) {
-                return new Date(obj1.date) - new Date(obj2.date)
+                return new Date(obj1.dateAdded) - new Date(obj2.dateAdded)
             }),
             sort: "Old to New"
         })
     }
 
     datesortReverse() {
-        this.setState({ data: this.state.data.sort(function (obj1, obj2) { return new Date(obj2.date) - new Date(obj1.date) }), sort: "New to Old" })
+        this.setState({ data: this.state.data.sort(function (obj1, obj2) { return new Date(obj2.dateAdded) - new Date(obj1.dateAdded) }), sort: "New to Old" })
     }
 
     handlePageClick = data => {
