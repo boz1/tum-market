@@ -9,7 +9,6 @@ import PageNotFound from './PageNotFound'
 import NewAdvertisement from "./advertisement/NewAdvertisement"
 import TradeList from './trade/TradeList'
 
-import Verification from './Verification'
 
 class Home extends Component {
   constructor(props) {
@@ -155,33 +154,31 @@ class Home extends Component {
       this.adsRef.on('value', snap => {
         let data = snap.val();
         let ads = [];
-        if (data !== null && data !== undefined) {
-          Object.keys(data).forEach(function (user) {
-            Object.values(data[user]).forEach(function (ad) {
-              const conRef = firebase.database().ref('conditions').child(ad.conditionId);
-              conRef.on('value', cond => {
-                ad.condition = cond.val()
-              })
-
-              const ownerRef = firebase.database().ref('users').child(ad.userId);
-              ownerRef.on('value', user => {
-                ad.user = user.val()
-              })
-
-              const mainCatRef = firebase.database().ref('categories').child(ad.mainCategoryId);
-              mainCatRef.on('value', cat => {
-                const mainCat = cat.val()
-                ad.mainCategory = mainCat;
-                const subCatRef = firebase.database().ref('sub-categories').child(ad.mainCategoryId).child(ad.subCategoryId);
-                subCatRef.on('value', sub => {
-                  const subCat = sub.val();
-                  ad.subCategory = subCat;
-                })
-              })
-              ads.push(ad)
+        Object.keys(data).forEach(function (user) {
+          Object.values(data[user]).forEach(function (ad) {
+            const conRef = firebase.database().ref('conditions').child(ad.conditionId);
+            conRef.on('value', cond => {
+              ad.condition = cond.val()
             })
-          });
-        }
+
+            const ownerRef = firebase.database().ref('users').child(ad.userId);
+            ownerRef.on('value', user => {
+              ad.user = user.val()
+            })
+
+            const mainCatRef = firebase.database().ref('categories').child(ad.mainCategoryId);
+            mainCatRef.on('value', cat => {
+              const mainCat = cat.val()
+              ad.mainCategory = mainCat;
+              const subCatRef = firebase.database().ref('sub-categories').child(ad.mainCategoryId).child(ad.subCategoryId);
+              subCatRef.on('value', sub => {
+                const subCat = sub.val();
+                ad.subCategory = subCat;
+              })
+            })
+            ads.push(ad)
+          })
+        });
 
         this.setState({
           advertisements: ads,
@@ -237,25 +234,21 @@ class Home extends Component {
   }
 
   render() {
-    const ver = firebase.auth().currentUser;
-    if (ver.emailVerified) {
-      return (
-        <React.Fragment>
-          <div className="container" style={{ background: "#e9ebee" }}>
-            <Navbar search={this.search} user={this.state.user} />
-            <Switch>
-              <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user} />} />
-              <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
-              <Route path="/adDetails/:id" component={AdDetails} />
-              <Route path="/newAdvertisement" render={(props) => <NewAdvertisement {...props} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />} />
-              <Route component={PageNotFound} />
-            </Switch>
-            <Footer />
-          </div>
-        </React.Fragment>
-      );
-    }
-    else { return (<Verification></Verification>) }
+    return (
+      <React.Fragment>
+        <div className="container">
+          <Navbar search={this.search} user={this.state.user} />
+          <Switch>
+            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user} />} />
+            <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
+            <Route path="/adDetails/:id" component={AdDetails} />
+            <Route path="/newAdvertisement" render={(props) => <NewAdvertisement {...props} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />} />
+            <Route component={PageNotFound} />
+          </Switch>
+          <Footer />
+        </div>
+      </React.Fragment>
+    );
   }
 }
 
