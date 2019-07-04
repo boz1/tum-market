@@ -3,6 +3,7 @@ import firebase from '../../config/firebaseConfig';
 import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import ConfirmationModal from '../ConfirmationModal' 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -176,33 +177,10 @@ export default class TradeRequest extends Component {
             statusAction = "reject"
         }
 
-        statusUpdateModal = <Modal show={this.state.showStatusModal} onHide={this.handleClose}>
-            <Modal.Body style={{ fontSize: '16px' }}>
-                Do you want to <strong>{statusAction}</strong> this offer?
-                  </Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={this.handleClose}>
-                    Close
-                </Button>
-                <Button variant="success" onClick={this.handleSubmit} value={this.state.statusAction}>
-                    Confirm
-                </Button>
-            </Modal.Footer>
-        </Modal>
+        const updateTxt = <span>Do you want to <strong>{statusAction}</strong> this offer?</span>
+        statusUpdateModal = <ConfirmationModal show={this.state.showStatusModal} onHide={this.handleClose} title="Status Update" txt={updateTxt} onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
 
-        deleteModal = <Modal show={this.state.showDeleteModal} onHide={this.handleClose}>
-            <Modal.Body style={{ fontSize: '16px' }}>
-                Do you want to delete this request?
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={this.handleDeleteClose}>
-                    Close
-                </Button>
-                <Button variant="success" onClick={this.handleDeleteSubmit}>
-                    Confirm
-                </Button>
-            </Modal.Footer>
-        </Modal>
+        deleteModal = <ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Request" txt="Do you want to delete this request?" onClickClose={this.handleDeleteClose} onClickConfirm={this.handleDeleteSubmit} />
 
         if (this.state.status === "Accepted") {
             receivedStatus =

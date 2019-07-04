@@ -3,7 +3,7 @@ import firebase from '../config/firebaseConfig';
 import { Switch, Route } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
-import AdvertisementList from './advertisement/AdvertisementList'
+import Marketplace from './advertisement/Marketplace'
 import AdDetails from './advertisement/AdDetails'
 import PageNotFound from './PageNotFound'
 import NewAdvertisement from "./advertisement/NewAdvertisement"
@@ -253,9 +253,9 @@ class Home extends Component {
         <div className="container" style={{ background: "#e9ebee" }}>
           <Navbar search={this.search} user={this.state.user} />
           <Switch>
-            <Route exact path="/" render={(props) => <AdvertisementList {...props} adsList={this.state.sug} user={this.state.user} />} />
+            <Route exact path="/" render={(props) => <Marketplace {...props} adsList={this.state.sug} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions}/>} />
             <Route path="/tradeRequests" render={(props) => <TradeList {...props} user={this.state.user} />} />
-            <Route path="/myAds" render={(props) => <MyAds {...props} user={this.state.user} getAds={this.filterUserAds}/>} />
+            <Route path="/myAds" render={(props) => <MyAds {...props} user={this.state.user} getAds={this.filterUserAds} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions}/>} />
             <Route path="/adDetails/:id" component={AdDetails} />
             <Route path="/newAdvertisement" render={(props) => <NewAdvertisement {...props} user={this.state.user} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />} />
             <Route component={PageNotFound} />

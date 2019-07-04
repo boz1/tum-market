@@ -4,9 +4,10 @@ import Title from '../Title'
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import history from '../../history'
+import Edit from './Edit';
+import ConfirmationModal from '../ConfirmationModal'
 
 export default class AdDetails extends Component {
     constructor(props) {
@@ -17,7 +18,8 @@ export default class AdDetails extends Component {
             showAlert: false,
             isAlreadyOffered: false,
             showModal: false,
-            showDeleteModal: false
+            showDeleteModal: false,
+            showEditModal: false
         }
 
         this.showRequestModal = this.showRequestModal.bind(this)
@@ -183,15 +185,20 @@ export default class AdDetails extends Component {
         this.setState({ showDeleteModal: true })
     }
 
+    showEditModal = (e) => {
+        e.preventDefault();
+        this.setState({ showEditModal: true })
+    }
+
     handleClose() {
-        this.setState({ showModal: false, showDeleteModal: false });
+        this.setState({ showModal: false, showDeleteModal: false, showEditModal: false });
     }
 
     render() {
         const ad = this.props.location.state.ad;
         const adOwner = ad.user;
         const user = this.props.location.state.user;
-        let actionField, requestSentAlert, alreadyAlert, modal, deleteModal;
+        let actionField, requestSentAlert, alreadyAlert, modal, deleteModal, editModal;
 
         let items = [];
         items.push(<option key="empty" disabled value={''}>Choose...</option>)
@@ -200,46 +207,16 @@ export default class AdDetails extends Component {
             Object.values(user.ads).map((item) => items.push(<option key={item.id} value={item.title + '&' + item.id}>{item.title}</option>))
         }
 
-        modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
-            <Modal.Header>
-                <Modal.Title className="text-title ">
-                    Trade Request Confirmation
-                </Modal.Title>
-            </Modal.Header>
-            <Modal.Body style={{ fontSize: '18px' }}>
-                You are offering <strong>{this.state.offeredItem.split('&')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>.
-                Do you want to send this trade request?
-                  </Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={this.handleClose}>
-                    Close
-                </Button>
-                <Button variant="success" onClick={this.handleSubmit} value={this.state.offeredItem}>
-                    Confirm
-                </Button>
-            </Modal.Footer>
-        </Modal>
+        const confTxt = <span>You are offering <strong>{this.state.offeredItem.split('&')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>.  Do you want to send this trade request?"</span>
 
-        deleteModal = <Modal show={this.state.showDeleteModal} onHide={this.handleClose}>
-            <Modal.Header>
-                <Modal.Title className="text-title ">
-                    Delete Advertisement Confirmation
-            </Modal.Title>
-            </Modal.Header>
-            <Modal.Body style={{ fontSize: '18px' }}>
-                Deleting this advertisement will also <strong>delete any trade request this item has been used</strong>.
-                Are you sure to delete this advertisement?
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={this.handleClose}>
-                    Close
-                </Button>
-                <span></span>
-                <Button variant="success" onClick={this.handleDelete}>
-                    Confirm
-                </Button>
-            </Modal.Footer>
-        </Modal>
+        modal = <ConfirmationModal show={this.state.showModal} onHide={this.handleClose} title="Trade Request" txt={confTxt} onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
+
+        const delTxt = <span>Deleting this advertisement will also <strong>delete any trade request this item has been used</strong>.
+        Are you sure to delete this advertisement?</span>
+
+        deleteModal = <ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Advertisement" txt={delTxt} onClickClose={this.handleClose} onClickConfirm={this.handleDelete} />
+
+        editModal = <Edit show={this.state.showEditModal} close={this.handleClose} categories={this.props.location.state.categories} subCategories={this.props.location.state.subCategories} conditions={this.props.location.state.conditions} />
 
         if (ad.trade && user.info.id !== ad.userId && !this.state.isOfferSubmitted && !this.state.isAlreadyOffered) {
             actionField = <div className="mt-3">
@@ -270,7 +247,7 @@ export default class AdDetails extends Component {
                 <Card style={{ width: '18rem', background: 'whitesmoke' }} className="mt-2">
                     <Card.Body className="d-flex m-auto">
                         <div className="mr-5">
-                            <Button variant="primary" type="submit" className="m-auto">
+                            <Button variant="primary" type="submit" className="m-auto" onClick={this.showEditModal}>
                                 Edit
                             </Button>
                         </div>
@@ -371,6 +348,7 @@ export default class AdDetails extends Component {
                         </div>
                         {modal}
                         {deleteModal}
+                        {editModal}
                     </div>
                 </div>
             </React.Fragment>

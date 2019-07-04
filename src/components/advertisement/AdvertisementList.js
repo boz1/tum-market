@@ -93,7 +93,7 @@ export default class AdvertisementList extends Component {
                 return (obj1.user.isPremium === obj2.user.isPremium) ? 0 : obj1 ? -1 : 1;
             });
         }
-        return pageData.map((ad) => <Advertisment key={ad.id} ad={ad} user={this.state.user}/>)
+        return pageData.map((ad) => <Advertisment key={ad.id} ad={ad} user={this.state.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions}/>)
     }
 
     render() {

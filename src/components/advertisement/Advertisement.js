@@ -18,7 +18,7 @@ export default class Advertisement extends Component {
         return (
             <div>
                 <Card style={{ width: '15rem', marginBottom: "10px" }} className={isPremium ? "premium" : ""}>
-                        <Link to={{ pathname: '/adDetails/' + this.props.ad.id, state: { ad: this.props.ad, user: this.props.user} }} className="my-3 mx-auto">
+                        <Link to={{ pathname: '/adDetails/' + this.props.ad.id, state: { ad: this.props.ad, user: this.props.user, categories: this.props.categories, subCategories: this.props.subCategories, conditions: this.props.conditions} }} className="my-3 mx-auto">
                             <img
                                 src={this.props.ad.image}
                                 style={{ height: "150px" }}

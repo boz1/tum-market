@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import firebase, { storage } from '../../config/firebaseConfig';
 import Title from '../Title'
+import PropertyDropdown from './PropertyDropdown'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
+import ConfirmationModal from '../ConfirmationModal'
 import history from '../../history'
 import { css } from '@emotion/core';
 import { RingLoader } from 'react-spinners';
@@ -31,9 +33,7 @@ export default class NewAdvertisement extends Component {
             loading: false
         }
 
-        this.handleMainCatChange = this.handleMainCatChange.bind(this)
-        this.handleSubCatChange = this.handleSubCatChange.bind(this)
-        this.handleConditionChange = this.handleConditionChange.bind(this)
+        this.handleDropChange = this.handleDropChange.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.handleImageChange = this.handleImageChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -42,26 +42,17 @@ export default class NewAdvertisement extends Component {
         this.getMainCatTitle = this.getMainCatTitle.bind(this)
     }
 
-
-    handleMainCatChange(event) {
-        const mainCat = parseInt(this.refs.mainCat.value)
-        this.setState({
-            mainCategory: mainCat
-        });
-    }
-
-    handleSubCatChange(event) {
-        const subCat = parseInt(this.refs.subCat.value)
-        this.setState({
-            subCategory: subCat
-        });
-    }
-
-    handleConditionChange(event) {
-        const condition = parseInt(this.refs.cond.value)
-        this.setState({
-            condition: condition
-        });
+    handleDropChange(item, target) {
+        if (target === 'mainCategory') {
+            this.setState({
+                [target]: item,
+                subCategory: 1
+            });
+        } else {
+            this.setState({
+                [target]: item
+            });
+        }
     }
 
     handleChange(e) {
@@ -166,37 +157,24 @@ export default class NewAdvertisement extends Component {
 
 
     render() {
-        let mainCategories = [];
-        let subCategories = [];
-        let conditions = [];
-
         let mainCatContainer, subCatContainer, conditionsContainer;
 
         if (this.props.categories.length > 0) {
-            mainCategories.push(<option key="empty" disabled value={''}>Choose...</option>)
-            this.props.categories.map((cat) => mainCategories.push(<option key={cat.id + cat.title} value={cat.id}>{cat.title}</option>))
-            mainCatContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleMainCatChange} ref="mainCat">
-                {mainCategories}
-            </Form.Control>
+            mainCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
         }
 
         if (this.props.subCategories.length > 0) {
             let id = this.state.mainCategory;
-            subCategories.push(<option key="empty" disabled value={''}>Choose...</option>)
-            if (this.state.mainCategory !== '') {
-                this.props.subCategories[id].map((cat) => subCategories.push(<option key={cat.id + cat.title} value={cat.id}>{cat.title}</option>))
+            if (id !== '') {
+                subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
             }
-            subCatContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleSubCatChange} ref="subCat">
-                {subCategories}
-            </Form.Control>
+            else {
+                subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
+            }
         }
 
         if (this.props.conditions.length > 0) {
-            conditions.push(<option key="empty" disabled value={''}>Choose...</option>)
-            this.props.conditions.map((con) => conditions.push(<option key={con.id + con.title} value={con.id}>{con.title}</option>))
-            conditionsContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleConditionChange} ref="cond">
-                {conditions}
-            </Form.Control>
+            conditionsContainer = <PropertyDropdown handleChange={this.handleDropChange} target="condition" items={this.props.conditions} title="Condition" />
         }
 
         let loading = <Modal show={this.state.loading}>
@@ -211,31 +189,14 @@ export default class NewAdvertisement extends Component {
             </Modal.Body>
         </Modal>
 
-        let isPremium =false;
+        let isPremium = false;
         if (this.props.user.info !== undefined) {
-            if(this.props.user.info.isPremium){
+            if (this.props.user.info.isPremium) {
                 isPremium = true;
             }
         }
 
-        let modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
-            <Modal.Header>
-                <Modal.Title className="text-title ">
-                    New Advertisement Confirmation
-            </Modal.Title>
-            </Modal.Header>
-            <Modal.Body style={{ fontSize: '18px' }}>
-                Are you sure to create this advertisement?
-              </Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={this.handleClose}>
-                    Close
-            </Button>
-                <Button variant="success" onClick={this.handleSubmit}>
-                    Confirm
-            </Button>
-            </Modal.Footer>
-        </Modal>
+        let modal = <ConfirmationModal show={this.state.showModal} onHide={this.handleClose} title="New Advertisement" txt="Are you sure to create this advertisement?" onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
 
         return (
             <React.Fragment>
@@ -248,18 +209,9 @@ export default class NewAdvertisement extends Component {
                             <div className="col-md-9 pl-0">
                                 <div className="d-flex col-sm-12 p-0">
                                     <div className="col-sm-6 pl-0">
-                                        <Form.Group>
-                                            <Form.Label className="text-sub-title" style={{ fontSize: "16px" }} >Main Category</Form.Label>
-                                            {mainCatContainer}
-                                        </Form.Group>
-                                        <Form.Group >
-                                            <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Sub Category</Form.Label>
-                                            {subCatContainer}
-                                        </Form.Group>
-                                        <Form.Group>
-                                            <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Condition</Form.Label>
-                                            {conditionsContainer}
-                                        </Form.Group>
+                                        {mainCatContainer}
+                                        {subCatContainer}
+                                        {conditionsContainer}
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0 mr-2" style={{ fontSize: "16px" }}>
                                                 Image
