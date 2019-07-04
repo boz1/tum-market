@@ -70,22 +70,21 @@ class Login extends Component {
           <div className="mx-auto my-auto p-4 w-50 login-border">
             <h3 className="login-header">Student Login</h3>
             <hr></hr>
-            <form>
-              <div className="form-group large-text" >
-                <label htmlFor="exampleInputEmail1">Email</label>
-                <input value={this.state.email} onChange={this.handleChange} type="email" name="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email address" />
-                {/* <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small> */}
+            <form onSubmit={e => this.login(e)}>
+              <div className="form-group text-sub-title" >
+                <label >Email</label>
+                <input required value={this.state.email} onChange={this.handleChange} type="email" name="email" className="form-control" aria-describedby="emailHelp" placeholder="Enter email address" />
               </div>
               <div className="form-group large-text">
                 <label htmlFor="exampleInputPassword1">Password</label>
-                <input value={this.state.password} onChange={this.handleChange} type="password" name="password" className="form-control" id="exampleInputPassword1" placeholder="Enter password" />
+                <input required value={this.state.password} onChange={this.handleChange} type="password" name="password" className="form-control" placeholder="Enter password" />
               </div>
               {this.state.showAlert ? <Alert variant={"danger"} >
                 Wrong password or email, please try again.
             </Alert> : ''}
               <div className="d-flex">
                 <div>
-                  <button type="submit" onClick={this.login} className="btn btn-primary">Login</button>
+                  <button type="submit" className="btn btn-primary">Login</button>
                 </div>
                 <div className="ml-auto mt-auto mb-auto  large-text">
                   <span>New here? <strong style={{cursor:"pointer"}} onClick={this.togglePage} className="text-premium bold">Sign Up!</strong></span>
