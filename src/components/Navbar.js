@@ -231,7 +231,7 @@ export default class Navbar extends Component {
                     </Dropdown.Toggle>
                     <Dropdown.Menu alignRight>
                         <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2">My Advertisements</Dropdown.Item>
+                        <Link to={{ pathname: '/myAds' }} className="dropdown-item">My Advertisements</Link>
                         <Dropdown.Item href="#/action-3">My Buying Requests</Dropdown.Item>
                         <Link to={{ pathname: '/tradeRequests' }} className="dropdown-item">My Trade Requests</Link>
                         <Dropdown.Item href="#/action-3">Chat Bot</Dropdown.Item>

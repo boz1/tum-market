@@ -1,15 +1,13 @@
 import React, { Component } from 'react'
 import firebase, { storage } from '../../config/firebaseConfig';
-import Title from '../Title'
 import PropertyDropdown from './PropertyDropdown'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
-import ConfirmationModal from '../ConfirmationModal'
 import history from '../../history'
 import { css } from '@emotion/core';
 import { RingLoader } from 'react-spinners';
+
 
 const override = css`
     display: block;
@@ -17,7 +15,7 @@ const override = css`
     border-color: red;
 `;
 
-export default class NewAdvertisement extends Component {
+export default class Edit extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -29,7 +27,6 @@ export default class NewAdvertisement extends Component {
             description: '',
             image: null,
             trade: "On",
-            showModal: false,
             loading: false
         }
 
@@ -37,12 +34,9 @@ export default class NewAdvertisement extends Component {
         this.handleChange = this.handleChange.bind(this)
         this.handleImageChange = this.handleImageChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
-        this.showRequestModal = this.showRequestModal.bind(this)
-        this.handleClose = this.handleClose.bind(this)
-        this.getMainCatTitle = this.getMainCatTitle.bind(this)
     }
 
-    handleDropChange(item, target) {
+    handleDropChange = (item, target) => {
         if (target === 'mainCategory') {
             this.setState({
                 [target]: item,
@@ -66,27 +60,14 @@ export default class NewAdvertisement extends Component {
         }
     }
 
-    getMainCatTitle() {
-        let title;
-        if (Object.getOwnPropertyNames(this.props.categories).length !== 0) {
-            this.props.categories.forEach(element => {
-                if (element.id === this.state.mainCategory) {
-                    title = element.title
-                }
-            });
-        }
-        return title;
-    }
-
     handleSubmit(event) {
         event.preventDefault();
         this.setState({
             loading: true,
-            showModal: false
         })
 
-        var newPostKey = firebase.database().ref('advertisements').child(this.props.user.info.id).push().key;
-
+        const ad = this.props.ad;
+        const userId = this.props.user.info.id;
         // Get date
         var today = new Date(),
             date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -102,7 +83,7 @@ export default class NewAdvertisement extends Component {
         // Upload Image
         const { image } = this.state;
         let imageUrl;
-        const uploadImage = storage.ref(`images/${this.props.user.info.id}/${newPostKey}/${image.name}`).put(image);
+        const uploadImage = storage.ref(`images/${userId}/${ad.id}/${image.name}`).put(image);
 
         uploadImage.on('state_changed',
             (snapshot) => {
@@ -116,25 +97,26 @@ export default class NewAdvertisement extends Component {
             },
             () => {
                 // complete function ....
-                storage.ref(`images/${this.props.user.info.id}/${newPostKey}/${image.name}`).getDownloadURL().then(url => {
+                storage.ref(`images/${userId}/${ad.id}/${image.name}`).getDownloadURL().then(url => {
                     imageUrl = url;
                     // // Insert to databse
-                    const ad = {
+                    const update = {
                         title: this.state.title,
+                        userId: ad.userId,
+                        id: ad.id,
                         price: this.state.price,
                         trade: trade,
-                        userId: this.props.user.info.id,
-                        id: newPostKey,
                         image: imageUrl,
                         description: this.state.description,
                         mainCategoryId: this.state.mainCategory,
                         subCategoryId: this.state.subCategory,
                         conditionId: this.state.condition,
-                        dateAdded: date
+                        modifyDate: date,
+                        dateAdded: ad.dateAdded
                     };
 
                     var updates = {};
-                    updates['/advertisements/' + this.props.user.info.id + '/' + newPostKey] = ad;
+                    updates['/advertisements/' + userId + '/' + ad.id] = update;
 
                     firebase.database().ref().update(updates);
 
@@ -143,24 +125,20 @@ export default class NewAdvertisement extends Component {
             });
     }
 
-    showRequestModal(e) {
-        e.preventDefault();
-
-        this.setState({
-            showModal: true
-        })
-    }
-
-    handleClose() {
-        this.setState({ showModal: false });
-    }
-
-    goHome = () => {
-        history.push('/')
-    }
-
     render() {
         let mainCatContainer, subCatContainer, conditionsContainer;
+
+        let loading = <Modal show={this.state.loading}>
+            <Modal.Body>
+                <RingLoader
+                    css={override}
+                    sizeUnit={"px"}
+                    size={100}
+                    color={'#006BD6'}
+                    loading={this.state.loading}
+                />
+            </Modal.Body>
+        </Modal>
 
         if (this.props.categories.length > 0) {
             mainCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
@@ -180,36 +158,17 @@ export default class NewAdvertisement extends Component {
             conditionsContainer = <PropertyDropdown handleChange={this.handleDropChange} target="condition" items={this.props.conditions} title="Condition" />
         }
 
-        let loading = <Modal show={this.state.loading}>
-            <Modal.Body>
-                <RingLoader
-                    css={override}
-                    sizeUnit={"px"}
-                    size={100}
-                    color={'#006BD6'}
-                    loading={this.state.loading}
-                />
-            </Modal.Body>
-        </Modal>
-
-        let isPremium = false;
-        if (this.props.user.info !== undefined) {
-            if (this.props.user.info.isPremium) {
-                isPremium = true;
-            }
-        }
-
-        let modal = <ConfirmationModal show={this.state.showModal} onHide={this.handleClose} title="New Advertisement" txt="Are you sure to create this advertisement?" onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
-
         return (
-            <React.Fragment>
-                <div className="container">
-                    <Title title="Create New Advertisement" />
-                    <hr className="my-2"></hr>
-                    <div className="row"></div>
-                    <Form onSubmit={e => this.showRequestModal(e)}>
+            <Modal show={this.props.show} onHide={this.props.close} backdrop="static" keyboard={false}>
+                <Modal.Header>
+                    <Modal.Title className="text-title ">
+                        Edit Advertisement
+            </Modal.Title>
+                </Modal.Header>
+                <Modal.Body style={{ fontSize: '18px' }}>
+                    <Form onSubmit={e => this.handleSubmit(e)}>
                         <div className='col-md-12 d-flex'>
-                            <div className="col-md-9 pl-0">
+                            <div className="col-md-12 pl-0">
                                 <div className="d-flex col-sm-12 p-0">
                                     <div className="col-sm-6 pl-0">
                                         {mainCatContainer}
@@ -219,7 +178,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0 mr-2" style={{ fontSize: "16px" }}>
                                                 Image
                                                  </Form.Label>
-                                            <input required type="file" onChange={this.handleImageChange} />
+                                            <input required type="file" style={{ fontSize: "14px" }} onChange={this.handleImageChange} />
                                         </Form.Group>
                                     </div>
                                     <div className="col-sm-6 ml-2">
@@ -233,7 +192,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Trade
                                                  </Form.Label>
-                                            <div className="mt-2">
+                                            <div className="mt-1">
                                                 <label>
                                                     <input
                                                         type="radio"
@@ -242,7 +201,7 @@ export default class NewAdvertisement extends Component {
                                                         onChange={this.handleChange}
                                                         name="trade"
                                                     />
-                                                    <span style={{ marginLeft: "5px" }}>On</span>
+                                                    <span style={{ marginLeft: "5px", fontSize: "14px" }}>On</span>
                                                 </label>
                                                 <label className="ml-2">
                                                     <input
@@ -252,7 +211,7 @@ export default class NewAdvertisement extends Component {
                                                         onChange={this.handleChange}
                                                         name="trade"
                                                     />
-                                                    <span style={{ marginLeft: "5px" }}>Off</span>
+                                                    <span style={{ marginLeft: "5px", fontSize: "14px" }}>Off</span>
                                                 </label>
                                             </div>
                                         </Form.Group>
@@ -260,59 +219,32 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Price (€)
                                                  </Form.Label>
-                                            <Form.Control name="price" required type="number" placeholder="€" onChange={this.handleChange} min={0} step="0.01" />
+                                            <Form.Control name="price" required type="number" onChange={this.handleChange} placeholder="€" min={0} step="0.01"/>
                                         </Form.Group>
+
                                     </div>
                                 </div>
                                 <div className="mb-1">
                                     <Form.Group className="pl-0">
                                         <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 250 characters)</span></Form.Label>
-                                        <Form.Control name="description" required as="textarea" rows="3" onChange={this.handleChange} maxLength="250" placeholder="Descibe your product..." />
+                                        <Form.Control name="description" required as="textarea" rows="3" maxLength="250" onChange={this.handleChange} placeholder="Descibe your product..." />
                                     </Form.Group>
-                                </div>
-                            </div>
-                            <div className="col-md-3 d-block">
-                                <div className="mb-2">
-                                    <Form.Group className="pl-0">
-                                        <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Preview</Form.Label>
-                                        <Card style={{ width: 'auto', height: 'fit-content' }} className={isPremium ? "premium" : ""}>
-                                            <div className="m-auto">
-                                                <img
-                                                    src={'http://via.placeholder.com/200x150'}
-                                                    style={{
-                                                        height: "auto", width: "auto", marginTop: "12px"
-                                                    }}
-                                                    alt="Product"
-                                                />
-                                            </div>
-                                            <Card.Body className="p-2">
-                                                <hr></hr>
-                                                <Card.Title className="text-ad-title">{this.state.title}</Card.Title>
-                                                <Card.Text>
-                                                    {this.getMainCatTitle()}
-                                                </Card.Text>
-                                                <Card.Text className="bold">
-                                                    <span className="text-premium">{this.state.price + " €"}</span>  {(this.state.trade === "On" ? <span className="text-trade">Trade</span> : "")}
-                                                </Card.Text>
-                                            </Card.Body>
-                                        </Card>
-                                    </Form.Group>
-                                </div>
-                                <div>
-                                    <Button variant="danger" onClick={this.goHome}>
-                                        Cancel
-                                        </Button>
-                                    <Button variant="primary" type="submit" className="float-right">
-                                        Complete
-                                        </Button>
+                                    <div>
+                                        <Button variant="danger" onClick={this.props.close}>
+                                            Close
+                                </Button>
+                                        <Button variant="primary" type="submit" className="float-right">
+                                            Save
+                                </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     </Form>
-                    {modal}
                     {loading}
-                </div>
-            </React.Fragment>
+                </Modal.Body>
+            </Modal >
         )
     }
 }

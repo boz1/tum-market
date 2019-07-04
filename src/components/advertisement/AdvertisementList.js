@@ -69,14 +69,14 @@ export default class AdvertisementList extends Component {
     datesort() {
         this.setState({
             data: this.state.data.sort(function (obj1, obj2) {
-                return new Date(obj1.date) - new Date(obj2.date)
+                return new Date(obj1.dateAdded) - new Date(obj2.dateAdded)
             }),
             sort: "Old to New"
         })
     }
 
     datesortReverse() {
-        this.setState({ data: this.state.data.sort(function (obj1, obj2) { return new Date(obj2.date) - new Date(obj1.date) }), sort: "New to Old" })
+        this.setState({ data: this.state.data.sort(function (obj1, obj2) { return new Date(obj2.dateAdded) - new Date(obj1.dateAdded) }), sort: "New to Old" })
     }
 
     handlePageClick = data => {
@@ -88,12 +88,12 @@ export default class AdvertisementList extends Component {
         const bottomLimit = this.state.currentPage * this.state.itemPerPage
         const topLimit = (this.state.currentPage + 1) * this.state.itemPerPage
         let pageData = this.state.data.slice(bottomLimit, topLimit)
-        if(this.state.sort === ''){
+        if (this.state.sort === '') {
             pageData.sort(function (obj1, obj2) {
                 return (obj1.user.isPremium === obj2.user.isPremium) ? 0 : obj1 ? -1 : 1;
             });
         }
-        return pageData.map((ad) => <Advertisment key={ad.id} ad={ad} user={this.state.user} />)
+        return pageData.map((ad) => <Advertisment key={ad.id} ad={ad} user={this.state.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions}/>)
     }
 
     render() {
