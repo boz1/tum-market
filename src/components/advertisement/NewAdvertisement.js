@@ -5,17 +5,10 @@ import PropertyDropdown from './PropertyDropdown'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import Image from 'react-image-resizer';
 import Modal from 'react-bootstrap/Modal';
 import ConfirmationModal from '../ConfirmationModal'
 import history from '../../history'
-import { css } from '@emotion/core';
-import { RingLoader } from 'react-spinners';
-
-const override = css`
-    display: block;
-    margin: 0 auto;
-    border-color: red;
-`;
 
 export default class NewAdvertisement extends Component {
     constructor(props) {
@@ -29,8 +22,7 @@ export default class NewAdvertisement extends Component {
             description: '',
             image: null,
             trade: "On",
-            showModal: false,
-            loading: false
+            showModal: false
         }
 
         this.handleDropChange = this.handleDropChange.bind(this)
@@ -55,8 +47,32 @@ export default class NewAdvertisement extends Component {
         }
     }
 
-    handleChange(e) {
-        this.setState({ [e.target.name]: e.target.value });
+    handleTitleChange(event) {
+        const title = event.target.value
+        this.setState({
+            title: title
+        });
+    }
+
+    handlePriceChange(event) {
+        const price = event.target.value
+        this.setState({
+            price: price
+        });
+    }
+
+    handleTradeChange(event) {
+        const trade = event.target.value
+        this.setState({
+            trade: trade
+        });
+    }
+
+    handleDescriptionChange(event) {
+        const description = event.target.value
+        this.setState({
+            description: description
+        });
     }
 
     handleImageChange(event) {
@@ -80,11 +96,8 @@ export default class NewAdvertisement extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        this.setState({
-            loading: true,
-            showModal: false
-        })
 
+        // Get a key for a new Post.
         var newPostKey = firebase.database().ref('advertisements').child(this.props.user.info.id).push().key;
 
         // Get date
@@ -239,8 +252,7 @@ export default class NewAdvertisement extends Component {
                                                         type="radio"
                                                         value="On"
                                                         checked={this.state.trade === "On"}
-                                                        onChange={this.handleChange}
-                                                        name="trade"
+                                                        onChange={this.handleTradeChange}
                                                     />
                                                     <span style={{ marginLeft: "5px" }}>On</span>
                                                 </label>
@@ -249,8 +261,7 @@ export default class NewAdvertisement extends Component {
                                                         type="radio"
                                                         value="Off"
                                                         checked={this.state.trade === "Off"}
-                                                        onChange={this.handleChange}
-                                                        name="trade"
+                                                        onChange={this.handleTradeChange}
                                                     />
                                                     <span style={{ marginLeft: "5px" }}>Off</span>
                                                 </label>
@@ -267,7 +278,7 @@ export default class NewAdvertisement extends Component {
                                 <div className="mb-1">
                                     <Form.Group className="pl-0">
                                         <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 250 characters)</span></Form.Label>
-                                        <Form.Control name="description" required as="textarea" rows="3" onChange={this.handleChange} maxLength="250" placeholder="Descibe your product..." />
+                                        <Form.Control required as="textarea" rows="3" onChange={this.handleDescriptionChange} maxLength="250" placeholder="Descibe your product..." />
                                     </Form.Group>
                                 </div>
                             </div>
@@ -310,7 +321,6 @@ export default class NewAdvertisement extends Component {
                         </div>
                     </Form>
                     {modal}
-                    {loading}
                 </div>
             </React.Fragment>
         )

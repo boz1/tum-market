@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import Card from 'react-bootstrap/Card';
+import Image from 'react-image-resizer';
 
 export default class Advertisement extends Component {
     constructor(props) {

@@ -200,12 +200,12 @@ export default class Navbar extends Component {
                 </Link>
                 <ul className="navbar-nav align-items-center">
                     <li className="nav-item ml-5">
-                        <Link to="/newAdvertisement" className="text-new-ad text-decoration-none">New Advertisement</Link>
+                        <Link to="/newAdvertisement" className="text-new-ad">New Advertisement</Link>
                     </li>
                 </ul>
                 <div className="ml-auto">
                     <Form inline>
-                        <FormControl onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />
+                        <FormControl onChange={this.props.search} placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
                         <Button type="submit">Filter</Button>
                     </Form>
                 </div>
