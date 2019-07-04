@@ -205,7 +205,9 @@ export default class Navbar extends Component {
                 </ul>
                 <div className="ml-auto">
                     <Form inline>
-                        <FormControl onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />
+                    <Link to='/'>
+                        <FormControl onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />                 
+                    </Link>
                         <Button type="submit">Filter</Button>
                     </Form>
                 </div>
