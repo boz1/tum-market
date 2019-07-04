@@ -5,13 +5,14 @@ import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import Image from 'react-image-resizer';
 import Alert from 'react-bootstrap/Alert';
 
 export default class AdDetails extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            offeredItem: '',
+            offeredItem: this.props.location.state.user.ads[2].title + '-' + this.props.location.state.user.ads[2].id,
             isOfferSubmitted: false,
             showAlert: false,
             isAlreadyOffered: false,
@@ -49,7 +50,7 @@ export default class AdDetails extends Component {
         event.preventDefault();
         const ad = this.props.location.state.ad;
         const user = this.props.location.state.user;
-        const itemId = this.state.offeredItem.split('&')[1];
+        const itemId = parseInt(this.state.offeredItem.split('-')[1]);
 
         // Get a key for a new Post.
         var newPostKey = firebase.database().ref('trade-requests').child(user.info.id).push().key;
@@ -99,8 +100,6 @@ export default class AdDetails extends Component {
     }
 
     showRequestModal(e) {
-        e.preventDefault();
-
         this.setState({
             showModal: true
         })
@@ -116,9 +115,7 @@ export default class AdDetails extends Component {
         const user = this.props.location.state.user;
         let tradeRequest, alert, modal;
 
-        let items = [];
-        items.push(<option key="empty" disabled value={''}>Choose...</option>)
-        Object.values(user.ads).map((item) => items.push(<option key={item.id} value={item.title + '&' + item.id}>{item.title}</option>))
+        let items = Object.values(user.ads).map((item) => <option key={item.id} value={item.title + '-' + item.id}>{item.title}</option>)
 
         modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
             <Modal.Header>
@@ -145,16 +142,16 @@ export default class AdDetails extends Component {
                 <span className="text-sub-title">Trade Request</span>
                 <Card style={{ width: '18rem', background: 'whitesmoke' }} className="mt-2">
                     <Card.Body>
-                        <Form onSubmit={e => this.showRequestModal(e)}>
+                        <Form>
                             <Form.Row>
                                 <Form.Group controlId="tradeItem">
                                     <Form.Label style={{ fontSize: "16px" }}>Your Items</Form.Label>
-                                    <Form.Control required defaultValue={''} as="select" onChange={this.handleChange}>
+                                    <Form.Control as="select" value={this.state.offeredItem} onChange={this.handleChange}>
                                         {items}
                                     </Form.Control>
                                 </Form.Group>
                             </Form.Row>
-                            <Button variant="primary" type="submit">
+                            <Button variant="primary" onClick={this.showRequestModal}>
                                 Send Request
                              </Button>
                         </Form>
@@ -183,15 +180,17 @@ export default class AdDetails extends Component {
                         <div className="col-md-12 d-flex p-0">
                             <div className="col-md-8">
                                 <span className="text-sub-title">Details</span>
-                                <div className="d-flex mt-2 col-sm-12 p-0 detail-div">
-                                    <div className="col-sm-6 m-auto">
-                                            <img src={ad.image} style={{ height: "290px", width: "300px", marginLeft:"12px" }} alt="Product"/>
+                                <div className="d-flex mt-2 col-sm-12 p-0">
+                                    <div className="col-sm-6">
+                                        <Image className="mt-0"
+                                            src={ad.image}
+                                            height={270}
+                                            width={300}
+                                        />
                                     </div>
-                                    <div className="col-sm-6 my-3">
+                                    <div className="col-sm-6 p-0 mt-3">
                                         <ul className="align-content-center category-list details-list">
                                             <li className="center-item"><span className="float-left">ID</span><strong>{ad.id}</strong></li>
-                                            <hr></hr>
-                                            <li className="center-item"><span className="float-left">Date</span><strong>{ad.date.split(' ')[0]}</strong></li>
                                             <hr></hr>
                                             <li className="center-item"><span className="float-left">Main Category</span><strong>{ad.mainCategory.title}</strong></li>
                                             <hr></hr>
@@ -208,7 +207,7 @@ export default class AdDetails extends Component {
                                 <div className="my-3">
                                     <Card>
                                         <Card.Header><span className="text-sub-title">Description</span></Card.Header>
-                                        <Card.Body style={{fontSize:"16px"}}>
+                                        <Card.Body>
                                             <p>
                                                 {' '}
                                                 {ad.description}{' '}
@@ -235,11 +234,12 @@ export default class AdDetails extends Component {
                                                     {adOwner.address}
                                                 </Card.Text>
                                             </div>
-                                            <div className="d-block">
+                                            <br></br>
+                                            <div className="d-flex bold">
                                                 <div>
                                                     {adOwner.telephone}
                                                 </div>
-                                                <div>
+                                                <div className="ml-auto">
                                                     {adOwner.email}
                                                 </div>
                                             </div>

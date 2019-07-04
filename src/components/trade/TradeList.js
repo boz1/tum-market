@@ -31,7 +31,6 @@ export default class TradeList extends Component {
                             <CardDeck>
                                 {sentOffers !== undefined && sentOffers !== null ? (sentOffers.length > 0 ? sentOffers.map((item) => <TradeRequest key={item.id} item={item} user={this.props.user.info} type="sent" />) : "") : ""}
                             </CardDeck>
-                            <div style={{textAlign:'center', fontSize:"16px"}}>{sentOffers !== undefined && sentOffers !== null && sentOffers.length === 0 && receivedOffers !== undefined && receivedOffers !== null && receivedOffers.length === 0 ? "No requests found." : ""}</div>
                         </div>
 
                     </div>
