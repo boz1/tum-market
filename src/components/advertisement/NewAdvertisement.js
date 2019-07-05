@@ -101,6 +101,7 @@ export default class NewAdvertisement extends Component {
 
         // Upload Image
         const { image } = this.state;
+        const imageTitle = this.state.image.name;
         let imageUrl;
         const uploadImage = storage.ref(`images/${this.props.user.info.id}/${newPostKey}/${image.name}`).put(image);
 
@@ -130,7 +131,8 @@ export default class NewAdvertisement extends Component {
                         mainCategoryId: this.state.mainCategory,
                         subCategoryId: this.state.subCategory,
                         conditionId: this.state.condition,
-                        dateAdded: date
+                        dateAdded: date,
+                        imageTitle: imageTitle
                     };
 
                     var updates = {};

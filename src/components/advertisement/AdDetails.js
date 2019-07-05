@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import firebase from '../../config/firebaseConfig';
+import firebase, {storage} from '../../config/firebaseConfig';
 import Title from '../Title'
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
@@ -7,7 +7,16 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import history from '../../history'
 import Edit from './Edit';
+import Modal from 'react-bootstrap/Modal';
+import { css } from '@emotion/core';
+import { RingLoader } from 'react-spinners';
 import ConfirmationModal from '../ConfirmationModal'
+
+const override = css`
+    display: block;
+    margin: 0 auto;
+    border-color: red;
+`;
 
 export default class AdDetails extends Component {
     constructor(props) {
@@ -20,7 +29,8 @@ export default class AdDetails extends Component {
             showModal: false,
             showDeleteModal: false,
             showEditModal: false,
-            isEditable: true
+            isEditable: true,
+            loading: false
         }
 
         this.showRequestModal = this.showRequestModal.bind(this)
@@ -43,18 +53,6 @@ export default class AdDetails extends Component {
         this.setState({
             isAlreadyOffered: isOffered
         })
-    }
-
-    componentWillUnmount() {
-        if (this.checkTradeReqRef !== undefined) {
-            this.checkTradeReqRef.off('value')
-            this.checkTradeReqRef = null;
-        }
-
-        if (this.checkReceivedReqRef !== undefined) {
-            this.checkReceivedReqRef.off('value')
-            this.checkReceivedReqRef = null;
-        }
     }
 
     handleChange(event) {
@@ -125,6 +123,10 @@ export default class AdDetails extends Component {
 
     handleDelete = (event) => {
         event.preventDefault()
+        this.setState({
+            loading: true,
+        })
+
         const ad = this.props.location.state.ad;
 
         this.checkAdSentReq(ad).then(reqs => {
@@ -169,13 +171,16 @@ export default class AdDetails extends Component {
             console.log(er)
         })
 
-        this.removeAdRef = firebase.database().ref('advertisements').child(ad.userId).child(ad.id).remove();
+        firebase.database().ref('advertisements').child(ad.userId).child(ad.id).remove();
 
-        this.setState({
-            showDeleteModal: false
-        })
-
-        history.push('/')
+        const deleteImageRef = storage.ref(`images/${ad.userId}/${ad.id}/${ad.imageTitle}`)
+        
+        // Delete the file
+        deleteImageRef.delete().then(function () {
+            history.push('/')
+        }).catch(function (error) {
+            console.log(error)
+        });
     }
 
     checkAdSentReq = (ad) => {
@@ -254,6 +259,18 @@ export default class AdDetails extends Component {
         const adOwner = ad.user;
         const user = this.props.location.state.user;
         let actionField;
+        
+        let loading = <Modal show={this.state.loading}>
+            <Modal.Body>
+                <RingLoader
+                    css={override}
+                    sizeUnit={"px"}
+                    size={100}
+                    color={'#006BD6'}
+                    loading={this.state.loading}
+                />
+            </Modal.Body>
+        </Modal>
 
         let items = [];
         items.push(<option key="empty" disabled value={''}>Choose...</option>)
@@ -266,7 +283,8 @@ export default class AdDetails extends Component {
         const modal = <ConfirmationModal show={this.state.showModal} onHide={this.handleClose} title="Trade Request" txt={confTxt} onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
 
         const delTxt = <span>Deleting this advertisement will also <strong>delete any trade request this item has been used</strong>. Are you sure to delete this advertisement?</span>
-        const deleteModal = <ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Advertisement" txt={delTxt} onClickClose={this.handleClose} onClickConfirm={this.handleDelete} />
+        const deleteModal = <span><ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Advertisement" txt={delTxt} onClickClose={this.handleClose} onClickConfirm={this.handleDelete} />
+        {loading}</span>
 
         const editModal = <Edit show={this.state.showEditModal} close={this.handleClose} user={this.props.location.state.user} ad={this.props.location.state.ad} categories={this.props.location.state.categories} subCategories={this.props.location.state.subCategories} conditions={this.props.location.state.conditions} />
         const editAlert = <Alert show={!this.state.isEditable} variant={"danger"} style={{ marginTop: "10px" }} >

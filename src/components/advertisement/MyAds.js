@@ -16,7 +16,7 @@ export default class MyAds extends Component {
     render() {
         return (
             <React.Fragment>
-                <AdvertisementList adsList={this.state.data} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions}/>
+                <AdvertisementList title="My Advertisements" adsList={this.state.data} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions}/>
             </React.Fragment >
         )
     }
