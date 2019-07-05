@@ -16,7 +16,7 @@ export default class Marketplace extends Component {
     render() {
         return (
             <React.Fragment>
-                <AdvertisementList adsList={this.props.adsList} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
+                <AdvertisementList title="Marketplace" adsList={this.props.adsList} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
             </React.Fragment >
         )
     }

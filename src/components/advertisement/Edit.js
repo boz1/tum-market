@@ -23,9 +23,9 @@ export default class Edit extends Component {
             subCategory: '',
             condition: '',
             title: '',
-            price: 0,
+            price: '',
             description: '',
-            image: null,
+            image: '',
             trade: "On",
             loading: false
         }
@@ -60,14 +60,34 @@ export default class Edit extends Component {
         }
     }
 
+    getValue = (item) => {
+        const ad = this.props.ad;
+        console.log(ad)
+
+        if (this.state[item] === "") {
+            item = ad[item];
+        }
+        else {
+            item = this.state[item]
+        }
+        return item;
+    }
+
     handleSubmit(event) {
         event.preventDefault();
         this.setState({
             loading: true,
         })
 
+        let price, title, desc;
+
         const ad = this.props.ad;
         const userId = this.props.user.info.id;
+
+        price = this.getValue("price");
+        desc = this.getValue("description");
+        title = this.getValue("title");
+
         // Get date
         var today = new Date(),
             date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -80,49 +100,76 @@ export default class Edit extends Component {
             trade = false
         }
 
-        // Upload Image
-        const { image } = this.state;
-        let imageUrl;
-        const uploadImage = storage.ref(`images/${userId}/${ad.id}/${image.name}`).put(image);
 
-        uploadImage.on('state_changed',
-            (snapshot) => {
-                // progrss function ....
-                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                console.log("progress " + progress)
-            },
-            (error) => {
-                // error function ....
-                console.log("error " + error);
-            },
-            () => {
-                // complete function ....
-                storage.ref(`images/${userId}/${ad.id}/${image.name}`).getDownloadURL().then(url => {
-                    imageUrl = url;
-                    // // Insert to databse
-                    const update = {
-                        title: this.state.title,
-                        userId: ad.userId,
-                        id: ad.id,
-                        price: this.state.price,
-                        trade: trade,
-                        image: imageUrl,
-                        description: this.state.description,
-                        mainCategoryId: this.state.mainCategory,
-                        subCategoryId: this.state.subCategory,
-                        conditionId: this.state.condition,
-                        modifyDate: date,
-                        dateAdded: ad.dateAdded
-                    };
+        if (this.state.image !== "") {
+            const { image } = this.state;
+            // Upload Image
+            let imageUrl;
+            const uploadImage = storage.ref(`images/${userId}/${ad.id}/${image.name}`).put(image);
 
-                    var updates = {};
-                    updates['/advertisements/' + userId + '/' + ad.id] = update;
+            uploadImage.on('state_changed',
+                (snapshot) => {
+                    // progrss function ....
+                    const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    console.log("progress " + progress)
+                },
+                (error) => {
+                    // error function ....
+                    console.log("error " + error);
+                },
+                () => {
+                    // complete function ....
+                    storage.ref(`images/${userId}/${ad.id}/${image.name}`).getDownloadURL().then(url => {
+                        imageUrl = url;
+                        // // Insert to databse
+                        const update = {
+                            title: title,
+                            userId: ad.userId,
+                            id: ad.id,
+                            price: price,
+                            trade: trade,
+                            image: imageUrl,
+                            description: desc,
+                            mainCategoryId: this.state.mainCategory,
+                            subCategoryId: this.state.subCategory,
+                            conditionId: this.state.condition,
+                            modifyDate: date,
+                            dateAdded: ad.dateAdded
+                        };
 
-                    firebase.database().ref().update(updates);
+                        var updates = {};
+                        updates['/advertisements/' + userId + '/' + ad.id] = update;
 
-                    history.push('/')
-                })
-            });
+                        firebase.database().ref().update(updates);
+
+                        history.push('/')
+                    })
+                });
+        }
+        else {
+            const update = {
+                title: title,
+                userId: ad.userId,
+                id: ad.id,
+                price: price,
+                trade: trade,
+                image: ad.image,
+                description: desc,
+                mainCategoryId: this.state.mainCategory,
+                subCategoryId: this.state.subCategory,
+                conditionId: this.state.condition,
+                modifyDate: date,
+                dateAdded: ad.dateAdded
+            };
+
+            var updates = {};
+            updates['/advertisements/' + userId + '/' + ad.id] = update;
+
+            firebase.database().ref().update(updates);
+
+            history.push('/')
+        }
+
     }
 
     render() {
@@ -178,7 +225,7 @@ export default class Edit extends Component {
                                             <Form.Label className="text-sub-title pl-0 mr-2" style={{ fontSize: "16px" }}>
                                                 Image
                                                  </Form.Label>
-                                            <input required type="file" style={{ fontSize: "14px" }} onChange={this.handleImageChange} />
+                                            <input type="file" style={{ fontSize: "14px" }} onChange={this.handleImageChange} />
                                         </Form.Group>
                                     </div>
                                     <div className="col-sm-6 ml-2">
@@ -186,7 +233,7 @@ export default class Edit extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Title
                                                  </Form.Label>
-                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+." />
+                                            <Form.Control name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+." />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -219,7 +266,7 @@ export default class Edit extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Price (€)
                                                  </Form.Label>
-                                            <Form.Control name="price" required type="number" onChange={this.handleChange} placeholder="€" min={0} step="0.01"/>
+                                            <Form.Control name="price" type="number" onChange={this.handleChange} placeholder="€" min={0} step="0.01" />
                                         </Form.Group>
 
                                     </div>
@@ -227,7 +274,7 @@ export default class Edit extends Component {
                                 <div className="mb-1">
                                     <Form.Group className="pl-0">
                                         <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 250 characters)</span></Form.Label>
-                                        <Form.Control name="description" required as="textarea" rows="3" maxLength="250" onChange={this.handleChange} placeholder="Descibe your product..." />
+                                        <Form.Control name="description" as="textarea" rows="3" maxLength="250" onChange={this.handleChange} placeholder="Descibe your product..." />
                                     </Form.Group>
                                     <div>
                                         <Button variant="danger" onClick={this.props.close}>
