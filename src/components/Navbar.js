@@ -202,12 +202,15 @@ export default class Navbar extends Component {
                 </Link>
                 <ul className="navbar-nav align-items-center">
                     <li className="nav-item ml-5">
-                        <Link to="/newAdvertisement" className="text-new-ad">New Advertisement</Link>
+                        <Link to="/newAdvertisement" className="text-new-ad text-decoration-none">New Advertisement</Link>
                     </li>
                 </ul>
                 <div className="ml-auto">
                     <Form inline>
-                        <FormControl onChange={this.props.search} placeholder="Type in Title, Item No, ..." className="mr-sm-2 search" />
+                    <Link to='/'>
+                        <FormControl onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />                 
+                    </Link>
+                        <Button type="submit">Filter</Button>
                     </Form>
                 </div>
                 <Filter categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
@@ -232,7 +235,7 @@ export default class Navbar extends Component {
                     </Dropdown.Toggle>
                     <Dropdown.Menu alignRight>
                         <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2">My Advertisements</Dropdown.Item>
+                        <Link to={{ pathname: '/myAds' }} className="dropdown-item">My Advertisements</Link>
                         <Dropdown.Item href="#/action-3">My Buying Requests</Dropdown.Item>
                         <Link to={{ pathname: '/tradeRequests' }} className="dropdown-item">My Trade Requests</Link>
                         <Dropdown.Item href="#/action-3">Chat Bot</Dropdown.Item>

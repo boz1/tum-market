@@ -1,12 +1,21 @@
 import React, { Component } from 'react'
 import firebase, { storage } from '../../config/firebaseConfig';
 import Title from '../Title'
+import PropertyDropdown from './PropertyDropdown'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import Image from 'react-image-resizer';
 import Modal from 'react-bootstrap/Modal';
+import ConfirmationModal from '../ConfirmationModal'
 import history from '../../history'
+import { css } from '@emotion/core';
+import { RingLoader } from 'react-spinners';
+
+const override = css`
+    display: block;
+    margin: 0 auto;
+    border-color: red;
+`;
 
 export default class NewAdvertisement extends Component {
     constructor(props) {
@@ -20,16 +29,12 @@ export default class NewAdvertisement extends Component {
             description: '',
             image: null,
             trade: "On",
-            showModal: false
+            showModal: false,
+            loading: false
         }
 
-        this.handleMainCatChange = this.handleMainCatChange.bind(this)
-        this.handleSubCatChange = this.handleSubCatChange.bind(this)
-        this.handleTitleChange = this.handleTitleChange.bind(this)
-        this.handleConditionChange = this.handleConditionChange.bind(this)
-        this.handlePriceChange = this.handlePriceChange.bind(this)
-        this.handleTradeChange = this.handleTradeChange.bind(this)
-        this.handleDescriptionChange = this.handleDescriptionChange.bind(this)
+        this.handleDropChange = this.handleDropChange.bind(this)
+        this.handleChange = this.handleChange.bind(this)
         this.handleImageChange = this.handleImageChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
         this.showRequestModal = this.showRequestModal.bind(this)
@@ -37,54 +42,21 @@ export default class NewAdvertisement extends Component {
         this.getMainCatTitle = this.getMainCatTitle.bind(this)
     }
 
-
-    handleMainCatChange(event) {
-        const mainCat = parseInt(this.refs.mainCat.value)
-        this.setState({
-            mainCategory: mainCat
-        });
+    handleDropChange(item, target) {
+        if (target === 'mainCategory') {
+            this.setState({
+                [target]: item,
+                subCategory: 1
+            });
+        } else {
+            this.setState({
+                [target]: item
+            });
+        }
     }
 
-    handleSubCatChange(event) {
-        const subCat = parseInt(this.refs.subCat.value)
-        this.setState({
-            subCategory: subCat
-        });
-    }
-
-    handleConditionChange(event) {
-        const condition = parseInt(this.refs.cond.value)
-        this.setState({
-            condition: condition
-        });
-    }
-
-    handleTitleChange(event) {
-        const title = event.target.value
-        this.setState({
-            title: title
-        });
-    }
-
-    handlePriceChange(event) {
-        const price = event.target.value
-        this.setState({
-            price: price
-        });
-    }
-
-    handleTradeChange(event) {
-        const trade = event.target.value
-        this.setState({
-            trade: trade
-        });
-    }
-
-    handleDescriptionChange(event) {
-        const description = event.target.value
-        this.setState({
-            description: description
-        });
+    handleChange(e) {
+        this.setState({ [e.target.name]: e.target.value });
     }
 
     handleImageChange(event) {
@@ -108,8 +80,11 @@ export default class NewAdvertisement extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
+        this.setState({
+            loading: true,
+            showModal: false
+        })
 
-        // Get a key for a new Post.
         var newPostKey = firebase.database().ref('advertisements').child(this.props.user.info.id).push().key;
 
         // Get date
@@ -126,6 +101,7 @@ export default class NewAdvertisement extends Component {
 
         // Upload Image
         const { image } = this.state;
+        const imageTitle = this.state.image.name;
         let imageUrl;
         const uploadImage = storage.ref(`images/${this.props.user.info.id}/${newPostKey}/${image.name}`).put(image);
 
@@ -155,7 +131,8 @@ export default class NewAdvertisement extends Component {
                         mainCategoryId: this.state.mainCategory,
                         subCategoryId: this.state.subCategory,
                         conditionId: this.state.condition,
-                        date: date
+                        dateAdded: date,
+                        imageTitle: imageTitle
                     };
 
                     var updates = {};
@@ -180,60 +157,51 @@ export default class NewAdvertisement extends Component {
         this.setState({ showModal: false });
     }
 
+    goHome = () => {
+        history.push('/')
+    }
 
     render() {
-        let mainCategories = [];
-        let subCategories = [];
-        let conditions = [];
-
         let mainCatContainer, subCatContainer, conditionsContainer;
 
         if (this.props.categories.length > 0) {
-            mainCategories.push(<option key="empty" disabled value={''}>Choose...</option>)
-            this.props.categories.map((cat) => mainCategories.push(<option key={cat.id + cat.title} value={cat.id}>{cat.title}</option>))
-            mainCatContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleMainCatChange} ref="mainCat">
-                {mainCategories}
-            </Form.Control>
+            mainCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
         }
 
         if (this.props.subCategories.length > 0) {
             let id = this.state.mainCategory;
-            subCategories.push(<option key="empty" disabled value={''}>Choose...</option>)
-            if (this.state.mainCategory !== '') {
-                this.props.subCategories[id].map((cat) => subCategories.push(<option key={cat.id + cat.title} value={cat.id}>{cat.title}</option>))
+            if (id !== '') {
+                subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
             }
-            subCatContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleSubCatChange} ref="subCat">
-                {subCategories}
-            </Form.Control>
+            else {
+                subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
+            }
         }
 
         if (this.props.conditions.length > 0) {
-            conditions.push(<option key="empty" disabled value={''}>Choose...</option>)
-            this.props.conditions.map((con) => conditions.push(<option key={con.id + con.title} value={con.id}>{con.title}</option>))
-            conditionsContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleConditionChange} ref="cond">
-                {conditions}
-            </Form.Control>
+            conditionsContainer = <PropertyDropdown handleChange={this.handleDropChange} target="condition" items={this.props.conditions} title="Condition" />
         }
 
-        let modal = <Modal show={this.state.showModal} onHide={this.handleClose}>
-            <Modal.Header>
-                <Modal.Title className="text-title ">
-                    New Advertisement Confirmation
-            </Modal.Title>
-            </Modal.Header>
-            <Modal.Body style={{ fontSize: '18px' }}>
-                Are you sure to create this advertisement?
-              </Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={this.handleClose}>
-                    Close
-            </Button>
-                <Button variant="success" onClick={this.handleSubmit}>
-                    Confirm
-            </Button>
-            </Modal.Footer>
+        let loading = <Modal show={this.state.loading}>
+            <Modal.Body>
+                <RingLoader
+                    css={override}
+                    sizeUnit={"px"}
+                    size={100}
+                    color={'#006BD6'}
+                    loading={this.state.loading}
+                />
+            </Modal.Body>
         </Modal>
 
+        let isPremium = false;
+        if (this.props.user.info !== undefined) {
+            if (this.props.user.info.isPremium) {
+                isPremium = true;
+            }
+        }
+
+        let modal = <ConfirmationModal show={this.state.showModal} onHide={this.handleClose} title="New Advertisement" txt="Are you sure to create this advertisement?" onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
 
         return (
             <React.Fragment>
@@ -246,18 +214,9 @@ export default class NewAdvertisement extends Component {
                             <div className="col-md-9 pl-0">
                                 <div className="d-flex col-sm-12 p-0">
                                     <div className="col-sm-6 pl-0">
-                                        <Form.Group>
-                                            <Form.Label className="text-sub-title" style={{ fontSize: "16px" }} >Main Category</Form.Label>
-                                            {mainCatContainer}
-                                        </Form.Group>
-                                        <Form.Group >
-                                            <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Sub Category</Form.Label>
-                                            {subCatContainer}
-                                        </Form.Group>
-                                        <Form.Group>
-                                            <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Condition</Form.Label>
-                                            {conditionsContainer}
-                                        </Form.Group>
+                                        {mainCatContainer}
+                                        {subCatContainer}
+                                        {conditionsContainer}
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0 mr-2" style={{ fontSize: "16px" }}>
                                                 Image
@@ -270,7 +229,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Title
                                                  </Form.Label>
-                                            <Form.Control maxLength="40" required type="text" placeholder="Title" onChange={this.handleTitleChange} pattern="[a-zA-Z0-9\s]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain alphanumeric characters." />
+                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+." />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -282,7 +241,8 @@ export default class NewAdvertisement extends Component {
                                                         type="radio"
                                                         value="On"
                                                         checked={this.state.trade === "On"}
-                                                        onChange={this.handleTradeChange}
+                                                        onChange={this.handleChange}
+                                                        name="trade"
                                                     />
                                                     <span style={{ marginLeft: "5px" }}>On</span>
                                                 </label>
@@ -291,26 +251,25 @@ export default class NewAdvertisement extends Component {
                                                         type="radio"
                                                         value="Off"
                                                         checked={this.state.trade === "Off"}
-                                                        onChange={this.handleTradeChange}
+                                                        onChange={this.handleChange}
+                                                        name="trade"
                                                     />
                                                     <span style={{ marginLeft: "5px" }}>Off</span>
                                                 </label>
                                             </div>
-
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Price (€)
                                                  </Form.Label>
-                                            <Form.Control required type="number" placeholder="€" onChange={this.handlePriceChange} min={0} />
+                                            <Form.Control name="price" required type="number" placeholder="€" onChange={this.handleChange} min={0} step="0.01" />
                                         </Form.Group>
-
                                     </div>
                                 </div>
                                 <div className="mb-1">
                                     <Form.Group className="pl-0">
                                         <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 250 characters)</span></Form.Label>
-                                        <Form.Control required as="textarea" rows="3" onChange={this.handleDescriptionChange} maxLength="250" placeholder="Descibe your product..." />
+                                        <Form.Control name="description" required as="textarea" rows="3" onChange={this.handleChange} maxLength="250" placeholder="Descibe your product..." />
                                     </Form.Group>
                                 </div>
                             </div>
@@ -318,12 +277,16 @@ export default class NewAdvertisement extends Component {
                                 <div className="mb-2">
                                     <Form.Group className="pl-0">
                                         <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Preview</Form.Label>
-                                        <Card style={{ width: 'auto', height: 'fit-content' }}>
-                                            <Image
-                                                src={'http://via.placeholder.com/400x300'}
-                                                height={150}
-                                                width="auto"
-                                            />
+                                        <Card style={{ width: 'auto', height: 'fit-content' }} className={isPremium ? "premium" : ""}>
+                                            <div className="m-auto">
+                                                <img
+                                                    src={'http://via.placeholder.com/200x150'}
+                                                    style={{
+                                                        height: "auto", width: "auto", marginTop: "12px"
+                                                    }}
+                                                    alt="Product"
+                                                />
+                                            </div>
                                             <Card.Body className="p-2">
                                                 <hr></hr>
                                                 <Card.Title className="text-ad-title">{this.state.title}</Card.Title>
@@ -338,7 +301,10 @@ export default class NewAdvertisement extends Component {
                                     </Form.Group>
                                 </div>
                                 <div>
-                                    <Button variant="primary" type="submit">
+                                    <Button variant="danger" onClick={this.goHome}>
+                                        Cancel
+                                        </Button>
+                                    <Button variant="primary" type="submit" className="float-right">
                                         Complete
                                         </Button>
                                 </div>
@@ -346,6 +312,7 @@ export default class NewAdvertisement extends Component {
                         </div>
                     </Form>
                     {modal}
+                    {loading}
                 </div>
             </React.Fragment>
         )

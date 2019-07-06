@@ -13,11 +13,10 @@
     "react": "^16.8.6",
     "react-bootstrap": "^1.0.0-beta.9",
     "react-dom": "^16.8.6",
-    "react-grid-system": "^4.4.6",
-    "react-image-resizer": "^1.3.0",
+    "react-paginate": "^6.3.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
-    "reactstrap": "^8.0.0"
+    "react-spinners": "^0.5.4"
   },
   "scripts": {
     "start": "react-scripts start",

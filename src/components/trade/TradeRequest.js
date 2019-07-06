@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import firebase from '../../config/firebaseConfig';
 import Card from 'react-bootstrap/Card';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import ConfirmationModal from '../ConfirmationModal' 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -115,7 +114,6 @@ export default class TradeRequest extends Component {
             showDeleteModal: false
         });
 
-        // Get a key for a new Post.
         var newPostKey = firebase.database().ref('notifications').child(this.props.item.sellerId).push().key;
 
         const notification = {
@@ -124,13 +122,12 @@ export default class TradeRequest extends Component {
             isRead: false
         };
 
-        // Get a key for a new Post.
         var updates = {};
         updates['/notifications/' + this.props.item.sellerId + '/' + newPostKey] = notification;
         firebase.database().ref().update(updates);
 
-        this.removeTradeReqRef = firebase.database().ref('trade-requests').child(this.props.item.userId).child(this.props.item.id).remove();
-        this.removeReceivedOffRef = firebase.database().ref('received-offers').child(this.props.item.sellerId).child(this.props.item.id).remove();
+        firebase.database().ref('trade-requests').child(this.props.item.userId).child(this.props.item.id).remove();
+        firebase.database().ref('received-offers').child(this.props.item.sellerId).child(this.props.item.id).remove();
     }
 
     showStatusModal(e) {
@@ -178,33 +175,10 @@ export default class TradeRequest extends Component {
             statusAction = "reject"
         }
 
-        statusUpdateModal = <Modal show={this.state.showStatusModal} onHide={this.handleClose}>
-            <Modal.Body style={{ fontSize: '16px' }}>
-                Do you want to <strong>{statusAction}</strong> this offer?
-                  </Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={this.handleClose}>
-                    Close
-                </Button>
-                <Button variant="success" onClick={this.handleSubmit} value={this.state.statusAction}>
-                    Confirm
-                </Button>
-            </Modal.Footer>
-        </Modal>
+        const updateTxt = <span>Do you want to <strong>{statusAction}</strong> this offer?</span>
+        statusUpdateModal = <ConfirmationModal show={this.state.showStatusModal} onHide={this.handleClose} title="Status Update" txt={updateTxt} onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
 
-        deleteModal = <Modal show={this.state.showDeleteModal} onHide={this.handleClose}>
-            <Modal.Body style={{ fontSize: '16px' }}>
-                Do you want to delete this request?
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={this.handleDeleteClose}>
-                    Close
-                </Button>
-                <Button variant="success" onClick={this.handleDeleteSubmit}>
-                    Confirm
-                </Button>
-            </Modal.Footer>
-        </Modal>
+        deleteModal = <ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Request" txt="Do you want to delete this request?" onClickClose={this.handleDeleteClose} onClickConfirm={this.handleDeleteSubmit} />
 
         if (this.state.status === "Accepted") {
             receivedStatus =
@@ -239,10 +213,16 @@ export default class TradeRequest extends Component {
                 </Card.Header>
                 <Card.Body style={{ background: "#FFE7DF" }}>
                     <Card.Text>
-                        You Receive: <strong>{this.state.receivedItem.title} - ID {this.state.receivedItem.id}</strong>
+                        Receive Item: <strong>{this.state.receivedItem.title}</strong>
                     </Card.Text>
                     <Card.Text>
-                        You Send: <strong>{this.state.sentItem.title}  - ID {this.state.sentItem.id}</strong>
+                        Received Item Id: <strong>{this.state.receivedItem.id}</strong>
+                    </Card.Text>
+                    <Card.Text>
+                        Sent Item: <strong>{this.state.sentItem.title}</strong>
+                    </Card.Text>
+                    <Card.Text>
+                        Sent Item Id: <strong>{this.state.sentItem.id}</strong>
                     </Card.Text>
                     <Card.Text>
                         From: <strong>{this.state.otherParty.name} - {this.state.otherParty.email}</strong>
@@ -265,10 +245,16 @@ export default class TradeRequest extends Component {
                 </Card.Header>
                 <Card.Body style={{ background: "#DBEDEC" }}>
                     <Card.Text>
-                        You Receive: <strong>{this.state.receivedItem.title} - ID {this.state.receivedItem.id}</strong>
+                        Received Item: <strong>{this.state.receivedItem.title}</strong>
                     </Card.Text>
                     <Card.Text>
-                        You Send: <strong>{this.state.sentItem.title}  - ID {this.state.sentItem.id}</strong>
+                        Received Item Id: <strong>{this.state.receivedItem.id}</strong>
+                    </Card.Text>
+                    <Card.Text>
+                        Sent Item: <strong>{this.state.sentItem.title}</strong>
+                    </Card.Text>
+                    <Card.Text>
+                        Sent Item Id: <strong>{this.state.sentItem.id}</strong>
                     </Card.Text>
                     <Card.Text>
                         To: <strong>{this.state.otherParty.name} - {this.state.otherParty.email}</strong>
