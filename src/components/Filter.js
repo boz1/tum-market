@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { Container, Row, Col } from 'reactstrap';
 
 export default class Filter extends Component {
     constructor(props) {
@@ -15,26 +16,110 @@ export default class Filter extends Component {
             subCategory: '',
             condition: '',
             title: '',
-            price: 0,
+            minPrice: 0,
+            maxPrice: 0,
             trade: "On",
         }
+
+        this.handleMainCatChange = this.handleMainCatChange.bind(this)
+        this.handleSubCatChange = this.handleSubCatChange.bind(this)
+        this.handleTitleChange = this.handleTitleChange.bind(this)
+        this.handleConditionChange = this.handleConditionChange.bind(this)
+        this.handleMinPriceChange = this.handleMinPriceChange.bind(this)
+        this.handleMaxPriceChange = this.handleMaxPriceChange.bind(this)
+        this.handleTradeChange = this.handleTradeChange.bind(this)
+        this.handleCancel = this.handleCancel.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
     componentDidMount() {
-      }
+    }
 
+    handleMainCatChange(event) {
+        const mainCat = parseInt(this.refs.mainCat.value)
+        this.setState({
+            mainCategory: mainCat
+        });
+    }
 
+    handleSubCatChange(event) {
+        const subCat = parseInt(this.refs.subCat.value)
+        this.setState({
+            subCategory: subCat
+        });
+    }
+
+    handleConditionChange(event) {
+        const condition = parseInt(this.refs.cond.value)
+        this.setState({
+            condition: condition
+        });
+    }
+
+    handleTitleChange(event) {
+        const title = event.target.value
+        this.setState({
+            title: title
+        });
+    }
+
+    handleMinPriceChange(event) {
+        const price = event.target.value
+        this.setState({
+            minPrice: price
+        });
+    }
+    handleMaxPriceChange(event) {
+        const price = event.target.value
+        this.setState({
+            maxPrice: price
+        });
+    }
+
+    handleTradeChange(event) {
+        const trade = event.target.value
+        this.setState({
+            trade: trade
+        });
+    }
+
+    handleCancel() {
+        //this.setState({ showModal: false });
+    }
+
+    handleSubmit(event){
+
+    }
     render() { 
 
         let mainCategories = [];
         let subCategories = [];
         let conditions = [];
 
-        let mainCatContainer, adsubCatContainer, conditionsContainer;
+        let mainCatContainer, subCatContainer, conditionsContainer;
         if (this.props.categories.length > 0) {
             mainCategories.push(<option key="empty" disabled value={''}>Choose...</option>)
             this.props.categories.map((cat) => mainCategories.push(<option key={cat.id + cat.title} value={cat.id}>{cat.title}</option>))
             mainCatContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleMainCatChange} ref="mainCat">
                 {mainCategories}
+            </Form.Control>
+        }
+
+        if (this.props.subCategories.length > 0) {
+            let id = this.state.mainCategory;
+            subCategories.push(<option key="empty" disabled value={''}>Choose...</option>)
+            if (this.state.mainCategory !== '') {
+                this.props.subCategories[id].map((cat) => subCategories.push(<option key={cat.id + cat.title} value={cat.id}>{cat.title}</option>))
+            }
+            subCatContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleSubCatChange} ref="subCat">
+                {subCategories}
+            </Form.Control>
+        }
+
+        if (this.props.conditions.length > 0) {
+            conditions.push(<option key="empty" disabled value={''}>Choose...</option>)
+            this.props.conditions.map((con) => conditions.push(<option key={con.id + con.title} value={con.id}>{con.title}</option>))
+            conditionsContainer = <Form.Control required as="select" defaultValue={''} onChange={this.handleConditionChange} ref="cond">
+                {conditions}
             </Form.Control>
         }
 
@@ -48,59 +133,76 @@ export default class Filter extends Component {
                         <div className="container" style={{width:'300px'}}>
                             <Form>
                                 <Form.Group controlId="exampleForm.ControlSelect1">
-                                    <Form.Label>Main Category</Form.Label>
+                                    <Form.Label className="text-primary" style={{ fontSize: "18px" }}>
+                                        Category
+                                    </Form.Label>
+                                    {mainCatContainer}
                                 </Form.Group>
                                 <Form.Group controlId="exampleForm.ControlSelect2">
-                                    <Form.Label>Sub Category</Form.Label>
-                                    <Form.Control as="select">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    </Form.Control>
+                                     <Form.Label className="text-primary" style={{ fontSize: "18px" }}>
+                                        Sub Category
+                                    </Form.Label>
+                                    {subCatContainer}
                                 </Form.Group>
                                 <Dropdown.Divider />
 
                                 
                                 <Form.Group controlId="exampleForm.ControlSelect3">
-                                    <Form.Label>Details</Form.Label>
-                                    <div className="form-group row">
-                                        <label for="inputEmail3" className="col-sm-2 col-form-label">Title</label>
-                                        <div className="col-sm-10">
-                                            <input type="title" className="form-control" id="inputEmail3" placeholder="Title"/>
-                                        </div>
-                                    </div>
-                                  
-                                    
-                                    <div class="form-row">
-                                        
-                                        <div class="col">
-                                            <input type="number" placeholder="minPrice" min="0" max="100000000" step="1"/>     
-                                        </div>
-                                        <div class="col">
-                                            <input type="number" placeholder="maxPrice" min="0" max="100000000" step="1"/>     
-                                        </div>
-                                    </div>
+                                    <Form.Label className="text-primary" style={{ fontSize: "20px" }}>
+                                        Details
+                                    </Form.Label>
 
-                                </Form.Group>
-                                <Form.Group controlId="condition">
-                                    <Form.Label>Condition</Form.Label>
-                                    <Form.Control as="select">
-                                    <option>As new</option>
-                                    <option>Mint</option>
-                                    </Form.Control>
-                                </Form.Group>
-                                <Form.Group controlId="Trade">
-                                    <Form.Label>Trade</Form.Label>
-                                    <div className="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" id="customRadioInline1" name="customRadioInline1" className="custom-control-input"/>
-                                        <label className="custom-control-label" for="customRadioInline1">Yes</label>
-                                    </div>
-                                    <div className="custom-control custom-radio custom-control-inline">
-                                        <input type="radio" id="customRadioInline2" name="customRadioInline1" className="custom-control-input"/>
-                                        <label className="custom-control-label" for="customRadioInline2">No</label>
-                                    </div>
-                                </Form.Group>
+                                    <Form.Group as={Row} controlId="formPlaintextPassword">
+                                        <Form.Label column sm="2" style={{ fontSize: "18px" }}>
+                                                Title
+                                         </Form.Label>
+                                        <Col sm="10">
+                                            <Form.Control maxLength="40" required type="text" placeholder="Title" onChange={this.handleTitleChange} pattern="[a-zA-Z0-9\s]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain alphanumeric characters." />
+                                        </Col>
+                                    </Form.Group>
+                               
+
+                                    <Form.Group as={Row} controlId="formPlaintextEmail">
+                                        <Form.Label column sm="4" style={{ fontSize: "18px" }}>
+                                            Price (€) 
+                                        </Form.Label>
+                                        <Col sm="2">
+                                            <div class="form-row">
+                                                <div class="col">
+                                                    <input type="number" placeholder="min" min="0" max="100000000" step="1"/>     
+                                                </div>
+                                                <div class="col">
+                                                    <input type="number" placeholder="max" min="0" max="100000000" step="1"/>     
+                                                </div>
+                                            </div>    
+                                        </Col>
+                                    </Form.Group>
                                 
+
+                                    <Form.Group controlId="condition">
+                                        <Form.Label style={{ fontSize: "18px" }}>
+                                            Condition
+                                        </Form.Label>
+                                        {conditionsContainer}
+                                    </Form.Group>
+                                    
+                                    <Form.Group controlId="Trade">
+                                        <Form.Label style={{ fontSize: "18px" }}>
+                                            Open for Trade
+                                        </Form.Label>
+                                        <div>
+                                        <div className="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="customRadioInline1" name="customRadioInline1" className="custom-control-input"/>
+                                            <label className="custom-control-label" for="customRadioInline1">Yes</label>
+                                        </div>
+                                        <div className="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" id="customRadioInline2" name="customRadioInline1" className="custom-control-input"/>
+                                            <label className="custom-control-label" for="customRadioInline2">No</label>
+                                        </div>
+                                        </div>
+                                    </Form.Group>
+                                </Form.Group>
+
                                 <div class="form-row">
                                     <div class="col">
                                         <Button variant="danger">Cancel</Button>
