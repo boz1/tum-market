@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Title from '../Title'
-import PropertyDropdown from './PropertyDropdown'
+import PropertyDropdown from '../PropertyDropdown'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
