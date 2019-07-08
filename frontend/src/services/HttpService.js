@@ -1,8 +1,4 @@
-"use strict";
-
 export default class HttpService {
-    constructor() {
-    }
 
     static apiURL() { return "http://localhost:9000"; }
 
@@ -60,51 +56,35 @@ export default class HttpService {
             headers: header,
             body: JSON.stringify(data)
         }).then((resp) => {
-            console.log('asddsadsadas')
-            console.log(resp)
-            return (resp)
-            // if(this.checkIfUnauthorized(resp)) {
-            //     window.location = "/#login";
-            //     return;
-            // }
-            // else {
-            //     return resp.json();
-            // }
-        })
-            .catch((e) => {
+            return resp.json();
+        }).then((resp) => {
+            if (resp.error) {
+                onError(resp.error);
+            }
+            else {
+                onSuccess(resp);
+            }
+        }).catch((e) => {
+            onError(e.message);
+        });
+    }
+
+    static remove(url, onSuccess, onError) {
+
+        fetch(url, {
+            method: 'DELETE'
+        }).then((resp) => { return resp.json() })
+            .then((resp) => {
+                if (resp.error) {
+                    onError(resp.error);
+                }
+                else {
+                    onSuccess(resp)
+                }
+            }).catch((e) => {
                 onError(e.message);
             });
     }
-
-    // static remove(url, onSuccess, onError) {
-    //     let token = window.localStorage['jwtToken'];
-    //     let header = new Headers();
-    //     if(token) {
-    //         header.append('Authorization', `JWT ${token}`);
-    //     }
-
-    //     fetch(url, {
-    //         method: 'DELETE',
-    //         headers: header
-    //     }).then((resp) => {
-    //         if(this.checkIfUnauthorized(resp)) {
-    //             window.location = "/#login";
-    //             return;
-    //         }
-    //         else {
-    //             return resp.json();
-    //         }
-    //     }).then((resp) => {
-    //         if(resp.error) {
-    //             onError(resp.error);
-    //         }
-    //         else {
-    //             onSuccess(resp)
-    //         }
-    //     }).catch((e) => {
-    //         onError(e.message);
-    //     });
-    // }
 
     // static checkIfUnauthorized(res) {
     //     if(res.status == 401) {

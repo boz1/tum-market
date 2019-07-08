@@ -1,26 +1,11 @@
 "use strict";
 
-const firebase = require('firebase')
-
-var firebaseConfig = {
-  apiKey: "AIzaSyCpc6o1X4c_vIxMafO2QE29aBDM4w-UPio",
-  authDomain: "tum-market.firebaseapp.com",
-  databaseURL: "https://tum-market.firebaseio.com",
-  projectId: "tum-market",
-  storageBucket: "tum-market.appspot.com",
-  messagingSenderId: "1018647233485",
-  appId: "1:1018647233485:web:ee411c8fc9da26f3"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-// const storage = firebase.storage();
+const firebase = require('../firebaseConfig')
 
 const getMainContent = (req, res) => {
   let categoriesRef, subCategoriesRef, conditionsRef, adsRef, usersRef;
   let obj = {};
-  // Add an object and resolve that
+
   new Promise((resolve) => {
     categoriesRef = firebase.database().ref('categories')
     categoriesRef.on('value', snap => {
@@ -101,7 +86,6 @@ const getUserContent = (req, res) => {
   let userRef, userAdsRef, userBuyReqRef, userTradeReqRefSent, userTradeReqRefReceived;
   let obj = {};
 
-  // Add an object and resolve that
   new Promise((resolve) => {
     userRef = firebase.database().ref('users').child(id)
     userRef.on('value', snap => {

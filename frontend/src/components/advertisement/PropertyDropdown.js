@@ -18,7 +18,12 @@ export default class PropertyDropdown extends Component {
         let options = [];
 
         options.push(<option key="empty" disabled value={''}>Choose...</option>)
-        this.props.items.map((item) => options.push(<option key={item.id + item.title} value={item.id}>{item.title}</option>))
+        
+        this.props.items.map((item) => {
+            if(item !== null){
+                options.push(<option key={item.id + item.title} value={item.id}>{item.title}</option>)
+            }
+        })
 
         return (
             <div>

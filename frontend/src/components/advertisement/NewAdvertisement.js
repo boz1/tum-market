@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import firebase, { storage } from '../../config/firebaseConfig';
 import Title from '../Title'
 import PropertyDropdown from './PropertyDropdown'
 import Form from 'react-bootstrap/Form';
@@ -10,6 +9,7 @@ import ConfirmationModal from '../ConfirmationModal'
 import history from '../../history'
 import { css } from '@emotion/core';
 import { RingLoader } from 'react-spinners';
+import AdService from '../../services/AdService'
 
 const override = css`
     display: block;
@@ -70,12 +70,24 @@ export default class NewAdvertisement extends Component {
         let title;
         if (Object.getOwnPropertyNames(this.props.categories).length !== 0) {
             this.props.categories.forEach(element => {
-                if (element.id === this.state.mainCategory) {
-                    title = element.title
+                if (element !== null) {
+                    if (element.id === this.state.mainCategory) {
+                        title = element.title
+                    }
                 }
             });
         }
         return title;
+    }
+
+    createAd(key, id, ad, image) {
+        AdService.createAd(key, id, ad, image).then((msg) => {
+            console.log(msg)
+            this.props.reRender()
+            history.push('/')
+        }).catch((e) => {
+            console.log(e);
+        });
     }
 
     handleSubmit(event) {
@@ -85,11 +97,10 @@ export default class NewAdvertisement extends Component {
             showModal: false
         })
 
-        var newPostKey = firebase.database().ref('advertisements').child(this.props.user.info.id).push().key;
-
         // Get date
         var today = new Date(),
             date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
 
         let trade;
 
@@ -99,49 +110,29 @@ export default class NewAdvertisement extends Component {
             trade = false
         }
 
-        // Upload Image
-        const { image } = this.state;
         const imageTitle = this.state.image.name;
-        let imageUrl;
-        const uploadImage = storage.ref(`images/${this.props.user.info.id}/${newPostKey}/${image.name}`).put(image);
 
-        uploadImage.on('state_changed',
-            (snapshot) => {
-                // progrss function ....
-                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                console.log("progress " + progress)
-            },
-            (error) => {
-                // error function ....
-                console.log("error " + error);
-            },
-            () => {
-                // complete function ....
-                storage.ref(`images/${this.props.user.info.id}/${newPostKey}/${image.name}`).getDownloadURL().then(url => {
-                    imageUrl = url;
-                    // // Insert to databse
-                    const ad = {
-                        title: this.state.title,
-                        price: this.state.price,
-                        trade: trade,
-                        userId: this.props.user.info.id,
-                        id: newPostKey,
-                        image: imageUrl,
-                        description: this.state.description,
-                        mainCategoryId: this.state.mainCategory,
-                        subCategoryId: this.state.subCategory,
-                        conditionId: this.state.condition,
-                        dateAdded: date,
-                        imageTitle: imageTitle
-                    };
-
-                    var updates = {};
-                    updates['/advertisements/' + this.props.user.info.id + '/' + newPostKey] = ad;
-
-                    firebase.database().ref().update(updates);
-
-                    history.push('/')
-                })
+        AdService.getKey(this.props.user.info.id).then((data) => {
+            return data.obj;
+        })
+            .then((key) => {
+                const ad = {
+                    title: this.state.title,
+                    price: this.state.price,
+                    trade: trade,
+                    userId: this.props.user.info.id,
+                    id: key,
+                    description: this.state.description,
+                    mainCategoryId: this.state.mainCategory,
+                    subCategoryId: this.state.subCategory,
+                    conditionId: this.state.condition,
+                    dateAdded: date,
+                    imageTitle: imageTitle
+                };
+                this.createAd(key, this.props.user.info.id, ad, this.state.image)
+            })
+            .catch((e) => {
+                console.log(e);
             });
     }
 

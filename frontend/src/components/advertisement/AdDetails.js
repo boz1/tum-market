@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import firebase, {storage} from '../../config/firebaseConfig';
 import Title from '../Title'
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
@@ -11,6 +10,8 @@ import Modal from 'react-bootstrap/Modal';
 import { css } from '@emotion/core';
 import { RingLoader } from 'react-spinners';
 import ConfirmationModal from '../ConfirmationModal'
+import AdService from '../../services/AdService'
+import TradeService from '../../services/TradeService'
 
 const override = css`
     display: block;
@@ -62,57 +63,22 @@ export default class AdDetails extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
+        const resetHome = this.props.location
         const ad = this.props.location.state.ad;
         const user = this.props.location.state.user;
         const itemId = this.state.offeredItem.split('&')[1];
 
-        // Get a key for a new Post.
-        var newPostKey = firebase.database().ref('trade-requests').child(user.info.id).push().key;
+        TradeService.sendTradeReq(ad, user, itemId).then((msg) => {
+            this.setState({
+                isOfferSubmitted: true,
+                showAlert: true,
+                showModal: false
+            })
 
-        // Get date
-        var today = new Date(),
-            date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-
-        const postDataBuyer = {
-            offeredItemId: itemId,
-            sellerId: ad.userId,
-            targetItemId: ad.id,
-            userId: user.info.id,
-            id: newPostKey,
-            status: '-',
-            date: date
-        };
-
-        const postDataSeller = {
-            receivedItemId: itemId,
-            userId: ad.userId,
-            sentItemId: ad.id,
-            buyerId: user.info.id,
-            id: newPostKey,
-            status: '-',
-            date: date
-        };
-
-        const notification = {
-            id: newPostKey,
-            message: "You have a new trade request from " + user.info.name + " for your " + ad.title + ".",
-            isRead: false
-        };
-
-        var updates = {};
-        updates['/trade-requests/' + user.info.id + '/' + newPostKey] = postDataBuyer;
-        updates['/received-offers/' + ad.userId + '/' + newPostKey] = postDataSeller;
-        updates['/notifications/' + ad.userId + '/' + newPostKey] = notification;
-
-        firebase.database().ref().update(updates);
-
-        this.setState({
-            isOfferSubmitted: true,
-            showAlert: true,
-            showModal: false
-        })
-
-        this.props.location.func()
+            resetHome.func()
+        }).catch((e) => {
+            console.log(e);
+        });
     }
 
     showRequestModal(e) {
@@ -131,90 +97,32 @@ export default class AdDetails extends Component {
 
         const ad = this.props.location.state.ad;
 
-        this.checkAdSentReq(ad).then(reqs => {
-            reqs.forEach((req) => {
-                firebase.database().ref('trade-requests').child(ad.userId).child(req.id).remove()
-                firebase.database().ref('received-offers').child(req.sellerId).child(req.id).remove()
+        this.deleteSentReq(ad)
+        this.deleteReceivedReq(ad)
+        this.deleteAd(ad)
+    }
 
-                var newPostKey = firebase.database().ref('notifications').child(req.sellerId).push().key;
-
-                const notification = {
-                    id: newPostKey,
-                    message: ad.user.name + " has deleted their " + ad.title + " advertisement. The trade offer sent to you is also deleted.",
-                    isRead: false
-                };
-
-                var updates = {};
-                updates['/notifications/' + req.sellerId + '/' + newPostKey] = notification;
-                firebase.database().ref().update(updates);
-            })
-        }).catch(er => {
-            console.log(er)
-        })
-
-        this.checkAdReceivedReq(ad).then(reqs => {
-            reqs.forEach((req) => {
-                firebase.database().ref('received-offers').child(ad.userId).child(req.id).remove()
-                firebase.database().ref('trade-requests').child(req.buyerId).child(req.id).remove()
-
-                var newPostKey = firebase.database().ref('notifications').child(req.buyerId).push().key;
-
-                const notification = {
-                    id: newPostKey,
-                    message: ad.user.name + " has deleted their " + ad.title + " advertisement. The trade offer you sent is also deleted.",
-                    isRead: false
-                };
-
-                var updates = {};
-                updates['/notifications/' + req.buyerId + '/' + newPostKey] = notification;
-                firebase.database().ref().update(updates);
-            })
-        }).catch(er => {
-            console.log(er)
-        })
-
-        firebase.database().ref('advertisements').child(ad.userId).child(ad.id).remove();
-
-        const deleteImageRef = storage.ref(`images/${ad.userId}/${ad.id}/${ad.imageTitle}`)
-        
-        // Delete the file
-        deleteImageRef.delete().then(function () {
+    deleteAd = (ad) => {
+        AdService.deleteAd(ad).then((msg) => {
+            this.props.location.func()
             history.push('/')
-        }).catch(function (error) {
-            console.log(error)
+        }).catch((e) => {
+            console.log(e);
         });
     }
 
-    checkAdSentReq = (ad) => {
-        return new Promise(function (res, rej) {
-            const checkTradeReqRef = firebase.database().ref('trade-requests').child(ad.userId).orderByChild("offeredItemId").equalTo(ad.id)
-            checkTradeReqRef.once('value').then(snap => {
-                if (snap.val() !== null) {
-                    const reqs = Object.values(snap.val())
-                    res(reqs);
-                } else {
-                    res([]);
-                }
-            }).catch(er => {
-                rej(er)
-            })
-        })
+    deleteSentReq = (ad) => {
+        TradeService.deleteSentReq(ad).then((msg) => {
+        }).catch((e) => {
+            console.log(e);
+        });
     }
 
-    checkAdReceivedReq = (ad) => {
-        return new Promise(function (res, rej) {
-            const checkReceivedReqRef = firebase.database().ref('received-offers').child(ad.userId).orderByChild("sentItemId").equalTo(ad.id)
-            checkReceivedReqRef.once('value').then(snap => {
-                if (snap.val() !== null) {
-                    const reqs = Object.values(snap.val())
-                    res(reqs);
-                } else {
-                    res([]);
-                }
-            }).catch(er => {
-                rej(er)
-            })
-        })
+    deleteReceivedReq = (ad) => {
+        TradeService.deleteReceivedReq(ad).then((msg) => {
+        }).catch((e) => {
+            console.log(e);
+        });
     }
 
     showDeleteModal = (e) => {
@@ -261,7 +169,7 @@ export default class AdDetails extends Component {
         const adOwner = ad.user;
         const user = this.props.location.state.user;
         let actionField;
-        
+
         let loading = <Modal show={this.state.loading}>
             <Modal.Body>
                 <RingLoader
@@ -286,7 +194,7 @@ export default class AdDetails extends Component {
 
         const delTxt = <span>Deleting this advertisement will also <strong>delete any trade request this item has been used</strong>. Are you sure to delete this advertisement?</span>
         const deleteModal = <span><ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Advertisement" txt={delTxt} onClickClose={this.handleClose} onClickConfirm={this.handleDelete} />
-        {loading}</span>
+            {loading}</span>
 
         const editModal = <Edit show={this.state.showEditModal} close={this.handleClose} user={this.props.location.state.user} ad={this.props.location.state.ad} categories={this.props.location.state.categories} subCategories={this.props.location.state.subCategories} conditions={this.props.location.state.conditions} />
         const editAlert = <Alert show={!this.state.isEditable} variant={"danger"} style={{ marginTop: "10px" }} >
