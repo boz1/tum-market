@@ -1,21 +1,26 @@
 import React, { Component } from 'react'
-import Advertisment from './Advertisement'
+import { Link } from 'react-router-dom'
+import BuyingRequest from './BuyingRequest'
 import Title from '../Title'
 import CardDeck from 'react-bootstrap/CardDeck';
 import Colbar from '../Colbar'
 import Dropdown from 'react-bootstrap/Dropdown';
 import ReactPaginate from 'react-paginate';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
 
-export default class AdvertisementList extends Component {
+export default class BuyList extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: this.props.adsList,
+            data: this.props.buyingRequests,
             user: this.props.user,
             itemPerPage: 6,
             currentPage: 0,
-            pageCount: Math.ceil(this.props.adsList.length / 6),
-            sort: ''
+            pageCount: Math.ceil(this.props.buyingRequests.length / 6),
+            sort: '',
+            showNewModal: false
         }
 
         this.sortAZ = this.sortAZ.bind(this)
@@ -29,7 +34,7 @@ export default class AdvertisementList extends Component {
     }
 
     componentWillReceiveProps() {
-        this.setState({ data: this.props.adsList, pageCount: Math.ceil(this.props.adsList.length / this.state.itemPerPage), user: this.props.user })
+        this.setState({ data: this.props.buyingRequests, pageCount: Math.ceil(this.props.buyingRequests.length / this.state.itemPerPage), user: this.props.user })
     }
 
     dynamicSort(property) {
@@ -93,7 +98,15 @@ export default class AdvertisementList extends Component {
             });
         }
 
-        return pageData.map((ad) => <Advertisment key={ad.id} ad={ad} reRender={this.props.reRender} user={this.state.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />)
+        return pageData.map((buy) => <BuyingRequest key={buy.id} buyingRequest={buy} reRender={this.props.reRender} user={this.state.user} categories={this.props.categories} subCategories={this.props.subCategories}/>)
+    }
+
+    showNewModal = () => {
+        this.setState({showNewModal:true})
+    }
+
+    handleClose = () => {
+        this.setState({ showNewModal: false });
     }
 
     render() {
@@ -108,6 +121,7 @@ export default class AdvertisementList extends Component {
                             <Title title={this.props.title} />
                             <div className="row mt-2 ml-auto">
                                 <div className="col-12">
+                                    <Button type="submit" onClick={this.showNewModal} >New Request</Button>
                                     <span style={{ fontSize: "16px", paddingTop: "7px", color: "#2A2525" }}>{this.state.sort}</span>
                                     <Dropdown style={{ background: "#3482D1", borderRadius: "0.25rem", marginLeft: "20px" }}>
                                         <Dropdown.Toggle variant="info" id="dropdown-basic">Sort By</Dropdown.Toggle>
@@ -126,7 +140,7 @@ export default class AdvertisementList extends Component {
                         </form>
                         <hr className="my-2"></hr>
                         <CardDeck className="mb-5 row">
-                            {this.state.data.length > 0 ? this.getData() : <div style={{ textAlign: 'center', fontSize: "16px", margin: "auto" }}>No Advertisements found.</div>}
+                            {this.state.data.length > 0 ? this.getData() : <div style={{ textAlign: 'center', fontSize: "16px", margin: "auto" }}>No Buying Requests found.</div>}
                         </CardDeck>
                         {this.state.data.length > 0 ?
                             <div className="my-2" style={{ background: "#D0E4F7" }}>

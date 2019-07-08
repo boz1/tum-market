@@ -3,7 +3,7 @@
 const firebase = require('../firebaseConfig')
 
 const getMainContent = (req, res) => {
-  let categoriesRef, subCategoriesRef, conditionsRef, adsRef, usersRef;
+  let categoriesRef, subCategoriesRef, conditionsRef, adsRef, usersRef, buyRef;
   let obj = {};
 
   new Promise((resolve) => {
@@ -43,6 +43,17 @@ const getMainContent = (req, res) => {
         adsRef.on('value', snap => {
           let data = obj;
           data.ads = snap.val()
+          obj = data;
+          resolve(obj)
+        })
+      })
+    })
+    .then((obj) => {
+      return new Promise((resolve) => {
+        buyRef = firebase.database().ref('buying-requests')
+        buyRef.on('value', snap => {
+          let data = obj;
+          data.buyreqs = snap.val()
           obj = data;
           resolve(obj)
         })
@@ -112,7 +123,7 @@ const getUserContent = (req, res) => {
         userBuyReqRef = firebase.database().ref('buying-requests').child(id)
         userBuyReqRef.on('value', snap => {
           let data = obj;
-          data.buyReq = snap.val()
+          data.buyreqs = snap.val()
           obj = data;
           resolve(obj)
         })

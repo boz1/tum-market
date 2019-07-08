@@ -6,7 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import history from '../../history'
 import { css } from '@emotion/core';
 import { RingLoader } from 'react-spinners';
-import AdService from '../../services/AdService'
+import BuyingRequestService from '../../services/BuyingRequestService'
 
 
 const override = css`
@@ -21,18 +21,14 @@ export default class Edit extends Component {
         this.state = {
             mainCategory: '',
             subCategory: '',
-            condition: '',
             title: '',
             price: '',
             description: '',
-            image: '',
-            trade: "On",
             loading: false
         }
 
         this.handleDropChange = this.handleDropChange.bind(this)
         this.handleChange = this.handleChange.bind(this)
-        this.handleImageChange = this.handleImageChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
@@ -53,18 +49,11 @@ export default class Edit extends Component {
         this.setState({ [e.target.name]: e.target.value });
     }
 
-    handleImageChange(event) {
-        if (event.target.files[0]) {
-            const image = event.target.files[0];
-            this.setState(() => ({ image }));
-        }
-    }
-
     getValue = (item) => {
-        const ad = this.props.ad;
+        const buy = this.props.buyingRequest;
 
         if (this.state[item] === "") {
-            item = ad[item];
+            item = buy[item];
         }
         else {
             item = this.state[item]
@@ -72,10 +61,10 @@ export default class Edit extends Component {
         return item;
     }
 
-    updateAd(id, ad, image) {
-        AdService.updateAd(id, ad, image).then((msg) => {
+    updateBuyingRequest(id, buy) {
+        BuyingRequestService.updateBuyingRequest(id, buy).then((msg) => {
             this.props.reRender()
-            history.push('/')
+            history.push('/myBuy')
         }).catch((e) => {
             console.log(e);
         });
@@ -89,7 +78,7 @@ export default class Edit extends Component {
 
         let price, title, desc;
 
-        const ad = this.props.ad;
+        const buyingRequest = this.props.buyingRequest;
         const userId = this.props.user.info.id;
 
         price = this.getValue("price");
@@ -100,54 +89,24 @@ export default class Edit extends Component {
         var today = new Date(),
             date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-        let trade;
-
-        if (this.state.trade === "On") {
-            trade = true
-        } else {
-            trade = false
-        }
-
-        let update;
-
-        if (this.state.image !== "") {
-            update = {
+        const update = {
                 title: title,
-                userId: ad.userId,
-                id: ad.id,
+                userId: buyingRequest.userId,
+                id: buyingRequest.id,
                 price: price,
-                trade: trade,
-                image: "",
                 description: desc,
                 mainCategoryId: this.state.mainCategory,
                 subCategoryId: this.state.subCategory,
                 conditionId: this.state.condition,
                 modifyDate: date,
-                dateAdded: ad.dateAdded
+                dateAdded: buyingRequest.dateAdded
             };
-        }
-        else {
-            update = {
-                title: title,
-                userId: ad.userId,
-                id: ad.id,
-                price: price,
-                trade: trade,
-                image: ad.image,
-                description: desc,
-                mainCategoryId: this.state.mainCategory,
-                subCategoryId: this.state.subCategory,
-                conditionId: this.state.condition,
-                modifyDate: date,
-                dateAdded: ad.dateAdded
-            };
-        }
 
-        this.updateAd(userId, update, this.state.image)
+        this.updateBuyingRequest(userId, update)
     }
 
     render() {
-        let mainCatContainer, subCatContainer, conditionsContainer;
+        let mainCatContainer, subCatContainer;
 
         let loading = <Modal show={this.state.loading}>
             <Modal.Body>
@@ -174,16 +133,12 @@ export default class Edit extends Component {
                 subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
             }
         }
-
-        if (this.props.conditions.length > 0) {
-            conditionsContainer = <PropertyDropdown handleChange={this.handleDropChange} target="condition" items={this.props.conditions} title="Condition" />
-        }
-
+        
         return (
             <Modal show={this.props.show} onHide={this.props.close} backdrop="static" keyboard={false}>
                 <Modal.Header>
                     <Modal.Title className="text-title ">
-                        Edit Advertisement
+                        Edit Buying Request
             </Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{ fontSize: '18px' }}>
@@ -194,13 +149,6 @@ export default class Edit extends Component {
                                     <div className="col-sm-6 pl-0">
                                         {mainCatContainer}
                                         {subCatContainer}
-                                        {conditionsContainer}
-                                        <Form.Group>
-                                            <Form.Label className="text-sub-title pl-0 mr-2" style={{ fontSize: "16px" }}>
-                                                Image
-                                                 </Form.Label>
-                                            <input type="file" style={{ fontSize: "14px" }} onChange={this.handleImageChange} />
-                                        </Form.Group>
                                     </div>
                                     <div className="col-sm-6 ml-2">
                                         <Form.Group>
@@ -208,33 +156,6 @@ export default class Edit extends Component {
                                                 Title
                                                  </Form.Label>
                                             <Form.Control name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
-                                        </Form.Group>
-                                        <Form.Group>
-                                            <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
-                                                Trade
-                                                 </Form.Label>
-                                            <div className="mt-1">
-                                                <label>
-                                                    <input
-                                                        type="radio"
-                                                        value="On"
-                                                        checked={this.state.trade === "On"}
-                                                        onChange={this.handleChange}
-                                                        name="trade"
-                                                    />
-                                                    <span style={{ marginLeft: "5px", fontSize: "14px" }}>On</span>
-                                                </label>
-                                                <label className="ml-2">
-                                                    <input
-                                                        type="radio"
-                                                        value="Off"
-                                                        checked={this.state.trade === "Off"}
-                                                        onChange={this.handleChange}
-                                                        name="trade"
-                                                    />
-                                                    <span style={{ marginLeft: "5px", fontSize: "14px" }}>Off</span>
-                                                </label>
-                                            </div>
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>

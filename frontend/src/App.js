@@ -15,16 +15,19 @@ class App extends Component {
       mount: 0,
       verified: false,
       advertisements: {},
+      buyingRequests: {},
       sug: {},
       categories: {},
       subCategories: {},
       conditions: {},
       ads: [],
-      users: []
+      users: [],
+      buyreqs: [],
     }
 
     this.search = this.search.bind(this);
     this.getAdvertisements = this.getAdvertisements.bind(this)
+    this.getBuyingRequest = this.getBuyingRequest.bind(this)
     this.getMainContent = this.getMainContent.bind(this)
     this.getUserContent = this.getUserContent.bind(this)
     this.authListener = this.authListener.bind(this);
@@ -55,6 +58,7 @@ class App extends Component {
           userInfo: data.obj
         })
         this.getAdvertisements()
+        this.getBuyingRequest()
       })
       .catch((error) => {
         console.error(error);
@@ -69,6 +73,7 @@ class App extends Component {
           conditions: data.obj.conditions,
           subCategories: data.obj.subCategories,
           ads: data.obj.ads,
+          buyreqs: data.obj.buyreqs,
           users: data.obj.users
         })
         this.getUserContent(this.state.user)
@@ -82,20 +87,48 @@ class App extends Component {
     let data = this.state
     let ads = [];
 
-    if (data.ads.length !== 0) {
-      Object.keys(data.ads).forEach(function (user) {
-        Object.values(data.ads[user]).forEach(function (ad) {
-          ad.condition = data.conditions[ad.conditionId]
-          ad.user = data.users[user]
-          ad.mainCategory = data.categories[ad.mainCategoryId]
-          ad.subCategory = data.subCategories[ad.mainCategoryId][ad.subCategoryId]
-          ads.push(ad)
+    if(data.ads !== undefined && data.ads !== null){
+      if (data.ads.length !== 0) {
+        Object.keys(data.ads).forEach(function (user) {
+          Object.values(data.ads[user]).forEach(function (ad) {
+            ad.condition = data.conditions[ad.conditionId]
+            ad.user = data.users[user]
+            ad.mainCategory = data.categories[ad.mainCategoryId]
+            ad.subCategory = data.subCategories[ad.mainCategoryId][ad.subCategoryId]
+            ads.push(ad)
+          })
         })
-      })
+      }
 
       this.setState({
         advertisements: ads,
         sug: ads
+      })
+    }
+  }
+
+  getBuyingRequest() {
+    let data = this.state
+    let buyreqs = [];
+
+    if(data.buyreqs !== undefined && data.buyreqs !== null){
+      if (data.buyreqs.length !== 0) {
+        Object.keys(data.buyreqs).forEach(function (user) {
+          Object.values(data.buyreqs[user]).forEach(function (buy) {
+            
+            if(buy !== null) {
+              buy.user = data.users[user]
+              buy.mainCategory = data.categories[buy.mainCategoryId]
+              buy.subCategory = data.subCategories[buy.mainCategoryId][buy.subCategoryId]
+              buyreqs.push(buy)
+            }
+            
+          })
+        })
+      }
+
+      this.setState({
+        buyingRequests: buyreqs,
       })
     }
   }
@@ -118,7 +151,7 @@ class App extends Component {
   render() {
     if (this.state.mount) {
       return (
-        <div>{this.state.user ? (<Home search={this.search} reRender={this.reRender} user={this.state.userInfo} advertisements={this.state.advertisements} sug={this.state.sug} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />) : <Login verify={this.authListener} />}</div>)
+        <div>{this.state.user ? (<Home search={this.search} buyingRequests={this.state.buyingRequests} reRender={this.reRender} user={this.state.userInfo} advertisements={this.state.advertisements} sug={this.state.sug} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />) : <Login verify={this.authListener} />}</div>)
     }
     else {
       return (<div></div>)
