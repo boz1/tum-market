@@ -64,7 +64,6 @@ class Login extends Component {
     e.preventDefault();
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
       .then((u) => {
-        console.log(u.user)
         if (!u.user.emailVerified) {
           this.setState({
             showVerify: true,

@@ -6,6 +6,9 @@ var logger = require('morgan');
 var cors = require("cors");
 
 var home = require("./routes/home");
+var ad = require("./routes/ad");
+var trade = require("./routes/trade");
+var buy = require("./routes/buy")
 
 var app = express();
 
@@ -21,6 +24,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', home);
+app.use('/ad', ad);
+app.use('/trade', trade);
+app.use('/buy', buy)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -37,5 +43,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import firebase, { storage } from '../../config/firebaseConfig';
 import Title from '../Title'
-import PropertyDropdown from './PropertyDropdown'
+import PropertyDropdown from '../PropertyDropdown'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -10,6 +9,7 @@ import ConfirmationModal from '../ConfirmationModal'
 import history from '../../history'
 import { css } from '@emotion/core';
 import { RingLoader } from 'react-spinners';
+import AdService from '../../services/AdService'
 
 const override = css`
     display: block;
@@ -40,6 +40,7 @@ export default class NewAdvertisement extends Component {
         this.showRequestModal = this.showRequestModal.bind(this)
         this.handleClose = this.handleClose.bind(this)
         this.getMainCatTitle = this.getMainCatTitle.bind(this)
+        this.updateAd = this.updateAd.bind(this)
     }
 
     handleDropChange(item, target) {
@@ -70,12 +71,23 @@ export default class NewAdvertisement extends Component {
         let title;
         if (Object.getOwnPropertyNames(this.props.categories).length !== 0) {
             this.props.categories.forEach(element => {
-                if (element.id === this.state.mainCategory) {
-                    title = element.title
+                if (element !== null) {
+                    if (element.id === this.state.mainCategory) {
+                        title = element.title
+                    }
                 }
             });
         }
         return title;
+    }
+
+    updateAd(id, ad, image) {
+        AdService.updateAd(id, ad, image).then((msg) => {
+            this.props.reRender()
+            history.push('/')
+        }).catch((e) => {
+            console.log(e);
+        });
     }
 
     handleSubmit(event) {
@@ -84,8 +96,6 @@ export default class NewAdvertisement extends Component {
             loading: true,
             showModal: false
         })
-
-        var newPostKey = firebase.database().ref('advertisements').child(this.props.user.info.id).push().key;
 
         // Get date
         var today = new Date(),
@@ -99,49 +109,30 @@ export default class NewAdvertisement extends Component {
             trade = false
         }
 
-        // Upload Image
-        const { image } = this.state;
         const imageTitle = this.state.image.name;
-        let imageUrl;
-        const uploadImage = storage.ref(`images/${this.props.user.info.id}/${newPostKey}/${image.name}`).put(image);
 
-        uploadImage.on('state_changed',
-            (snapshot) => {
-                // progrss function ....
-                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                console.log("progress " + progress)
-            },
-            (error) => {
-                // error function ....
-                console.log("error " + error);
-            },
-            () => {
-                // complete function ....
-                storage.ref(`images/${this.props.user.info.id}/${newPostKey}/${image.name}`).getDownloadURL().then(url => {
-                    imageUrl = url;
-                    // // Insert to databse
-                    const ad = {
-                        title: this.state.title,
-                        price: this.state.price,
-                        trade: trade,
-                        userId: this.props.user.info.id,
-                        id: newPostKey,
-                        image: imageUrl,
-                        description: this.state.description,
-                        mainCategoryId: this.state.mainCategory,
-                        subCategoryId: this.state.subCategory,
-                        conditionId: this.state.condition,
-                        dateAdded: date,
-                        imageTitle: imageTitle
-                    };
-
-                    var updates = {};
-                    updates['/advertisements/' + this.props.user.info.id + '/' + newPostKey] = ad;
-
-                    firebase.database().ref().update(updates);
-
-                    history.push('/')
-                })
+        AdService.createKey(this.props.user.info.id).then((data) => {
+            return data.obj;
+        })
+            .then((key) => {
+                const ad = {
+                    title: this.state.title,
+                    price: this.state.price,
+                    trade: trade,
+                    userId: this.props.user.info.id,
+                    id: key,
+                    image: "",
+                    description: this.state.description,
+                    mainCategoryId: this.state.mainCategory,
+                    subCategoryId: this.state.subCategory,
+                    conditionId: this.state.condition,
+                    dateAdded: date,
+                    imageTitle: imageTitle
+                };
+                this.updateAd(this.props.user.info.id, ad, this.state.image)
+            })
+            .catch((e) => {
+                console.log(e);
             });
     }
 
@@ -229,7 +220,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Title
                                                  </Form.Label>
-                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+." />
+                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -268,8 +259,8 @@ export default class NewAdvertisement extends Component {
                                 </div>
                                 <div className="mb-1">
                                     <Form.Group className="pl-0">
-                                        <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 250 characters)</span></Form.Label>
-                                        <Form.Control name="description" required as="textarea" rows="3" onChange={this.handleChange} maxLength="250" placeholder="Descibe your product..." />
+                                        <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 1000 characters)</span></Form.Label>
+                                        <Form.Control name="description" required as="textarea" rows="3" onChange={this.handleChange} maxLength="1000" placeholder="Descibe your product..." />
                                     </Form.Group>
                                 </div>
                             </div>

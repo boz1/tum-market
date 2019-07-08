@@ -1,11 +1,6 @@
-"use strict";
-
 import HttpService from "./HttpService";
 
 export default class UserService {
-
-    constructor() {
-    }
 
     static baseURL() {return "http://localhost:9000"; }
 
