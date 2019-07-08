@@ -2,13 +2,18 @@
 
 TUMarket is an online marketplace specialized to student needs and uniquely made for TUM students to buy/sell/trade products in a student focused, safe community.
 
-### Get started
+### Start Backend
 
-1.install modules:
+1. cd backend
 
-#npm install
+2. npm install
 
-2.start app:
+3. npm start
 
-#npm start
+### Start Frontend
 
+1. cd frontend
+
+2. npm install
+
+3. npm start
