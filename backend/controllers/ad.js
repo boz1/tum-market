@@ -23,7 +23,7 @@ const deleteAd = (req, res) => {
         })
 };
 
-const createAd = (req, res) => {
+const updateAd = (req, res) => {
     if (Object.keys(req.body).length === 0) return res.status(400).json({
         error: 'Bad Request',
         message: 'The request body is empty'
@@ -31,18 +31,17 @@ const createAd = (req, res) => {
 
     const ad = req.body.ad;
     const userId = req.body.userId;
-    const newPostKey = req.body.key;
 
     new Promise((resolve) => {
         var updates = {};
-        updates['/advertisements/' + userId + '/' + newPostKey] = ad;
+        updates['/advertisements/' + userId + '/' + ad.id] = ad;
 
         firebase.database().ref().update(updates);
 
         resolve();
     })
         .then(() => {
-            res.status(200).json({ message: `Created new ad` })
+            res.status(200).json({ message: `Updated new ad` })
         })
         .catch(error => {
             res.status(500).json({
@@ -52,7 +51,7 @@ const createAd = (req, res) => {
         })
 };
 
-const getKey = (req, res) => {
+const createKey = (req, res) => {
     const id = req.params.id;
     let key = {};
 
@@ -70,6 +69,6 @@ const getKey = (req, res) => {
 
 module.exports = {
     deleteAd,
-    createAd,
-    getKey
+    updateAd,
+    createKey
 };

@@ -12,40 +12,27 @@ export default class HttpService {
         });
     }
 
-    // static put(url, data, onSuccess, onError) {
-    //     let token = window.localStorage['jwtToken'];
-    //     let header = new Headers();
-    //     if(token) {
-    //         header.append('Authorization', `JWT ${token}`);
-    //     }
-    //     header.append('Content-Type', 'application/json');
+    static put(url, data, onSuccess, onError) {
+        let header = new Headers();
+        header.append('Content-Type', 'application/json');
 
-    //     fetch(url, {
-    //         method: 'PUT',
-    //         headers: header,
-    //         body: JSON.stringify(data)
-    //     }).then((resp) => {
-    //         if(this.checkIfUnauthorized(resp)) {
-    //             window.location = "/#login";
-    //             return;
-    //         }
-    //         else {
-    //             return resp.json();
-    //         }
-    //     }).then((resp) => {
-    //         if(resp.error) {
-    //             onError(resp.error);
-    //         }
-    //         else {
-    //             if(resp.hasOwnProperty('token')) {
-    //                 window.localStorage['jwtToken'] = resp.token;
-    //             }
-    //             onSuccess(resp);
-    //         }
-    //     }).catch((e) => {
-    //         onError(e.message);
-    //     });
-    // }
+        fetch(url, {
+            method: 'PUT',
+            headers: header,
+            body: JSON.stringify(data)
+        }).then((resp) => {
+            return resp.json();
+        }).then((resp) => {
+            if (resp.error) {
+                onError(resp.error);
+            }
+            else {
+                onSuccess(resp);
+            }
+        }).catch((e) => {
+            onError(e.message);
+        });
+    }
 
     static post(url, data, onSuccess, onError) {
         let header = new Headers();

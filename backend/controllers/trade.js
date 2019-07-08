@@ -2,6 +2,46 @@
 
 const firebase = require('../firebaseConfig')
 
+const getTradeReq = (req, res) => {
+    const id = req.params.id;
+    const userId = req.params.userId;
+    let checkTradeReqRef, checkReceivedReqRef;
+
+    let reqs = { sent: [], received: [] };
+
+    new Promise((resolve) => {
+        checkTradeReqRef = firebase.database().ref('trade-requests').child(userId).orderByChild("offeredItemId").equalTo(id)
+        checkTradeReqRef.once('value').then(snap => {
+            if (snap.val() !== null) {
+                reqs.sent = Object.values(snap.val())
+            }
+
+            resolve(reqs)
+        })
+    })
+        .then((obj) => {
+            return new Promise((resolve) => {
+                checkReceivedReqRef = firebase.database().ref('received-offers').child(userId).orderByChild("sentItemId").equalTo(id)
+                checkReceivedReqRef.once('value').then(snap => {
+                    if (snap.val() !== null) {
+                        obj.received = Object.values(snap.val())
+                    }
+
+                    resolve(obj)
+                })
+            })
+        })
+        .then((obj) => {
+            res.status(200).json({ obj })
+        })
+        .catch(error => {
+            res.status(500).json({
+                error: 'Internal server error',
+                message: error.message
+            })
+        })
+};
+
 const deleteSentReq = (req, res) => {
     const id = req.params.id;
     const userId = req.params.userId;
@@ -161,6 +201,7 @@ const sendTradeReq = (req, res) => {
 };
 
 module.exports = {
+    getTradeReq,
     deleteSentReq,
     deleteReceivedReq,
     sendTradeReq

@@ -28,48 +28,65 @@ export default class AdService {
         });
     }
 
-    static createAd(key, userId, ad, image) {
+    static updateAd(userId, ad, image) {
         return new Promise((resolve, reject) => {
-            // Upload Image
-            const uploadImage = storage.ref(`images/${userId}/${key}/${ad.imageTitle}`).put(image);
+            if (ad.image === "") {
+                // Upload Image
+                const uploadImage = storage.ref(`images/${userId}/${ad.id}/${ad.imageTitle}`).put(image);
 
-            uploadImage.on('state_changed',
-                (snapshot) => {
-                    // progrss function ....
-                    const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                    console.log("progress " + progress)
-                },
-                (error) => {
-                    // error function ....
-                    console.log("error " + error);
-                },
-                () => {
-                    // complete function ....
-                    storage.ref(`images/${userId}/${key}/${ad.imageTitle}`).getDownloadURL().then(url => {
-                        // Insert to databse
+                uploadImage.on('state_changed',
+                    (snapshot) => {
+                        // progrss function ....
+                        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                        console.log("progress " + progress)
+                    },
+                    (error) => {
+                        // error function ....
+                        console.log("error " + error);
+                    },
+                    () => {
+                        // complete function ....
+                        storage.ref(`images/${userId}/${ad.id}/${ad.imageTitle}`).getDownloadURL().then(url => {
+                            // Insert to databse
 
-                        ad.image = url;
+                            ad.image = url;
 
-                        let data = { key: key, userId: userId, ad: ad }
+                            let data = { userId: userId, ad: ad }
 
-                        HttpService.post(AdService.baseURL(), data, function (data) {
-                            if (data.message !== undefined) {
-                                resolve(data.message);
-                            }
-                            else {
-                                reject('Error while creating');
-                            }
-                        }, function (textStatus) {
-                            reject(textStatus);
-                        });
-                    })
+                            HttpService.put(AdService.baseURL(), data, function (data) {
+                                if (data.message !== undefined) {
+                                    resolve(data.message);
+                                }
+                                else {
+                                    reject('Error while creating');
+                                }
+                            }, function (textStatus) {
+                                reject(textStatus);
+                            });
+                        })
+                    });
+            }
+            else {
+                let data = { userId: userId, ad: ad }
+
+                HttpService.put(AdService.baseURL(), data, function (data) {
+                    if (data.message !== undefined) {
+                        resolve(data.message);
+                    }
+                    else {
+                        reject('Error while creating');
+                    }
+                }, function (textStatus) {
+                    reject(textStatus);
                 });
+            }
+
         })
     }
 
-    static getKey(id) {
+    static createKey(id) {
         return new Promise((resolve, reject) => {
-            HttpService.get(`${AdService.baseURL()}/${id}`,
+            HttpService.post(`${AdService.baseURL()}/${id}`, {},
                 function (data) {
                     resolve(data);
                 }, function (textStatus) {

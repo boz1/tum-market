@@ -6,6 +6,7 @@ const router         = express.Router();
 const AdController = require('../controllers/ad');
 
 router.delete('/:userId/:id', AdController.deleteAd);
-router.post('/', AdController.createAd);
-router.get('/:id', AdController.getKey);
+router.post('/:id', AdController.createKey);
+router.put('/', AdController.updateAd)
+
 module.exports = router;

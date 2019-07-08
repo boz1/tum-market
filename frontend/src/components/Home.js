@@ -38,7 +38,7 @@ class Home extends Component {
           <Switch>
             <Route exact path="/" render={(props) => <Marketplace {...props} reRender={this.props.reRender} adsList={this.props.sug} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />} />
             <Route path="/tradeRequests" render={(props) => <TradeList {...props} reRender={this.props.reRender} user={this.props.user} />} />
-            <Route path="/myAds" render={(props) => <MyAds {...props} user={this.props.user} getAds={this.filterUserAds} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />} />
+            <Route path="/myAds" render={(props) => <MyAds {...props} reRender={this.props.reRender} user={this.props.user} getAds={this.filterUserAds} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />} />
             <Route path="/adDetails/:id" component={AdDetails} />
             <Route path="/newAdvertisement" render={(props) => <NewAdvertisement {...props} reRender={this.props.reRender} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />} />
             <Route component={PageNotFound} />

@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import firebase, { storage } from '../../config/firebaseConfig';
 import PropertyDropdown from './PropertyDropdown'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -7,6 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import history from '../../history'
 import { css } from '@emotion/core';
 import { RingLoader } from 'react-spinners';
+import AdService from '../../services/AdService'
 
 
 const override = css`
@@ -62,7 +62,6 @@ export default class Edit extends Component {
 
     getValue = (item) => {
         const ad = this.props.ad;
-        console.log(ad)
 
         if (this.state[item] === "") {
             item = ad[item];
@@ -71,6 +70,15 @@ export default class Edit extends Component {
             item = this.state[item]
         }
         return item;
+    }
+
+    updateAd(id, ad, image) {
+        AdService.updateAd(id, ad, image).then((msg) => {
+            this.props.reRender()
+            history.push('/')
+        }).catch((e) => {
+            console.log(e);
+        });
     }
 
     handleSubmit(event) {
@@ -100,54 +108,26 @@ export default class Edit extends Component {
             trade = false
         }
 
+        let update;
 
         if (this.state.image !== "") {
-            const { image } = this.state;
-            // Upload Image
-            let imageUrl;
-            const uploadImage = storage.ref(`images/${userId}/${ad.id}/${image.name}`).put(image);
-
-            uploadImage.on('state_changed',
-                (snapshot) => {
-                    // progrss function ....
-                    const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                    console.log("progress " + progress)
-                },
-                (error) => {
-                    // error function ....
-                    console.log("error " + error);
-                },
-                () => {
-                    // complete function ....
-                    storage.ref(`images/${userId}/${ad.id}/${image.name}`).getDownloadURL().then(url => {
-                        imageUrl = url;
-                        // // Insert to databse
-                        const update = {
-                            title: title,
-                            userId: ad.userId,
-                            id: ad.id,
-                            price: price,
-                            trade: trade,
-                            image: imageUrl,
-                            description: desc,
-                            mainCategoryId: this.state.mainCategory,
-                            subCategoryId: this.state.subCategory,
-                            conditionId: this.state.condition,
-                            modifyDate: date,
-                            dateAdded: ad.dateAdded
-                        };
-
-                        var updates = {};
-                        updates['/advertisements/' + userId + '/' + ad.id] = update;
-
-                        firebase.database().ref().update(updates);
-
-                        history.push('/')
-                    })
-                });
+            update = {
+                title: title,
+                userId: ad.userId,
+                id: ad.id,
+                price: price,
+                trade: trade,
+                image: "",
+                description: desc,
+                mainCategoryId: this.state.mainCategory,
+                subCategoryId: this.state.subCategory,
+                conditionId: this.state.condition,
+                modifyDate: date,
+                dateAdded: ad.dateAdded
+            };
         }
         else {
-            const update = {
+            update = {
                 title: title,
                 userId: ad.userId,
                 id: ad.id,
@@ -161,15 +141,9 @@ export default class Edit extends Component {
                 modifyDate: date,
                 dateAdded: ad.dateAdded
             };
-
-            var updates = {};
-            updates['/advertisements/' + userId + '/' + ad.id] = update;
-
-            firebase.database().ref().update(updates);
-
-            history.push('/')
         }
 
+        this.updateAd(userId, update, this.state.image)
     }
 
     render() {
@@ -233,7 +207,7 @@ export default class Edit extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Title
                                                  </Form.Label>
-                                            <Form.Control name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+." />
+                                            <Form.Control name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -273,8 +247,8 @@ export default class Edit extends Component {
                                 </div>
                                 <div className="mb-1">
                                     <Form.Group className="pl-0">
-                                        <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 250 characters)</span></Form.Label>
-                                        <Form.Control name="description" as="textarea" rows="3" maxLength="250" onChange={this.handleChange} placeholder="Descibe your product..." />
+                                        <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 1000 characters)</span></Form.Label>
+                                        <Form.Control name="description" as="textarea" rows="3" maxLength="1000" onChange={this.handleChange} placeholder="Descibe your product..." />
                                     </Form.Group>
                                     <div>
                                         <Button variant="danger" onClick={this.props.close}>

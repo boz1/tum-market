@@ -40,6 +40,7 @@ export default class NewAdvertisement extends Component {
         this.showRequestModal = this.showRequestModal.bind(this)
         this.handleClose = this.handleClose.bind(this)
         this.getMainCatTitle = this.getMainCatTitle.bind(this)
+        this.updateAd = this.updateAd.bind(this)
     }
 
     handleDropChange(item, target) {
@@ -80,9 +81,8 @@ export default class NewAdvertisement extends Component {
         return title;
     }
 
-    createAd(key, id, ad, image) {
-        AdService.createAd(key, id, ad, image).then((msg) => {
-            console.log(msg)
+    updateAd(id, ad, image) {
+        AdService.updateAd(id, ad, image).then((msg) => {
             this.props.reRender()
             history.push('/')
         }).catch((e) => {
@@ -101,7 +101,6 @@ export default class NewAdvertisement extends Component {
         var today = new Date(),
             date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-
         let trade;
 
         if (this.state.trade === "On") {
@@ -112,7 +111,7 @@ export default class NewAdvertisement extends Component {
 
         const imageTitle = this.state.image.name;
 
-        AdService.getKey(this.props.user.info.id).then((data) => {
+        AdService.createKey(this.props.user.info.id).then((data) => {
             return data.obj;
         })
             .then((key) => {
@@ -122,6 +121,7 @@ export default class NewAdvertisement extends Component {
                     trade: trade,
                     userId: this.props.user.info.id,
                     id: key,
+                    image: "",
                     description: this.state.description,
                     mainCategoryId: this.state.mainCategory,
                     subCategoryId: this.state.subCategory,
@@ -129,7 +129,7 @@ export default class NewAdvertisement extends Component {
                     dateAdded: date,
                     imageTitle: imageTitle
                 };
-                this.createAd(key, this.props.user.info.id, ad, this.state.image)
+                this.updateAd(this.props.user.info.id, ad, this.state.image)
             })
             .catch((e) => {
                 console.log(e);
@@ -220,7 +220,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Title
                                                  </Form.Label>
-                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+." />
+                                            <Form.Control name="title" maxLength="40" required type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -259,8 +259,8 @@ export default class NewAdvertisement extends Component {
                                 </div>
                                 <div className="mb-1">
                                     <Form.Group className="pl-0">
-                                        <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 250 characters)</span></Form.Label>
-                                        <Form.Control name="description" required as="textarea" rows="3" onChange={this.handleChange} maxLength="250" placeholder="Descibe your product..." />
+                                        <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 1000 characters)</span></Form.Label>
+                                        <Form.Control name="description" required as="textarea" rows="3" onChange={this.handleChange} maxLength="1000" placeholder="Descibe your product..." />
                                     </Form.Group>
                                 </div>
                             </div>

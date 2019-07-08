@@ -51,4 +51,15 @@ export default class TradeService {
             });
         });
     }
+
+    static getTradeReq(ad) {
+        return new Promise((resolve, reject) => {
+            HttpService.get(`${TradeService.baseURL()}/${ad.userId}/${ad.id}`,
+                function (data) {
+                    resolve(data);
+                }, function (textStatus) {
+                    reject(textStatus);
+                });
+        });
+    }
 }

@@ -125,6 +125,15 @@ export default class AdDetails extends Component {
         });
     }
 
+    getTradeReq = (ad) => {
+        TradeService.getTradeReq(ad).then((data) => {
+            console.log(data)
+            return data;
+        }).catch((e) => {
+            console.log(e);
+        });
+    }
+
     showDeleteModal = (e) => {
         e.preventDefault();
         this.setState({ showDeleteModal: true })
@@ -134,30 +143,21 @@ export default class AdDetails extends Component {
         e.preventDefault();
         const ad = this.props.location.state.ad;
 
-        const req = this.checkAdSentReq(ad)
-        req.then(reqs => {
-            if (reqs.length > 0) {
+        TradeService.getTradeReq(ad).then((data) => {
+            if (data.obj.received.length > 0 || data.obj.sent.length > 0) {
                 this.setState({
                     isEditable: false
                 })
-            } else {
-                const req2 = this.checkAdReceivedReq(ad);
-                req2.then(reqs => {
-                    if (reqs.length > 0) {
-                        this.setState({
-                            isEditable: false
-                        })
-                    }
-                    else {
-                        this.setState({
-                            showEditModal: true
-                        })
-                    }
+            }
+            else {
+                this.setState({
+                    showEditModal: true
                 })
             }
-        }).catch(er => {
-            console.log(er)
-        })
+        }).catch((e) => {
+            console.log(e);
+        });
+
     }
 
     handleClose() {
@@ -196,7 +196,7 @@ export default class AdDetails extends Component {
         const deleteModal = <span><ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Advertisement" txt={delTxt} onClickClose={this.handleClose} onClickConfirm={this.handleDelete} />
             {loading}</span>
 
-        const editModal = <Edit show={this.state.showEditModal} close={this.handleClose} user={this.props.location.state.user} ad={this.props.location.state.ad} categories={this.props.location.state.categories} subCategories={this.props.location.state.subCategories} conditions={this.props.location.state.conditions} />
+        const editModal = <Edit show={this.state.showEditModal} close={this.handleClose} user={this.props.location.state.user} ad={this.props.location.state.ad} categories={this.props.location.state.categories} subCategories={this.props.location.state.subCategories} conditions={this.props.location.state.conditions} reRender={this.props.location.func}/>
         const editAlert = <Alert show={!this.state.isEditable} variant={"danger"} style={{ marginTop: "10px" }} >
             This item can't be edited since it is used in a trade request.
         </Alert>
