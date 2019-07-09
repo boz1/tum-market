@@ -30,7 +30,8 @@ export default class NewAdvertisement extends Component {
             image: null,
             trade: "On",
             showModal: false,
-            loading: false
+            loading: false,
+            imageSrc: null
         }
 
         this.handleDropChange = this.handleDropChange.bind(this)
@@ -63,7 +64,15 @@ export default class NewAdvertisement extends Component {
     handleImageChange(event) {
         if (event.target.files[0]) {
             const image = event.target.files[0];
-            this.setState(() => ({ image }));
+            let reader = new FileReader();
+            let imageSrc;
+
+            reader.onload = function (e) {
+                imageSrc = e.target.result;
+                this.setState(() => ({ image, imageSrc }));
+            }.bind(this);
+
+            reader.readAsDataURL(event.target.files[0]);
         }
     }
 
@@ -194,6 +203,15 @@ export default class NewAdvertisement extends Component {
 
         let modal = <ConfirmationModal show={this.state.showModal} onHide={this.handleClose} title="New Advertisement" txt="Are you sure to create this advertisement?" onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
 
+        let imageSrc;
+
+        if (this.state.imageSrc !== null) {
+            imageSrc = this.state.imageSrc
+        }
+        else {
+            imageSrc = "http://via.placeholder.com/200x150"
+        }
+
         return (
             <React.Fragment>
                 <div className="container">
@@ -271,9 +289,9 @@ export default class NewAdvertisement extends Component {
                                         <Card style={{ width: 'auto', height: 'fit-content' }} className={isPremium ? "premium" : ""}>
                                             <div className="m-auto">
                                                 <img
-                                                    src={'http://via.placeholder.com/200x150'}
+                                                    src={imageSrc}
                                                     style={{
-                                                        height: "auto", width: "auto", marginTop: "12px"
+                                                        height: "150px", width: "200px", marginTop: "12px"
                                                     }}
                                                     alt="Product"
                                                 />

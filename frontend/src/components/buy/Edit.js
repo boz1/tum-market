@@ -90,17 +90,17 @@ export default class Edit extends Component {
             date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
         const update = {
-                title: title,
-                userId: buyingRequest.userId,
-                id: buyingRequest.id,
-                price: price,
-                description: desc,
-                mainCategoryId: this.state.mainCategory,
-                subCategoryId: this.state.subCategory,
-                conditionId: this.state.condition,
-                modifyDate: date,
-                dateAdded: buyingRequest.dateAdded
-            };
+            title: title,
+            userId: buyingRequest.userId,
+            id: buyingRequest.id,
+            price: price,
+            description: desc,
+            mainCategoryId: this.state.mainCategory,
+            subCategoryId: this.state.subCategory,
+            conditionId: this.state.condition,
+            modifyDate: date,
+            dateAdded: buyingRequest.dateAdded
+        };
 
         this.updateBuyingRequest(userId, update)
     }
@@ -133,7 +133,7 @@ export default class Edit extends Component {
                 subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
             }
         }
-        
+
         return (
             <Modal show={this.props.show} onHide={this.props.close} backdrop="static" keyboard={false}>
                 <Modal.Header>

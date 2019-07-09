@@ -27,7 +27,7 @@ export default class MyAds extends Component {
 
     render() {
         const search = <Form inline>
-            <FormControl className="mr-sm-2 search" onChange={this.search} type="text" placeholder="Search your ads.." style={{ marginLeft: "27%", marginTop: "10px" }} />
+            <FormControl className="mr-sm-2 search" onChange={this.search} type="text" placeholder="Search your ads..." style={{ marginLeft: "27%", marginTop: "10px" }} />
         </Form>
 
         return (

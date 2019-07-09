@@ -18,8 +18,7 @@ export default class BuyingRequest extends Component {
         return (
             <div>
                 <Card style={{ width: '15rem', marginBottom: "10px" }} className={isPremium ? "premium" : ""}>
-                        <Link to={{ pathname: '/buyDetails/' + this.props.buyingRequest.id, state: { buyingRequest: this.props.buyingRequest, user: this.props.user, categories: this.props.categories, subCategories: this.props.subCategories}, func: this.props.reRender }} className="my-3 mx-auto">
-                            
+                    <Link to={{ pathname: '/buyDetails/' + this.props.buyingRequest.id, state: { buyingRequest: this.props.buyingRequest, user: this.props.user, categories: this.props.categories, subCategories: this.props.subCategories }, func: this.props.reRender }} className="my-3 mx-auto">
                         <Card.Body className="p-2">
                             <hr></hr>
                             <Card.Title className="text-ad-title">{this.props.buyingRequest.title}</Card.Title>
@@ -30,9 +29,8 @@ export default class BuyingRequest extends Component {
                                 <span className="text-premium">{this.props.buyingRequest.price + " €"}</span>
                             </Card.Text>
                         </Card.Body>
-                        </Link>
-
-                    </Card>
+                    </Link>
+                </Card>
             </div>
         )
     }

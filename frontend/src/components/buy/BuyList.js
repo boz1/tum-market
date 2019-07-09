@@ -98,11 +98,11 @@ export default class BuyList extends Component {
             });
         }
 
-        return pageData.map((buy) => <BuyingRequest key={buy.id} buyingRequest={buy} reRender={this.props.reRender} user={this.state.user} categories={this.props.categories} subCategories={this.props.subCategories}/>)
+        return pageData.map((buy) => <BuyingRequest key={buy.id} buyingRequest={buy} reRender={this.props.reRender} user={this.state.user} categories={this.props.categories} subCategories={this.props.subCategories} />)
     }
 
     showNewModal = () => {
-        this.setState({showNewModal:true})
+        this.setState({ showNewModal: true })
     }
 
     handleClose = () => {

@@ -94,9 +94,9 @@ export default class BuyDetails extends Component {
         const deleteModal = <span><ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Buying Request" txt={delTxt} onClickClose={this.handleClose} onClickConfirm={this.handleDelete} />
             {loading}</span>
 
-        const editModal = <Edit show={this.state.showEditModal} close={this.handleClose} user={this.props.location.state.user} buyingRequest={this.props.location.state.buyingRequest} categories={this.props.location.state.categories} subCategories={this.props.location.state.subCategories} reRender={this.props.location.func}/>
+        const editModal = <Edit show={this.state.showEditModal} close={this.handleClose} user={this.props.location.state.user} buyingRequest={this.props.location.state.buyingRequest} categories={this.props.location.state.categories} subCategories={this.props.location.state.subCategories} reRender={this.props.location.func} />
 
-        if(user.info.id === buyingRequest.userId) {
+        if (user.info.id === buyingRequest.userId) {
             actionField = <div className="mt-3">
                 <Card style={{ width: '18rem', background: 'whitesmoke' }} className="mt-2">
                     <Card.Body className="d-block m-auto">
