@@ -87,7 +87,7 @@ class App extends Component {
     let data = this.state
     let ads = [];
 
-    if(data.ads !== undefined && data.ads !== null){
+    if (data.ads !== undefined && data.ads !== null) {
       if (data.ads.length !== 0) {
         Object.keys(data.ads).forEach(function (user) {
           Object.values(data.ads[user]).forEach(function (ad) {
@@ -111,18 +111,18 @@ class App extends Component {
     let data = this.state
     let buyreqs = [];
 
-    if(data.buyreqs !== undefined && data.buyreqs !== null){
+    if (data.buyreqs !== undefined && data.buyreqs !== null) {
       if (data.buyreqs.length !== 0) {
         Object.keys(data.buyreqs).forEach(function (user) {
           Object.values(data.buyreqs[user]).forEach(function (buy) {
-            
-            if(buy !== null) {
+
+            if (buy !== null) {
               buy.user = data.users[user]
               buy.mainCategory = data.categories[buy.mainCategoryId]
               buy.subCategory = data.subCategories[buy.mainCategoryId][buy.subCategoryId]
               buyreqs.push(buy)
             }
-            
+
           })
         })
       }
@@ -145,7 +145,6 @@ class App extends Component {
       const regix = new RegExp(`${input.target.value}`, 'i')
       this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
     }
-
   }
 
   render() {
