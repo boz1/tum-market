@@ -97,6 +97,10 @@ export default class AdvertisementList extends Component {
     }
 
     render() {
+        let searchBar;
+        if(this.props.searchBar !== undefined && this.props.searchBar !== null){
+            searchBar = this.props.searchBar;
+        }
         return (
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
@@ -106,6 +110,7 @@ export default class AdvertisementList extends Component {
                     <div className="col-md-9">
                         <form className="form-inline">
                             <Title title={this.props.title} />
+                            {searchBar}
                             <div className="row mt-2 ml-auto">
                                 <div className="col-12">
                                     <span style={{ fontSize: "16px", paddingTop: "7px", color: "#2A2525" }}>{this.state.sort}</span>

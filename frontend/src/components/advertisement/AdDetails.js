@@ -105,7 +105,7 @@ export default class AdDetails extends Component {
     deleteAd = (ad) => {
         AdService.deleteAd(ad).then((msg) => {
             this.props.location.func()
-            history.push('/')
+            history.push('/myAds')
         }).catch((e) => {
             console.log(e);
         });
@@ -127,7 +127,6 @@ export default class AdDetails extends Component {
 
     getTradeReq = (ad) => {
         TradeService.getTradeReq(ad).then((data) => {
-            console.log(data)
             return data;
         }).catch((e) => {
             console.log(e);
