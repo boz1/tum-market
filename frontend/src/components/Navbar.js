@@ -175,15 +175,12 @@ export default class Navbar extends Component {
 
         if (!this.state.isRead) {
             bell = <span style={{ fontSize: "18px" }}><FontAwesomeIcon icon={faBell} /></span>
-            notificationCounter = <span style={{ fontSize: "18px", color: "#EF233C" }}>
+            notificationCounter = <span style={{ fontSize: "18px", color: "#dc3545" }}>
                 {this.state.notReadNotificationCount}
             </span>
         }
         else {
             bell = <span style={{ fontSize: "18px" }}><FontAwesomeIcon icon={faBell} /></span>
-            notificationCounter = <span style={{ fontSize: "18px" }}>
-                {this.state.notReadNotificationCount}
-            </span>
         }
 
         if (this.state.notificationIds.length > 0) {
