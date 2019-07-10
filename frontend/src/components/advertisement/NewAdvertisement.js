@@ -58,6 +58,11 @@ export default class NewAdvertisement extends Component {
     }
 
     handleChange(e) {
+        if (e.target.name === 'price') {
+            if(e.target.value < 0) {
+                e.target.value = ''
+            }
+        }
         this.setState({ [e.target.name]: e.target.value });
     }
 
