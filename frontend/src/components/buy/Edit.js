@@ -58,7 +58,11 @@ export default class Edit extends Component {
         const buy = this.props.buyingRequest;
 
         if (this.state[item] === "") {
-            item = buy[item];
+            if(item === "condition"){
+                item = buy[item].id;
+            }else{
+                item = buy[item];
+            }
         }
         else {
             item = this.state[item]
@@ -81,7 +85,7 @@ export default class Edit extends Component {
             loading: true,
         })
 
-        let price, title, desc;
+        let price, title, desc, mainCategory, subCategory;
 
         const buyingRequest = this.props.buyingRequest;
         const userId = this.props.user.info.id;
@@ -89,6 +93,8 @@ export default class Edit extends Component {
         price = this.getValue("price");
         desc = this.getValue("description");
         title = this.getValue("title");
+        mainCategory = this.getValue("mainCategory");
+        subCategory = this.getValue("subCategory");
 
         // Get date
         var today = new Date(),
@@ -100,8 +106,8 @@ export default class Edit extends Component {
             id: buyingRequest.id,
             price: price,
             description: desc,
-            mainCategoryId: this.state.mainCategory,
-            subCategoryId: this.state.subCategory,
+            mainCategoryId: mainCategory,
+            subCategoryId: subCategory,
             modifyDate: date,
             dateAdded: buyingRequest.dateAdded
         };
@@ -125,16 +131,16 @@ export default class Edit extends Component {
         </Modal>
 
         if (this.props.categories.length > 0) {
-            mainCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
+            mainCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
         }
 
         if (this.props.subCategories.length > 0) {
             let id = this.state.mainCategory;
             if (id !== '') {
-                subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
+                subCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
             }
             else {
-                subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
+                subCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
             }
         }
 
