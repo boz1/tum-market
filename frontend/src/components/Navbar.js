@@ -19,7 +19,8 @@ export default class Navbar extends Component {
             notifications: [],
             notificationIds: [],
             isRead: true,
-            notReadNotificationCount: 0
+            notReadNotificationCount: 0,
+            search: ""
         }
 
         this.logout = this.logout.bind(this)
@@ -169,7 +170,13 @@ export default class Navbar extends Component {
     }
 
     refresh = (e) => {
-        window.location.replace('/')
+        this.props.changeMarket('sell')
+        history.push('/')
+    }
+    
+    reset = (e) => {
+        this.props.reRender();
+        this.setState({ [e.target.name]: "" });
     }
 
     render() {
@@ -206,7 +213,8 @@ export default class Navbar extends Component {
                 </ul>
                 <div className="ml-auto">
                     <Form inline>
-                        <FormControl id="searchBar" onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />  
+                        <FormControl name="search" onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />  
+                        <Button type="reset" onClick={this.reset} variant="danger" className="mr-1">Clear</Button>
                         <Button type="submit">Filter</Button>
                     </Form>
                 </div>

@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import BuyingRequest from './BuyingRequest'
 import Title from '../Title'
 import CardDeck from 'react-bootstrap/CardDeck';

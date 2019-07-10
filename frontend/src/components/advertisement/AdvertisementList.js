@@ -5,7 +5,6 @@ import CardDeck from 'react-bootstrap/CardDeck';
 import Colbar from '../Colbar'
 import Dropdown from 'react-bootstrap/Dropdown';
 import ReactPaginate from 'react-paginate';
-import { Link } from 'react-router-dom'
 
 export default class AdvertisementList extends Component {
     constructor(props) {
