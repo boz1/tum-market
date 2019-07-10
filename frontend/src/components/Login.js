@@ -4,7 +4,6 @@ import Alert from 'react-bootstrap/Alert'
 import history from '../history'
 import { Switch, Route } from 'react-router-dom'
 import Verification from './Verification'
-import UserService from '../services/UserService';
 
 class Login extends Component {
   constructor(props) {
@@ -38,29 +37,6 @@ class Login extends Component {
   }
 
   login(e) {
-    // e.preventDefault();
-    // UserService.login(this.state.email, this.state.password)
-    //   .then((u) => {
-    //     // if (!u.user.emailVerified) {
-    //     //   this.setState({
-    //     //     showVerify: true,
-    //     //     showAlert: false,
-    //     //     password: ''
-    //     //   })
-    //     // }
-    //     // else {
-    //     //   this.props.verify()
-    //     // }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error)
-    //     // this.setState({
-    //     //   showAlert: true,
-    //     //   showVerify: false,
-    //     //   password: ''
-    //     // })
-    //   });
-
     e.preventDefault();
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
       .then((u) => {

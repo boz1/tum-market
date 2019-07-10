@@ -5,6 +5,7 @@ import CardDeck from 'react-bootstrap/CardDeck';
 import Colbar from '../Colbar'
 import Dropdown from 'react-bootstrap/Dropdown';
 import ReactPaginate from 'react-paginate';
+import { Link } from 'react-router-dom'
 
 export default class AdvertisementList extends Component {
     constructor(props) {
@@ -98,9 +99,10 @@ export default class AdvertisementList extends Component {
 
     render() {
         let searchBar;
-        if(this.props.searchBar !== undefined && this.props.searchBar !== null){
+        if (this.props.searchBar !== undefined && this.props.searchBar !== null) {
             searchBar = this.props.searchBar;
         }
+        let buyersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<Link style={{ color: "#707070", fontSize: "20px", marginLeft:"5px" }} to="/buyMarket">Buyer's Market</Link></div>
         return (
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
@@ -109,7 +111,10 @@ export default class AdvertisementList extends Component {
                     </div>
                     <div className="col-md-9">
                         <form className="form-inline">
-                            <Title title={this.props.title} />
+                            <div className="d-flex">
+                                <Title title={this.props.title} />
+                                {this.props.title === "Seller's Market" ? buyersMarket : ""}
+                            </div>
                             {searchBar}
                             <div className="row mt-2 ml-auto">
                                 <div className="col-12">

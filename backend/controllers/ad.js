@@ -7,7 +7,7 @@ const deleteAd = (req, res) => {
     const userId = req.params.userId;
 
     new Promise((resolve) => {
-        firebase.database().ref('advertisements').child(userId).child(id).remove();
+        firebase.database().ref('advertisements').child(userId).child(id).remove()
 
         resolve()
     })

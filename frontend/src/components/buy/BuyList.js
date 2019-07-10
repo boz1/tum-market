@@ -110,6 +110,7 @@ export default class BuyList extends Component {
     }
 
     render() {
+        let sellersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<Link style={{ color: "#707070", fontSize: "20px", marginLeft:"5px" }} to="/">Seller's Market</Link></div>
         return (
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
@@ -119,6 +120,7 @@ export default class BuyList extends Component {
                     <div className="col-md-9">
                         <form className="form-inline">
                             <Title title={this.props.title} />
+                            {this.props.title === "Buyer's Market" ? sellersMarket : ""}
                             <div className="row mt-2 ml-auto">
                                 <div className="col-12">
                                     <Button type="submit" onClick={this.showNewModal} >New Request</Button>
