@@ -207,7 +207,6 @@ export default class Navbar extends Component {
                 <div className="ml-auto">
                     <Form inline>
                         <FormControl id="searchBar" onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />  
-                        <Button title="Only resets search results, won't clear search bar!" variant="danger" type="reset" className="mr-1" onClick={this.props.search}>Reset</Button>               
                         <Button type="submit">Filter</Button>
                     </Form>
                 </div>

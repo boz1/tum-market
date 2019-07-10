@@ -142,21 +142,30 @@ class App extends Component {
   }
 
   search(input) {
-    input.preventDefault()
-    if (this.state.market === 'sellers') {
-      if (input.target.value.length === 0)
-      this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
-      else {
-        const regix = new RegExp(`${input.target.value}`, 'i')
-        this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
+    if(input === "null" || input === undefined){
+      if (this.state.market === 'sellers') {
+        this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
+      }else{
+        this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
       }
     }
-    else {      
-      if (input.target.value.length === 0)
-        this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
-      else {
-        const regix = new RegExp(`${input.target.value}`, 'i')
-        this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () =>  this.forceUpdate())
+    else{
+      input.preventDefault()
+      if (this.state.market === 'sellers') {
+        if (input.target.value.length === 0)
+        this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
+        else {
+          const regix = new RegExp(`${input.target.value}`, 'i')
+          this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
+        }
+      }
+      else {      
+        if (input.target.value.length === 0)
+          this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
+        else {
+          const regix = new RegExp(`${input.target.value}`, 'i')
+          this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () =>  this.forceUpdate())
+        }
       }
     }
   }

@@ -3,7 +3,6 @@ import PropertyDropdown from '../PropertyDropdown'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import history from '../../history'
 import { css } from '@emotion/core';
 import { RingLoader } from 'react-spinners';
 import BuyingRequestService from '../../services/BuyingRequestService'

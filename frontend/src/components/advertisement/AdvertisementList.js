@@ -97,12 +97,16 @@ export default class AdvertisementList extends Component {
         return pageData.map((ad) => <Advertisment key={ad.id} ad={ad} reRender={this.props.reRender} user={this.state.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />)
     }
 
+    changeMarket = () =>{
+        this.props.changeMarket('buy')
+    }
+
     render() {
         let searchBar;
         if (this.props.searchBar !== undefined && this.props.searchBar !== null) {
             searchBar = this.props.searchBar;
         }
-        let buyersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<Link style={{ color: "#707070", fontSize: "20px", marginLeft:"5px" }} to="/buyMarket">Buyer's Market</Link></div>
+        let buyersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<span style={{ color: "#707070", fontSize: "20px", marginLeft:"5px", cursor:"pointer" }} onClick={this.changeMarket}>Buyer's Market</span></div>
         return (
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
