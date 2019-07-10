@@ -51,11 +51,11 @@ class Home extends Component {
         <div className="container" style={{ background: "#e9ebee" }}>
           <Navbar search={this.props.search} user={this.props.user} />
           <Switch>
-            <Route exact path="/" render={(props) => <Marketplace {...props} reRender={this.props.reRender} adsList={this.props.sug} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />} />
+            <Route exact path="/" render={(props) => <Marketplace {...props} search={this.props.search} updateMarket={this.props.updateMarket} reRender={this.props.reRender} adsList={this.props.sug} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />} />
             <Route path="/tradeRequests" render={(props) => <TradeList {...props} reRender={this.props.reRender} user={this.props.user} />} />
-            <Route path="/myAds" render={(props) => <MyAds {...props} reRender={this.props.reRender} user={this.props.user} getAds={this.filterUserAds} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />} />
-            <Route path="/buyMarket" render={(props) => <BuyMarket {...props} buyingRequests={this.props.buyingRequests} reRender={this.props.reRender} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} />} />
-            <Route path="/myBuy" render={(props) => <MyBuyingRequests {...props} getBuyingRequests={this.filterUserBuyReqs} reRender={this.props.reRender} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} />} />
+            <Route path="/myAds" render={(props) => <MyAds {...props} updateMarket={this.props.updateMarket} reRender={this.props.reRender} user={this.props.user} getAds={this.filterUserAds} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />} />
+            <Route path="/buyMarket" render={(props) => <BuyMarket {...props} search={this.props.search} updateMarket={this.props.updateMarket} buyingRequests={this.props.buySug} reRender={this.props.reRender} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} />} />
+            <Route path="/myBuy" render={(props) => <MyBuyingRequests {...props} updateMarket={this.props.updateMarket} getBuyingRequests={this.filterUserBuyReqs} reRender={this.props.reRender} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} />} />
             <Route path="/adDetails/:id" component={AdDetails} />
             <Route path="/buyDetails/:id" component={BuyDetails} />
             <Route path="/newAdvertisement" render={(props) => <NewAdvertisement {...props} reRender={this.props.reRender} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />} />

@@ -110,6 +110,10 @@ export default class BuyList extends Component {
     }
 
     render() {
+        let searchBar;
+        if (this.props.searchBar !== undefined && this.props.searchBar !== null) {
+            searchBar = this.props.searchBar;
+        }
         const newModal = <NewBuyRequest show={this.state.showNewModal} close={this.handleClose} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} reRender={this.props.reRender} />
         let sellersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<Link style={{ color: "#707070", fontSize: "20px", marginLeft:"5px" }} to="/">Seller's Market</Link></div>
         return (
@@ -122,10 +126,11 @@ export default class BuyList extends Component {
                         <form className="form-inline">
                             <Title title={this.props.title} />
                             {this.props.title === "Buyer's Market" ? sellersMarket : ""}
+                            {searchBar}
                             <div className="row mt-2 ml-auto">
                                 <div className="col-12">
                                     <Button type="submit" onClick={this.showModal} >New Request</Button>
-                                    <span style={{ fontSize: "16px", paddingTop: "7px", color: "#2A2525" }}>{this.state.sort}</span>
+                                    <span style={{ fontSize: "16px", paddingTop: "7px", color: "#2A2525", marginLeft: "20px"}}>{this.state.sort}</span>
                                     <Dropdown style={{ background: "#3482D1", borderRadius: "0.25rem", marginLeft: "20px" }}>
                                         <Dropdown.Toggle variant="info" id="dropdown-basic">Sort By</Dropdown.Toggle>
                                         <Dropdown.Menu alignRight>
