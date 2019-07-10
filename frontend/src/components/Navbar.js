@@ -168,6 +168,10 @@ export default class Navbar extends Component {
         }
     }
 
+    refresh = (e) => {
+        window.location.replace('/')
+    }
+
     render() {
         const user = this.props.user;
         let notifications = [];
@@ -192,9 +196,9 @@ export default class Navbar extends Component {
 
         return (
             <nav className="navbar navbar-expand-sm px-sm-5 nav-back">
-                <Link to='/'>
+                <span onClick={this.refresh} style={{cursor:"pointer"}}>
                     <img src={logo} alt="Tum Market" className="navbar-brand img-responsive" style={{ width: "55px" }} />
-                </Link>
+                    </span>
                 <ul className="navbar-nav align-items-center">
                     <li className="nav-item ml-5">
                         <Link to="/newAdvertisement" className="text-new-ad text-decoration-none">New Advertisement</Link>
