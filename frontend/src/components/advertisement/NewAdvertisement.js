@@ -93,7 +93,7 @@ export default class NewAdvertisement extends Component {
     updateAd(id, ad, image) {
         AdService.updateAd(id, ad, image).then((msg) => {
             this.props.reRender()
-            history.push('/')
+            history.push('/myAds')
         }).catch((e) => {
             console.log(e);
         });

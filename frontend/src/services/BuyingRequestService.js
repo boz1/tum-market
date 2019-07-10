@@ -37,14 +37,14 @@ export default class BuyingRequestService {
         })
     }
 
-    // static createKey(id) {
-    //     return new Promise((resolve, reject) => {
-    //         HttpService.post(`${AdService.baseURL()}/${id}`, {},
-    //             function (data) {
-    //                 resolve(data);
-    //             }, function (textStatus) {
-    //                 reject(textStatus);
-    //             });
-    //     });
-    // }
+    static createKey(id) {
+        return new Promise((resolve, reject) => {
+            HttpService.post(`${BuyingRequestService.baseURL()}/${id}`, {},
+                function (data) {
+                    resolve(data);
+                }, function (textStatus) {
+                    reject(textStatus);
+                });
+        });
+    }
 }
