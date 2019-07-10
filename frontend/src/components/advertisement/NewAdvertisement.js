@@ -58,6 +58,11 @@ export default class NewAdvertisement extends Component {
     }
 
     handleChange(e) {
+        if (e.target.name === 'price') {
+            if(e.target.value < 0) {
+                e.target.value = ''
+            }
+        }
         this.setState({ [e.target.name]: e.target.value });
     }
 
@@ -93,7 +98,7 @@ export default class NewAdvertisement extends Component {
     updateAd(id, ad, image) {
         AdService.updateAd(id, ad, image).then((msg) => {
             this.props.reRender()
-            history.push('/')
+            history.push('/myAds')
         }).catch((e) => {
             console.log(e);
         });
@@ -165,21 +170,21 @@ export default class NewAdvertisement extends Component {
         let mainCatContainer, subCatContainer, conditionsContainer;
 
         if (this.props.categories.length > 0) {
-            mainCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
+            mainCatContainer = <PropertyDropdown isRequired={true} handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
         }
 
         if (this.props.subCategories.length > 0) {
             let id = this.state.mainCategory;
             if (id !== '') {
-                subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
+                subCatContainer = <PropertyDropdown isRequired={true} handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
             }
             else {
-                subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
+                subCatContainer = <PropertyDropdown isRequired={true} handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
             }
         }
 
         if (this.props.conditions.length > 0) {
-            conditionsContainer = <PropertyDropdown handleChange={this.handleDropChange} target="condition" items={this.props.conditions} title="Condition" />
+            conditionsContainer = <PropertyDropdown isRequired={true} handleChange={this.handleDropChange} target="condition" items={this.props.conditions} title="Condition" />
         }
 
         let loading = <Modal show={this.state.loading}>

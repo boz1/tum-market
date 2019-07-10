@@ -15,7 +15,7 @@ const override = css`
     border-color: red;
 `;
 
-export default class Edit extends Component {
+export default class NewBuyRequest extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -54,26 +54,11 @@ export default class Edit extends Component {
         this.setState({ [e.target.name]: e.target.value });
     }
 
-    getValue = (item) => {
-        const buy = this.props.buyingRequest;
-
-        if (this.state[item] === "") {
-            if(item === "condition"){
-                item = buy[item].id;
-            }else{
-                item = buy[item];
-            }
-        }
-        else {
-            item = this.state[item]
-        }
-        return item;
-    }
-
     updateBuyingRequest(id, buy) {
         BuyingRequestService.updateBuyingRequest(id, buy).then((msg) => {
             this.props.reRender()
-            history.push('/myBuy')
+            this.props.close()
+            //history.push('/myBuy')
         }).catch((e) => {
             console.log(e);
         });
@@ -85,34 +70,39 @@ export default class Edit extends Component {
             loading: true,
         })
 
-        let price, title, desc, mainCategory, subCategory;
+        let price, title, desc;
 
-        const buyingRequest = this.props.buyingRequest;
         const userId = this.props.user.info.id;
 
-        price = this.getValue("price");
-        desc = this.getValue("description");
-        title = this.getValue("title");
-        mainCategory = this.getValue("mainCategory");
-        subCategory = this.getValue("subCategory");
+        price = this.state.price;
+        desc = this.state.description;
+        title = this.state.title;
 
         // Get date
         var today = new Date(),
             date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 
-        const update = {
-            title: title,
-            userId: buyingRequest.userId,
-            id: buyingRequest.id,
-            price: price,
-            description: desc,
-            mainCategoryId: mainCategory,
-            subCategoryId: subCategory,
-            modifyDate: date,
-            dateAdded: buyingRequest.dateAdded
-        };
+            BuyingRequestService.createKey(this.props.user.info.id).then((data) => {
+                return data.obj;
+            })
+            .then((key) => {
+                const update = {
+                    title: title,
+                    userId: userId,
+                    id: key,
+                    price: price,
+                    description: desc,
+                    mainCategoryId: this.state.mainCategory,
+                    subCategoryId: this.state.subCategory,
+                    dateAdded: date,
+                };
+                this.updateBuyingRequest(userId, update)
+            })
+            .catch((e) => {
+                console.log(e);
+            });
 
-        this.updateBuyingRequest(userId, update)
+        
     }
 
     render() {
@@ -131,16 +121,16 @@ export default class Edit extends Component {
         </Modal>
 
         if (this.props.categories.length > 0) {
-            mainCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
+            mainCatContainer = <PropertyDropdown isRequired={true} handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
         }
 
         if (this.props.subCategories.length > 0) {
             let id = this.state.mainCategory;
             if (id !== '') {
-                subCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
+                subCatContainer = <PropertyDropdown isRequired={true} handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
             }
             else {
-                subCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
+                subCatContainer = <PropertyDropdown isRequired={true} handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
             }
         }
 
@@ -148,7 +138,7 @@ export default class Edit extends Component {
             <Modal show={this.props.show} onHide={this.props.close} backdrop="static" keyboard={false}>
                 <Modal.Header>
                     <Modal.Title className="text-title ">
-                        Edit Buying Request
+                        New Buying Request
             </Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{ fontSize: '18px' }}>
@@ -165,13 +155,13 @@ export default class Edit extends Component {
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Title
                                                  </Form.Label>
-                                            <Form.Control name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
+                                            <Form.Control name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" required/>
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                                 Price (€)
                                                  </Form.Label>
-                                            <Form.Control name="price" type="number" onChange={this.handleChange} placeholder="€" min={0} step="0.01" />
+                                            <Form.Control name="price" type="number" onChange={this.handleChange} placeholder="€" min={0} step="0.01" required/>
                                         </Form.Group>
 
                                     </div>
@@ -179,7 +169,7 @@ export default class Edit extends Component {
                                 <div className="mb-1">
                                     <Form.Group className="pl-0">
                                         <Form.Label className="text-sub-title" style={{ fontSize: "16px" }}>Description <span style={{ color: "#707070", fontSize: "14px" }}>(max 1000 characters)</span></Form.Label>
-                                        <Form.Control name="description" as="textarea" rows="3" maxLength="1000" onChange={this.handleChange} placeholder="Descibe your product..." />
+                                        <Form.Control name="description" as="textarea" rows="3" maxLength="1000" onChange={this.handleChange} placeholder="Descibe your product..." required/>
                                     </Form.Group>
                                     <div>
                                         <Button variant="danger" onClick={this.props.close}>

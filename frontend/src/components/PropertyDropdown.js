@@ -29,7 +29,7 @@ export default class PropertyDropdown extends Component {
             <div>
                 <Form.Group>
                     <Form.Label className="text-sub-title" style={{ fontSize: "16px" }} >{this.props.title}</Form.Label>
-                    <Form.Control required as="select" defaultValue={''} onChange={this.handleChange} ref="ref">
+                    <Form.Control required={this.props.isRequired} as="select" defaultValue={''} onChange={this.handleChange} ref="ref">
                         {options}
                     </Form.Control>
                 </Form.Group>

@@ -7,8 +7,7 @@ import Colbar from '../Colbar'
 import Dropdown from 'react-bootstrap/Dropdown';
 import ReactPaginate from 'react-paginate';
 import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import FormControl from 'react-bootstrap/FormControl';
+import NewBuyRequest from './NewBuyRequest';
 
 export default class BuyList extends Component {
     constructor(props) {
@@ -101,7 +100,8 @@ export default class BuyList extends Component {
         return pageData.map((buy) => <BuyingRequest key={buy.id} buyingRequest={buy} reRender={this.props.reRender} user={this.state.user} categories={this.props.categories} subCategories={this.props.subCategories} />)
     }
 
-    showNewModal = () => {
+    showModal = (e) => {
+        e.preventDefault();
         this.setState({ showNewModal: true })
     }
 
@@ -110,6 +110,7 @@ export default class BuyList extends Component {
     }
 
     render() {
+        const newModal = <NewBuyRequest show={this.state.showNewModal} close={this.handleClose} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} reRender={this.props.reRender} />
         let sellersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<Link style={{ color: "#707070", fontSize: "20px", marginLeft:"5px" }} to="/">Seller's Market</Link></div>
         return (
             <React.Fragment>
@@ -123,7 +124,7 @@ export default class BuyList extends Component {
                             {this.props.title === "Buyer's Market" ? sellersMarket : ""}
                             <div className="row mt-2 ml-auto">
                                 <div className="col-12">
-                                    <Button type="submit" onClick={this.showNewModal} >New Request</Button>
+                                    <Button type="submit" onClick={this.showModal} >New Request</Button>
                                     <span style={{ fontSize: "16px", paddingTop: "7px", color: "#2A2525" }}>{this.state.sort}</span>
                                     <Dropdown style={{ background: "#3482D1", borderRadius: "0.25rem", marginLeft: "20px" }}>
                                         <Dropdown.Toggle variant="info" id="dropdown-basic">Sort By</Dropdown.Toggle>
@@ -171,6 +172,7 @@ export default class BuyList extends Component {
                             </div> : ""}
                     </div>
                 </div>
+                {newModal}
             </React.Fragment >
         )
     }

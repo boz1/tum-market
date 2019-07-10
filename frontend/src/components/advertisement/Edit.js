@@ -50,6 +50,11 @@ export default class Edit extends Component {
     }
 
     handleChange(e) {
+        if (e.target.name === 'price') {
+            if(e.target.value < 0) {
+                e.target.value = ''
+            }
+        }
         this.setState({ [e.target.name]: e.target.value });
     }
 
@@ -64,7 +69,11 @@ export default class Edit extends Component {
         const ad = this.props.ad;
 
         if (this.state[item] === "") {
-            item = ad[item];
+            if(item === "condition"){
+                item = ad[item].id;
+            }else{
+                item = ad[item];
+            }
         }
         else {
             item = this.state[item]
@@ -87,7 +96,7 @@ export default class Edit extends Component {
             loading: true,
         })
 
-        let price, title, desc;
+        let price, title, desc, mainCategory, subCategory, condition;
 
         const ad = this.props.ad;
         const userId = this.props.user.info.id;
@@ -95,6 +104,9 @@ export default class Edit extends Component {
         price = this.getValue("price");
         desc = this.getValue("description");
         title = this.getValue("title");
+        mainCategory = this.getValue("mainCategory");
+        subCategory = this.getValue("subCategory");
+        condition = this.getValue("condition");
 
         // Get date
         var today = new Date(),
@@ -119,9 +131,9 @@ export default class Edit extends Component {
                 trade: trade,
                 image: "",
                 description: desc,
-                mainCategoryId: this.state.mainCategory,
-                subCategoryId: this.state.subCategory,
-                conditionId: this.state.condition,
+                mainCategoryId: mainCategory,
+                subCategoryId: subCategory,
+                conditionId: condition,
                 modifyDate: date,
                 dateAdded: ad.dateAdded
             };
@@ -135,14 +147,14 @@ export default class Edit extends Component {
                 trade: trade,
                 image: ad.image,
                 description: desc,
-                mainCategoryId: this.state.mainCategory,
-                subCategoryId: this.state.subCategory,
-                conditionId: this.state.condition,
+                mainCategoryId: mainCategory,
+                subCategoryId: subCategory,
+                conditionId: condition,
                 modifyDate: date,
                 dateAdded: ad.dateAdded
             };
         }
-
+        
         this.updateAd(userId, update, this.state.image)
     }
 
@@ -162,21 +174,21 @@ export default class Edit extends Component {
         </Modal>
 
         if (this.props.categories.length > 0) {
-            mainCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
+            mainCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
         }
 
         if (this.props.subCategories.length > 0) {
             let id = this.state.mainCategory;
             if (id !== '') {
-                subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
+                subCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
             }
             else {
-                subCatContainer = <PropertyDropdown handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
+                subCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
             }
         }
 
         if (this.props.conditions.length > 0) {
-            conditionsContainer = <PropertyDropdown handleChange={this.handleDropChange} target="condition" items={this.props.conditions} title="Condition" />
+            conditionsContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="condition" items={this.props.conditions} title="Condition" />
         }
 
         return (

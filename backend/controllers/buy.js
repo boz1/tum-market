@@ -51,24 +51,24 @@ const updateBuy = (req, res) => {
         })
 };
 
-// const createKey = (req, res) => {
-//     const id = req.params.id;
-//     let key = {};
+const createKey = (req, res) => {
+    const id = req.params.id;
+    let key = {};
 
-//     new Promise((resolve) => {
-//         key = firebase.database().ref('advertisements').child(id).push().key;
-//         resolve(key)
-//     })
-//         .then((obj) => {
-//             res.status(200).json({ obj });
-//         })
-//         .catch((er) => {
-//             console.log(er)
-//         });
-// };
+    new Promise((resolve) => {
+        key = firebase.database().ref('buying-requests').child(id).push().key;
+        resolve(key)
+    })
+        .then((obj) => {
+            res.status(200).json({ obj });
+        })
+        .catch((er) => {
+            console.log(er)
+        });
+};
 
 module.exports = {
     deleteBuy,
     updateBuy,
-    // createKey
+    createKey
 };
