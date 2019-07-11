@@ -112,7 +112,7 @@ export default class AdDetails extends Component {
     }
 
     deleteSentReq = (ad) => {
-        TradeService.deleteSentReq(ad).then((msg) => {
+        TradeService.deleteSentReq(ad, "ad").then((msg) => {
         }).catch((e) => {
             console.log(e);
         });
