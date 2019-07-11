@@ -117,7 +117,7 @@ const deleteSentReq = (req, res) => {
                     message: message,
                     isRead: false
                 };
-                firebase.database().ref('users').child(sellerId).once('value').then(async snap => sendMail(snap.val().email,'trade offer deleted',notification.message+'for '+title))
+                firebase.database().ref('users').child(sellerId).once('value').then(async snap => sendMail(snap.val().email,'trade offer deleted',notification.message+' for '+title))
                 firebase.database().ref('users').child(userId).once('value').then(async snap => sendMail(snap.val().email,'trade offer deleted','you have delated the trade request for '+title))
                 var updates = {};
                 updates['/notifications/' + sellerId + '/' + newPostKey] = notification;
@@ -227,7 +227,7 @@ const sendTradeReq = (req, res) => {
             isRead: false
         };
         firebase.database().ref('users').child(ad.userId).once('value').then(async snap => sendMail(snap.val().email,'new trade request',notification.message))
-        firebase.database().ref('users').child(user.info.id).once('value').then(async snap => sendMail(snap.val().email,'new trade request',"You have sent a new trade request to " + ad.name + " for your " + ad.title + "."))
+        firebase.database().ref('users').child(user.info.id).once('value').then(async snap => sendMail(snap.val().email,'new trade request',"You have sent a new trade request to " + ad.userName + " for your " + ad.title + "."))
 
         var updates = {};
         updates['/trade-requests/' + user.info.id + '/' + newPostKey] = postDataBuyer;
