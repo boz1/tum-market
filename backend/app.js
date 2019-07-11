@@ -8,7 +8,8 @@ var cors = require("cors");
 var home = require("./routes/home");
 var ad = require("./routes/ad");
 var trade = require("./routes/trade");
-var buy = require("./routes/buy")
+var buy = require("./routes/buy");
+var notification = require("./routes/notification");
 
 var app = express();
 
@@ -27,6 +28,7 @@ app.use('/', home);
 app.use('/ad', ad);
 app.use('/trade', trade);
 app.use('/buy', buy)
+app.use('/notification', notification)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

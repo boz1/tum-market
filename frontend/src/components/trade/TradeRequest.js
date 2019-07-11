@@ -114,6 +114,8 @@ export default class TradeRequest extends Component {
         });
 
         this.setState({status: this.state.statusAction})
+
+        this.props.reRender()
     }
 
     render() {

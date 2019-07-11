@@ -239,7 +239,7 @@ const sendTradeReq = (req, res) => {
         resolve();
     })
         .then(() => {
-            res.status(200).json({ message: `Created new ad` })
+            res.status(200).json({ message: `Sent trade request` })
         })
         .catch(error => {
             res.status(500).json({
@@ -364,7 +364,6 @@ const getSentItem = (req, res) => {
 };
 
 const updateStatus = (req, res) => {
-    console.log('adsladsakl')
     if (Object.keys(req.body).length === 0) return res.status(400).json({
         error: 'Bad Request',
         message: 'The request body is empty'

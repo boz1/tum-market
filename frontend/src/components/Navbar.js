@@ -10,6 +10,7 @@ import history from '../history'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import NotificationService from '../services/NotificationService'
 
 
 export default class Navbar extends Component {
@@ -33,16 +34,6 @@ export default class Navbar extends Component {
         if (this.notifRef !== undefined) {
             this.notifRef.off('value')
             this.notifRef = null;
-        }
-
-        if (this.removeNotifRef !== undefined) {
-            this.removeNotifRef.off('value')
-            this.removeNotifRef = null;
-        }
-
-        if (this.notifReadRef !== undefined) {
-            this.notifReadRef.off('value')
-            this.notifReadRef = null;
         }
     }
 
@@ -80,33 +71,29 @@ export default class Navbar extends Component {
 
     readNotifications(isShown) {
         if (this.props.user !== undefined && this.props.user.info !== undefined && !this.state.isRead) {
-            this.notifReadRef = firebase.database().ref('notifications').child(this.props.user.info.id).orderByChild('isRead').equalTo(false)
-            this.notifReadRef.on('value', function (snap) {
-                snap.forEach(function (notification) {
-                    notification.ref.update({ isRead: true });
-                });
-            });
-
-            this.notifReadRef.off('value')
-            this.notifReadRef = null;
-
-            let notifications = this.state.notifications;
-            let isRead = this.state.isRead;
-
-            if (!isShown) {
-                notifications.forEach(function (notification) {
-                    if (!notification.isRead) {
-                        notification.isRead = true;
-                    }
+            NotificationService.readNotifications(this.props.user.info.id).then((msg) => {
+                let notifications = this.state.notifications;
+                let isRead = this.state.isRead;
+    
+                if (!isShown) {
+                    notifications.forEach(function (notification) {
+                        if (!notification.isRead) {
+                            notification.isRead = true;
+                        }
+                    })
+                    isRead = true;
+                }
+    
+                this.setState({
+                    isRead: isRead,
+                    notReadNotificationCount: 0,
+                    notifications: notifications
                 })
-                isRead = true;
-            }
 
-            this.setState({
-                isRead: isRead,
-                notReadNotificationCount: 0,
-                notifications: notifications
-            })
+                this.props.reRender()
+            }).catch((e) => {
+                console.log(e);
+            });
         }
     }
 
@@ -165,7 +152,11 @@ export default class Navbar extends Component {
                 notReadNotificationCount: notifCount
             })
 
-            this.removeNotifRef = firebase.database().ref('notifications').child(this.props.user.info.id).child(id).remove();
+            NotificationService.deleteNotification(this.props.user.info.id, id).then((msg) => {
+            }).catch((e) => {
+                console.log(e);
+            });
+
         }
     }
 
