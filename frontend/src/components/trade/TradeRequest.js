@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import firebase from '../../config/firebaseConfig';
 import Card from 'react-bootstrap/Card';
-import ConfirmationModal from '../ConfirmationModal' 
+import ConfirmationModal from '../ConfirmationModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import TradeService from '../../services/TradeService'
 
 export default class TradeRequest extends Component {
     constructor(props) {
@@ -34,69 +34,36 @@ export default class TradeRequest extends Component {
         this.setItems()
     }
 
-    componentWillUnmount() {
-        this.receivedRef.off('value')
-        this.receivedRef = null;
-
-        this.sentItemRef.off('value')
-        this.sentItemRef = null;
-
-        this.otherPartyRef.off('value')
-        this.otherPartyRef = null;
-    }
-
     setItems() {
         const item = this.props.item;
 
         if (this.props.type === "received") {
-            this.receivedRef = firebase.database().ref('advertisements').child(item.buyerId).child(item.receivedItemId)
-            this.receivedRef.on('value', snap => {
+            TradeService.getReceivedItem(item).then((data) => {
                 this.setState({
-                    receivedItem: snap.val()
+                    receivedItem: data.obj.receivedItem,
+                    sentItem: data.obj.sentItem,
+                    otherParty: data.obj.otherParty
                 })
-            })
-
-            this.sentItemRef = firebase.database().ref('advertisements').child(item.userId).child(item.sentItemId)
-            this.sentItemRef.on('value', snap => {
-                this.setState({
-                    sentItem: snap.val()
-                })
-            })
-
-            this.otherPartyRef = firebase.database().ref('users').child(item.buyerId)
-            this.otherPartyRef.on('value', snap => {
-                this.setState({
-                    otherParty: snap.val()
-                })
-            })
+            }).catch((e) => {
+                console.log(e);
+            });
         }
 
         if (this.props.type === "sent") {
-            this.receivedRef = firebase.database().ref('advertisements').child(item.sellerId).child(item.targetItemId)
-            this.receivedRef.on('value', snap => {
+            TradeService.getSentItem(item).then((data) => {
                 this.setState({
-                    receivedItem: snap.val()
+                    receivedItem: data.obj.receivedItem,
+                    sentItem: data.obj.sentItem,
+                    otherParty: data.obj.otherParty
                 })
-            })
-
-            this.sentItemRef = firebase.database().ref('advertisements').child(item.userId).child(item.offeredItemId)
-            this.sentItemRef.on('value', snap => {
-                this.setState({
-                    sentItem: snap.val()
-                })
-            })
-
-            this.otherPartyRef = firebase.database().ref('users').child(item.sellerId)
-            this.otherPartyRef.on('value', snap => {
-                this.setState({
-                    otherParty: snap.val()
-                })
-            })
-
-            this.setState({
-                status: this.props.item.status
-            })
+            }).catch((e) => {
+                console.log(e);
+            });
         }
+
+        this.setState({
+            status: this.props.item.status
+        })
     }
 
     showDeleteModal() {
@@ -114,20 +81,13 @@ export default class TradeRequest extends Component {
             showDeleteModal: false
         });
 
-        var newPostKey = firebase.database().ref('notifications').child(this.props.item.sellerId).push().key;
+        let item = this.props.item;
+        item.username = this.props.user.name;
 
-        const notification = {
-            id: newPostKey,
-            message: this.props.user.name + " has deleted their trade request for your " + this.state.receivedItem.title + ".",
-            isRead: false
-        };
-
-        var updates = {};
-        updates['/notifications/' + this.props.item.sellerId + '/' + newPostKey] = notification;
-        firebase.database().ref().update(updates);
-
-        firebase.database().ref('trade-requests').child(this.props.item.userId).child(this.props.item.id).remove();
-        firebase.database().ref('received-offers').child(this.props.item.sellerId).child(this.props.item.id).remove();
+        TradeService.deleteSentReq(this.props.item, "req").then((msg) => {
+        }).catch((e) => {
+            console.log(e);
+        });
 
         this.props.reRender()
     }
@@ -146,24 +106,14 @@ export default class TradeRequest extends Component {
     handleSubmit(e) {
         this.setState({
             showStatusModal: false,
-            status: e.target.value
         });
 
-        // Get a key for a new Post.
-        var newPostKey = firebase.database().ref('notifications').child(this.props.item.buyerId).push().key;
+        TradeService.updateStatus(this.props.item, this.props.user, this.state.sentItem.title, this.state.statusAction).then((msg) => {
+        }).catch((e) => {
+            console.log(e);
+        });
 
-        const notification = {
-            id: newPostKey,
-            message: this.props.user.name + " has " + this.state.statusAction.toLowerCase() + " your trade request for " + this.state.sentItem.title + ".",
-            isRead: false
-        };
-
-        var updates = {};
-        updates['/trade-requests/' + this.props.item.buyerId + '/' + this.props.item.id + '/status'] = e.target.value;
-        updates['/received-offers/' + this.props.item.userId + '/' + this.props.item.id + '/status'] = e.target.value;
-        updates['/notifications/' + this.props.item.buyerId + '/' + newPostKey] = notification;
-
-        firebase.database().ref().update(updates);
+        this.setState({status: this.state.statusAction})
     }
 
     render() {
@@ -230,7 +180,7 @@ export default class TradeRequest extends Component {
                         From: <strong>{this.state.otherParty.name} - {this.state.otherParty.email}</strong>
                     </Card.Text>
                     <Card.Text>
-                        Status: <strong>{item.status}</strong>
+                        Status: <strong>{this.state.status}</strong>
                     </Card.Text>
                     <Card.Text>
                         Date: <strong>{item.date.split(" ")[0]}</strong>
@@ -262,7 +212,7 @@ export default class TradeRequest extends Component {
                         To: <strong>{this.state.otherParty.name} - {this.state.otherParty.email}</strong>
                     </Card.Text>
                     <Card.Text>
-                        Status: <strong>{item.status}</strong>
+                        Status: <strong>{this.state.status}</strong>
                     </Card.Text>
                     <Card.Text>
                         Date: <strong>{item.date.split(" ")[0]}</strong>

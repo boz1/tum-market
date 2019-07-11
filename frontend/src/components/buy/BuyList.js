@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import BuyingRequest from './BuyingRequest'
 import Title from '../Title'
 import CardDeck from 'react-bootstrap/CardDeck';
@@ -109,13 +108,17 @@ export default class BuyList extends Component {
         this.setState({ showNewModal: false });
     }
 
+    changeMarket = () =>{
+        this.props.changeMarket('sell')
+    }
+
     render() {
         let searchBar;
         if (this.props.searchBar !== undefined && this.props.searchBar !== null) {
             searchBar = this.props.searchBar;
         }
         const newModal = <NewBuyRequest show={this.state.showNewModal} close={this.handleClose} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} reRender={this.props.reRender} />
-        let sellersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<Link style={{ color: "#707070", fontSize: "20px", marginLeft:"5px" }} to="/">Seller's Market</Link></div>
+        let sellersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<span style={{ color: "#707070", fontSize: "20px", marginLeft:"5px", cursor:"pointer" }} onClick={this.changeMarket}>Seller's Market</span></div>
         return (
             <React.Fragment>
                 <div className='col-md-12 d-flex'>

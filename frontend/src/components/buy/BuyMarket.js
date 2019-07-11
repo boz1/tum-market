@@ -14,7 +14,7 @@ export default class BuyMarket extends Component {
 
         return (
             <React.Fragment>
-                <BuyList reRender={this.props.reRender} title="Buyer's Market" buyingRequests={this.props.buyingRequests} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} />
+                <BuyList changeMarket={this.props.changeMarket} reRender={this.props.reRender} title="Buyer's Market" buyingRequests={this.props.buyingRequests} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} />
             </React.Fragment >
         )
     }
