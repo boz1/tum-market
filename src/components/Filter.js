@@ -36,7 +36,7 @@ export default class Filter extends Component {
 
     handleMainCatChange(event) {
         const mainCat = parseInt(this.refs.mainCat.value)
-        this.setState({
+        this.setState({              
             mainCategory: mainCat
         });
     }
@@ -82,13 +82,44 @@ export default class Filter extends Component {
         });
     }
 
+    //not sure if this is also needed to do
     handleCancel() {
-        //this.setState({ showModal: false });
+        document.getElementById("create-filteredsearch-form").reset();
+
+        this.setState({
+            mainCategory: '',
+            subCategory: '',
+            condition: '',
+            title: '',
+            minPrice: 0,
+            maxPrice: 0,
+            trade: "On",
+        });
+    
     }
 
     handleSubmit(event){
+        event.preventDefault();
+        
+        if( this.props.advertisements.length > 0){
+            let adds = this.props.advertisements;
+            adds = adds.Filter();
+        }
+        else{
 
+        }
+
+        search(input) {
+            if (input.target.value.length === 0)
+              this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
+            else {
+              const regix = new RegExp(`${input.target.value}`, 'i')
+              this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
+            }
+        
+          }
     }
+
     render() { 
 
         let mainCategories = [];
@@ -96,6 +127,7 @@ export default class Filter extends Component {
         let conditions = [];
 
         let mainCatContainer, subCatContainer, conditionsContainer;
+
         if (this.props.categories.length > 0) {
             mainCategories.push(<option key="empty" disabled value={''}>Choose...</option>)
             this.props.categories.map((cat) => mainCategories.push(<option key={cat.id + cat.title} value={cat.id}>{cat.title}</option>))
@@ -131,7 +163,7 @@ export default class Filter extends Component {
                     </Dropdown.Toggle>
                     <Dropdown.Menu alignRight>
                         <div className="container" style={{width:'300px'}}>
-                            <Form>
+                            <Form id="create-filteredsearch-form">
                                 <Form.Group controlId="exampleForm.ControlSelect1">
                                     <Form.Label className="text-primary" style={{ fontSize: "18px" }}>
                                         Category
@@ -139,7 +171,7 @@ export default class Filter extends Component {
                                     {mainCatContainer}
                                 </Form.Group>
                                 <Form.Group controlId="exampleForm.ControlSelect2">
-                                     <Form.Label className="text-primary" style={{ fontSize: "18px" }}>
+                                     <Form.Label  className="text-primary" style={{ fontSize: "18px" }}>
                                         Sub Category
                                     </Form.Label>
                                     {subCatContainer}
@@ -205,10 +237,10 @@ export default class Filter extends Component {
 
                                 <div class="form-row">
                                     <div class="col">
-                                        <Button variant="danger">Cancel</Button>
+                                    <Button variant= "danger" as="input" type="reset" value="Clear" />
                                     </div>
                                     <div class="col">
-                                        <Button variant="success">Submit</Button>
+                                        <Button variant="success"  type="submit">Filter</Button>
                                     </div>
                                 </div>
                             </Form>

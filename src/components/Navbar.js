@@ -207,13 +207,12 @@ export default class Navbar extends Component {
                 </ul>
                 <div className="ml-auto">
                     <Form inline>
-                    <Link to='/'>
-                        <FormControl onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />                 
-                    </Link>
-                        <Button type="submit">Filter</Button>
+                        <Link to='/'>
+                            <FormControl onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />                 
+                        </Link>
                     </Form>
                 </div>
-                <Filter categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
+                <Filter advertisements={this.props.advertisements} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
                 <span className="ml-auto d-flex">
                     {notificationCounter}
                     <Dropdown onToggle={this.readNotifications}>

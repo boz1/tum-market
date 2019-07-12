@@ -16,7 +16,9 @@
     "react-paginate": "^6.3.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
-    "react-spinners": "^0.5.4"
+    "react-spinners": "^0.5.4",
+    "reactstrap": "^8.0.0",
+    "save": "^2.4.0"
   },
   "scripts": {
     "start": "react-scripts start",
