@@ -188,7 +188,7 @@ export default class AdDetails extends Component {
             Object.values(user.ads).map((item) => items.push(<option key={item.id} value={item.title + '&' + item.id}>{item.title}</option>))
         }
 
-        const confTxt = <span>You are offering <strong>{this.state.offeredItem.split('&')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>. Do you want to send this trade request?"</span>
+        const confTxt = <span>You are offering <strong>{this.state.offeredItem.split('&')[0]}</strong> for {adOwner.name}'s <strong>{ad.title}</strong>. Do you want to send this trade request?</span>
         const modal = <ConfirmationModal show={this.state.showModal} onHide={this.handleClose} title="Trade Request" txt={confTxt} onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
 
         const delTxt = <span>Deleting this advertisement will also <strong>delete any trade request this item has been used</strong>. Are you sure to delete this advertisement?</span>
