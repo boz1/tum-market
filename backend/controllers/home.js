@@ -1,6 +1,6 @@
 "use strict";
 
-const firebase = require('../firebaseConfig')
+const firebase = require('../config/firebaseConfig');
 
 const getMainContent = (req, res) => {
   let categoriesRef, subCategoriesRef, conditionsRef, adsRef, usersRef, buyRef;

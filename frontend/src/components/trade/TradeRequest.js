@@ -132,7 +132,8 @@ export default class TradeRequest extends Component {
         const updateTxt = <span>Do you want to <strong>{statusAction}</strong> this offer?</span>
         statusUpdateModal = <ConfirmationModal show={this.state.showStatusModal} onHide={this.handleClose} title="Status Update" txt={updateTxt} onClickClose={this.handleClose} onClickConfirm={this.handleSubmit} />
 
-        deleteModal = <ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Request" txt="Do you want to delete this request?" onClickClose={this.handleDeleteClose} onClickConfirm={this.handleDeleteSubmit} />
+        const txt = <span>Do you want to <strong>delete</strong> this request?</span>
+        deleteModal = <ConfirmationModal show={this.state.showDeleteModal} onHide={this.handleClose} title="Delete Request" txt={txt} onClickClose={this.handleDeleteClose} onClickConfirm={this.handleDeleteSubmit} />
 
         if (this.state.status === "Accepted") {
             receivedStatus =
