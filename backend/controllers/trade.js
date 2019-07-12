@@ -388,8 +388,6 @@ const updateStatus = (req, res) => {
             isRead: false
         };
 
-        firebase.database().ref('users').child(item.buyerId).once('value').then(async snap => sendMail(snap.val().email, 'Trade Request Status Update', notification.message))
-        
         var updates = {};
         updates['/trade-requests/' + item.buyerId + '/' + item.id + '/status'] = status;
         updates['/received-offers/' + item.userId + '/' + item.id + '/status'] = status;
