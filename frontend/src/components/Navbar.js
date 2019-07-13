@@ -233,7 +233,6 @@ export default class Navbar extends Component {
                     <Form inline>
                         <FormControl name="search" onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />
                         <Button type="reset" onClick={this.reset} variant="danger" className="mr-1">Clear</Button>
-                        <Button type="submit">Filter</Button>
                     </Form>
                 </div>
                 <Button variant="primary" type="submit" onClick={this.showFilter}>

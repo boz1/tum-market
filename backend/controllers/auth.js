@@ -56,7 +56,7 @@ const signup = (req, res) => {
     const newUser = req.body.newUser;
 
     new Promise(() => {
-        firebase.auth().createUserWithEmailAndPassword(email + '@gmail.com', password)
+        firebase.auth().createUserWithEmailAndPassword(email + '@mytum.de', password)
             .then((u) => {
                 let userId = u.uid;
                 newUser.id = userId;
