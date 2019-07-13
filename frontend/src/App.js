@@ -28,6 +28,7 @@ class App extends Component {
     }
 
     this.search = this.search.bind(this);
+    this.filteredSearch = this.filteredSearch.bind(this);
     this.getAdvertisements = this.getAdvertisements.bind(this)
     this.getBuyingRequest = this.getBuyingRequest.bind(this)
     this.getMainContent = this.getMainContent.bind(this)
@@ -174,6 +175,31 @@ class App extends Component {
     }
   }
 
+  filteredSearch(input) {
+    console.log(input)
+      if (input.market === "Seller's Market") {
+        
+        console.log(input)
+      /*  if (input.target.value.length === 0)
+        this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
+        else {
+          const regix = new RegExp(`${input.target.value}`, 'i')
+          this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
+        }*/
+      }
+      else {
+        console.log(input)      
+        /*if (input.target.value.length === 0)
+          this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
+        else {
+          const regix = new RegExp(`${input.target.value}`, 'i')
+          this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () =>  this.forceUpdate())
+        }
+        */
+    }
+    
+  }
+
   updateMarket = (market) => {
     if (this.state.market !== market) {
       this.setState({
@@ -185,7 +211,7 @@ class App extends Component {
   render() {
     if (this.state.mount) {
       return (
-        <div>{this.state.user ? (<Home updateMarket={this.updateMarket} search={this.search} buyingRequests={this.state.buyingRequests} buySug={this.state.buySug} reRender={this.reRender} user={this.state.userInfo} advertisements={this.state.advertisements} sug={this.state.sug} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />) : <Login verify={this.authListener} />}</div>)
+        <div>{this.state.user ? (<Home updateMarket={this.updateMarket} filteredSearch={this.filteredSearch} search={this.search} buyingRequests={this.state.buyingRequests}  buySug={this.state.buySug}  reRender={this.reRender} user={this.state.userInfo} advertisements={this.state.advertisements} sug={this.state.sug} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />) : <Login verify={this.authListener} />}</div>)
     }
     else {
       return (<div></div>)

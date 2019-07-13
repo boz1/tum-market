@@ -2,16 +2,19 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import firebase from '../config/firebaseConfig';
 import logo from '../assests/logo.svg'
-import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
 import history from '../history'
+import Filter from './Filter'
+import Button from 'react-bootstrap/Button';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import NotificationService from '../services/NotificationService'
 import AuthService from '../services/AuthService';
+
 
 
 export default class Navbar extends Component {
@@ -22,13 +25,15 @@ export default class Navbar extends Component {
             notificationIds: [],
             isRead: true,
             notReadNotificationCount: 0,
-            search: ""
+            search: "",
+            showFilter: false
         }
 
         this.logout = this.logout.bind(this)
         this.readNotifications = this.readNotifications.bind(this)
         this.getNotification = this.getNotification.bind(this)
         this.deleteNotification = this.deleteNotification.bind(this)
+        this.handleClose = this.handleClose.bind(this)
     }
 
     componentWillUnmount() {
@@ -181,6 +186,17 @@ export default class Navbar extends Component {
         this.setState({ [e.target.name]: "" });
     }
 
+    showFilter = (e) => {
+        e.preventDefault();
+        this.setState({
+            showFilter: true
+        })
+    }
+
+    handleClose() {
+        this.setState({ showFilter: false});
+    }
+
     render() {
         const user = this.props.user;
         let notifications = [];
@@ -220,7 +236,10 @@ export default class Navbar extends Component {
                         <Button type="submit">Filter</Button>
                     </Form>
                 </div>
-
+                <Button variant="primary" type="submit" onClick={this.showFilter}>
+                                Filter
+                            </Button>
+                <Filter show={this.state.showFilter} close={this.handleClose} filteredSearch={this.props.filteredSearch} advertisements={this.props.advertisements} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
                 <span className="ml-auto d-flex">
                     {notificationCounter}
                     <Dropdown onToggle={this.readNotifications}>
@@ -237,7 +256,7 @@ export default class Navbar extends Component {
                 </span>
                 <span></span>
                 <Dropdown className="ml-auto">
-                    <Dropdown.Toggle variant="info" id="dropdown-basic">
+                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
                         {user !== undefined && user.info !== undefined ? user.info.name : ""}
                     </Dropdown.Toggle>
                     <Dropdown.Menu alignRight>
