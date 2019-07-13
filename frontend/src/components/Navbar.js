@@ -7,6 +7,7 @@ import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
 import history from '../history'
 import Filter from './Filter'
+import Button from 'react-bootstrap/Button';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell } from '@fortawesome/free-solid-svg-icons'
@@ -23,13 +24,15 @@ export default class Navbar extends Component {
             notificationIds: [],
             isRead: true,
             notReadNotificationCount: 0,
-            search: ""
+            search: "",
+            showFilter: false
         }
 
         this.logout = this.logout.bind(this)
         this.readNotifications = this.readNotifications.bind(this)
         this.getNotification = this.getNotification.bind(this)
         this.deleteNotification = this.deleteNotification.bind(this)
+        this.handleClose = this.handleClose.bind(this)
     }
 
     componentWillUnmount() {
@@ -172,6 +175,17 @@ export default class Navbar extends Component {
         this.setState({ [e.target.name]: "" });
     }
 
+    showFilter = (e) => {
+        e.preventDefault();
+        this.setState({
+            showFilter: true
+        })
+    }
+
+    handleClose() {
+        this.setState({ showFilter: false});
+    }
+
     render() {
         const user = this.props.user;
         let notifications = [];
@@ -211,7 +225,10 @@ export default class Navbar extends Component {
                         </Link>
                     </Form>
                 </div>
-                <Filter advertisements={this.props.advertisements} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
+                <Button variant="primary" type="submit" onClick={this.showFilter}>
+                                Filter
+                            </Button>
+                <Filter show={this.state.showFilter} close={this.handleClose} filteredSearch={this.props.filteredSearch} advertisements={this.props.advertisements} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
                 <span className="ml-auto d-flex">
                     {notificationCounter}
                     <Dropdown onToggle={this.readNotifications}>
