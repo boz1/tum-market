@@ -186,21 +186,27 @@ class App extends Component {
           (input.mainCategory === ad.mainCategory.id) &&
           (input.subCategory === ad.subCategory.id) &&
           (input.condition === ad.condition.id) &&
-          ((input.trade === "On" && ad.trade === true) || input.trade === "Off" && ad.trade === false) &&
-          (ad.price ),
-           console.log(ad)
+          ((input.trade === "On" && ad.trade === true) || (input.trade === "Off" && ad.trade === false)) &&
+          (ad.price >= input.minPrice && ad.price <= input.maxPrice)
+           //,console.log(ad)
           )
 
         )
       }, () => this.forceUpdate())
     }
-    else {
-      console.log(input)
+    else { // not working properly yet
       const regix = new RegExp(`${input.title}`, 'i')
-      this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () => this.forceUpdate())
-    }
-    console.log(this.state.sug)
+      this.setState({
+        buySug: this.state.advertisements.filter(ad => 
+          (regix.test(ad.title) && 
+          (input.mainCategory === ad.mainCategory.id) &&
+          (input.subCategory === ad.subCategory.id) &&
+          (ad.price >= input.minPrice && ad.price <= input.maxPrice)
+          )
 
+        )
+      }, () => this.forceUpdate())
+    }
   }
 
   updateMarket = (market) => {
