@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import firebase from '../config/firebaseConfig';
 import Alert from 'react-bootstrap/Alert'
 import history from '../history'
 import { Switch, Route } from 'react-router-dom'
 import Verification from './Verification'
+import AuthService from '../services/AuthService'
 
 class Login extends Component {
   constructor(props) {
@@ -17,15 +17,14 @@ class Login extends Component {
       name: '',
       address: '',
       mobile: '',
-      showVerify: false
-      // error: {}
+      showVerify: false,
+      alreadyUsedAlert: false
     };
 
     this.signup = this.signup.bind(this);
     this.togglePage = this.togglePage.bind(this);
     this.login = this.login.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    // this.validateForm = this.validateForm.bind(this);
   }
 
   componentDidMount() {
@@ -38,19 +37,19 @@ class Login extends Component {
 
   login(e) {
     e.preventDefault();
-    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
-      .then((u) => {
-        if (!u.user.emailVerified) {
-          this.setState({
-            showVerify: true,
-            showAlert: false,
-            password: ''
-          })
-        }
-        else {
-          this.props.verify()
-        }
-      })
+    AuthService.login(this.state.email, this.state.password).then((data) => {
+      let u = data.us;
+      if (!u.emailVerified) {
+        this.setState({
+          showVerify: true,
+          showAlert: false,
+          password: ''
+        })
+      }
+      else {
+        this.props.verify()
+      }
+    })
       .catch((error) => {
         this.setState({
           showAlert: true,
@@ -66,30 +65,21 @@ class Login extends Component {
   }
 
   signup(e) {
-    // if (this.validateForm()) {
     e.preventDefault();
-    firebase.auth().createUserWithEmailAndPassword(this.state.email + '@mytum.de', this.state.password)
-      .then((u) => {
-        const userId = u.user.uid;
-        const newUser = {
-          address: this.state.address,
-          telephone: this.state.mobile,
-          isPremium: false,
-          id: userId,
-          email: this.state.email + '@mytum.de',
-          name: this.state.name
-        };
+    const newUser = {
+      address: this.state.address,
+      telephone: this.state.mobile,
+      isPremium: false,
+      email: this.state.email + '@mytum.de',
+      name: this.state.name
+    };
 
-        var updates = {};
-        updates['/users/' + userId] = newUser;
-
-        firebase.database().ref().update(updates);
-        history.push('/verify')
+    AuthService.signup(this.state.email, this.state.password, newUser).then((msg) => {
+      history.push('/verify')
+    })
+      .catch((er) => {
+        this.setState({ alreadyUsedAlert: true })
       })
-      .catch((error) => {
-        console.log(error);
-      })
-    // }
   }
 
   render() {
@@ -148,27 +138,25 @@ class Login extends Component {
                       </div>
                     </div>
                   </div>
-                  {/* <div style={{ color: "red" }}>{this.state.error.email}</div> */}
                   <label className="text-sub-title">Password</label>
                   <div className="form-group mb-2">
                     <input required name="password" onChange={this.handleChange} type="password" className="form-control w-75" placeholder="Password" minLength="8" maxLength="20" />
                   </div>
-                  {/* <div style={{ color: "red" }}>{this.state.error.password}</div> */}
                   <label className="text-sub-title">Full Name</label>
                   <div className="form-group mb-2">
-                    <input required pattern="[a-zA-Z\s]{1,40}" title="Name can only have alphabetic characters. (max 40 char.)" maxLength="40" name="name" onChange={this.handleChange} type="text" className="form-control w-75" placeholder="Name + Last Name" />
+                    <input required pattern="[a-zA-ZäöüÄÖÜß\s]{1,40}" title="Name can only have alphabetic characters. (max 40 char.)" maxLength="40" name="name" onChange={this.handleChange} type="text" className="form-control w-75" placeholder="Name + Last Name" />
                   </div>
-                  {/* <div style={{ color: "red" }}>{this.state.error.name}</div> */}
                   <label className="text-sub-title">Mobile Number</label>
                   <div className="form-group mb-2">
                     <input pattern="[0-9+\s]{10,20}" title="Mobile number can only have +, space, and numeric characters. (min 10, max 20 char.)" required name="mobile" onChange={this.handleChange} type="tel" className="form-control w-75" placeholder="Mobile" maxLength="20" />
                   </div>
-                  {/* <div style={{ color: "red" }}>{this.state.error.mobile}</div> */}
                   <label className="text-sub-title">Address <span style={{ color: "#707070", fontSize: "14px" }}>(max 100 characters)</span></label>
                   <div className="form-group mb-2">
                     <input required name="address" onChange={this.handleChange} type="text" className="form-control" placeholder="Address" maxLength="100" />
                   </div>
-                  {/* <div style={{ color: "red" }}>{this.state.error.address}</div> */}
+                  <Alert show={this.state.alreadyUsedAlert} variant={"danger"} >
+                    Email already in use.
+                  </Alert>
                   <div className="d-flex mt-3">
                     <div>
                       <button type="submit" className="btn btn-primary">

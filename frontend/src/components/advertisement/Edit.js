@@ -69,7 +69,7 @@ export default class Edit extends Component {
         const ad = this.props.ad;
 
         if (this.state[item] === "") {
-            if(item === "condition"){
+            if(item === "condition" || item === "mainCategory" || item === "subCategory"){
                 item = ad[item].id;
             }else{
                 item = ad[item];
@@ -211,7 +211,7 @@ export default class Edit extends Component {
                                             <Form.Label className="text-sub-title pl-0 mr-2" style={{ fontSize: "16px" }}>
                                                 Image
                                                  </Form.Label>
-                                            <input type="file" style={{ fontSize: "14px" }} onChange={this.handleImageChange} />
+                                            <input type="file" accept="image/*" style={{ fontSize: "14px" }} onChange={this.handleImageChange} />
                                         </Form.Group>
                                     </div>
                                     <div className="col-sm-6 ml-2">

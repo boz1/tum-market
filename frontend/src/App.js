@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
-import firebase from './config/firebaseConfig'
 import Home from './components/Home';
 import Login from './components/Login';
 import HomeService from './services/HomeService'
+import AuthService from './services/AuthService'
 
 class App extends Component {
   constructor() {
@@ -41,7 +41,8 @@ class App extends Component {
   }
 
   authListener() {
-    firebase.auth().onAuthStateChanged((us) => {
+    AuthService.getUser().then((data) => {
+      let us = data.us
       if (us && us.emailVerified) {
         this.setState({ user: us, mount: 1 });
         localStorage.setItem('user', us.uid);
@@ -51,7 +52,10 @@ class App extends Component {
         this.setState({ user: "", mount: 1 });
         localStorage.removeItem('user');
       }
-    });
+    })
+    .catch((er) => {
+      console.log(er)
+    })
   }
 
   getUserContent(us) {
@@ -143,29 +147,29 @@ class App extends Component {
   }
 
   search(input) {
-    if(input === "null" || input === undefined){
+    if (input === "null" || input === undefined) {
       if (this.state.market === 'sellers') {
         this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
-      }else{
+      } else {
         this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
       }
     }
-    else{
+    else {
       input.preventDefault()
       if (this.state.market === 'sellers') {
         if (input.target.value.length === 0)
-        this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
+          this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
         else {
           const regix = new RegExp(`${input.target.value}`, 'i')
           this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
         }
       }
-      else {      
+      else {
         if (input.target.value.length === 0)
           this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
         else {
           const regix = new RegExp(`${input.target.value}`, 'i')
-          this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () =>  this.forceUpdate())
+          this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () => this.forceUpdate())
         }
       }
     }
@@ -197,7 +201,7 @@ class App extends Component {
   }
 
   updateMarket = (market) => {
-    if(this.state.market !== market){
+    if (this.state.market !== market) {
       this.setState({
         market: market
       })
