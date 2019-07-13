@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
-import firebase from './config/firebaseConfig'
 import Home from './components/Home';
 import Login from './components/Login';
 import HomeService from './services/HomeService'
+import AuthService from './services/AuthService'
 
 class App extends Component {
   constructor() {
@@ -41,7 +41,8 @@ class App extends Component {
   }
 
   authListener() {
-    firebase.auth().onAuthStateChanged((us) => {
+    AuthService.getUser().then((data) => {
+      let us = data.us
       if (us && us.emailVerified) {
         this.setState({ user: us, mount: 1 });
         localStorage.setItem('user', us.uid);
@@ -51,7 +52,10 @@ class App extends Component {
         this.setState({ user: "", mount: 1 });
         localStorage.removeItem('user');
       }
-    });
+    })
+    .catch((er) => {
+      console.log(er)
+    })
   }
 
   getUserContent(us) {

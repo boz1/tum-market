@@ -235,7 +235,7 @@ export default class NewAdvertisement extends Component {
                                             <Form.Label className="text-sub-title pl-0 mr-2" style={{ fontSize: "16px" }}>
                                                 Image
                                                  </Form.Label>
-                                            <input required type="file" onChange={this.handleImageChange} />
+                                            <input required type="file" accept="image/*" onChange={this.handleImageChange} />
                                         </Form.Group>
                                     </div>
                                     <div className="col-sm-6 ml-2">
