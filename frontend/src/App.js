@@ -179,12 +179,18 @@ class App extends Component {
     console.log(input)
 
     if (input.market === "Seller's Market") {
-      //const regix = new RegExp(`${input.title}`, 'i')
+      const regix = new RegExp(`${input.title}`, 'i')
       this.setState({
-        sug: this.state.advertisements.filter(ad => {
-          console.log(ad)
-          //regix.test(ad.title)
-        }
+        sug: this.state.advertisements.filter(ad => 
+          (regix.test(ad.title) && 
+          (input.mainCategory === ad.mainCategory.id) &&
+          (input.subCategory === ad.subCategory.id) &&
+          (input.condition === ad.condition.id) &&
+          ((input.trade === "On" && ad.trade === true) || input.trade === "Off" && ad.trade === false) &&
+          (ad.price ),
+           console.log(ad)
+          )
+
         )
       }, () => this.forceUpdate())
     }
@@ -193,6 +199,8 @@ class App extends Component {
       const regix = new RegExp(`${input.title}`, 'i')
       this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () => this.forceUpdate())
     }
+    console.log(this.state.sug)
+
   }
 
   updateMarket = (market) => {
