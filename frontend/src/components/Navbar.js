@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import NotificationService from '../services/NotificationService'
+import AuthService from '../services/AuthService';
 
 
 export default class Navbar extends Component {
@@ -72,8 +73,12 @@ export default class Navbar extends Component {
     }
 
     logout() {
-        firebase.auth().signOut();
-        history.push('/')
+        AuthService.logout(this.state.email, this.state.password).then((data) => {
+            window.location.reload();
+        })
+            .catch((er) => {
+                console.log(er)
+            })
     }
 
     readNotifications(isShown) {

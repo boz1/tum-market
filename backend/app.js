@@ -6,6 +6,7 @@ var logger = require('morgan');
 var cors = require("cors");
 
 var home = require("./routes/home");
+var auth = require("./routes/auth");
 var ad = require("./routes/ad");
 var trade = require("./routes/trade");
 var buy = require("./routes/buy");
@@ -25,6 +26,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', home);
+app.use('/auth', auth);
 app.use('/ad', ad);
 app.use('/trade', trade);
 app.use('/buy', buy)
