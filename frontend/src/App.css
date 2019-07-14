@@ -99,7 +99,7 @@ body{
 }
 
 .details-list{
-  width: 300px;
+  width: 100%;
   float: right;
 }
 
@@ -206,4 +206,13 @@ a[aria-disabled="true"] {
 
 .premium {
   border: 1px solid #006BD6 !important
+}
+
+.buy-card:link:hover{
+  text-decoration: none;
+}
+
+.card-title{
+  color: #444444;
+  font-weight: bold;
 }
