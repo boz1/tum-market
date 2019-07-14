@@ -34,6 +34,7 @@ class App extends Component {
     this.getMainContent = this.getMainContent.bind(this)
     this.getUserContent = this.getUserContent.bind(this)
     this.authListener = this.authListener.bind(this);
+    this.getCategory = this.getCategory.bind(this);
   }
 
   componentDidMount() {
@@ -53,9 +54,9 @@ class App extends Component {
         localStorage.removeItem('user');
       }
     })
-    .catch((er) => {
-      console.log(er)
-    })
+      .catch((er) => {
+        console.log(er)
+      })
   }
 
   getUserContent(us) {
@@ -177,27 +178,65 @@ class App extends Component {
 
   filteredSearch(input) {
     console.log(input)
-      if (input.market === "Seller's Market") {
-        
-        console.log(input)
+    if (input.market === "Seller's Market") {
+
+      console.log(input)
       /*  if (input.target.value.length === 0)
         this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
         else {
           const regix = new RegExp(`${input.target.value}`, 'i')
           this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
         }*/
-      }
-      else {
-        console.log(input)      
-        /*if (input.target.value.length === 0)
-          this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
-        else {
-          const regix = new RegExp(`${input.target.value}`, 'i')
-          this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () =>  this.forceUpdate())
-        }
-        */
     }
-    
+    else {
+      console.log(input)
+      /*if (input.target.value.length === 0)
+        this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
+      else {
+        const regix = new RegExp(`${input.target.value}`, 'i')
+        this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () =>  this.forceUpdate())
+      }
+      */
+    }
+
+  }
+
+  getCategory(cat) {
+    const mainCat = cat.split('-')[0]
+    const subCat = cat.split('-')[1]
+    if (this.state.market === 'sellers') {
+      // Main Category
+      if (subCat === "*") {
+        this.setState({
+          sug: this.state.advertisements.filter(ad =>
+            ad.mainCategoryId === parseInt(mainCat)
+          )
+        }, () => this.forceUpdate())
+      }
+      else { // Sub Category
+        this.setState({
+          sug: this.state.advertisements.filter(ad =>
+            ad.mainCategoryId === parseInt(mainCat) && ad.subCategoryId === parseInt(subCat)
+          )
+        }, () => this.forceUpdate())
+      }
+    } else {
+      // Main Category
+      if (subCat === "*") {
+        this.setState({
+          buySug: this.state.buyingRequests.filter(buy =>
+            buy.mainCategoryId === parseInt(mainCat)
+          )
+        }, () => this.forceUpdate())
+      }
+      else { // Sub Category
+        this.setState({
+          buySug: this.state.buyingRequests.filter(buy =>
+            buy.mainCategoryId === parseInt(mainCat) && buy.subCategoryId === parseInt(subCat)
+          )
+        }, () => this.forceUpdate())
+      }
+    }
   }
 
   updateMarket = (market) => {
@@ -211,7 +250,7 @@ class App extends Component {
   render() {
     if (this.state.mount) {
       return (
-        <div>{this.state.user ? (<Home updateMarket={this.updateMarket} filteredSearch={this.filteredSearch} search={this.search} buyingRequests={this.state.buyingRequests}  buySug={this.state.buySug}  reRender={this.reRender} user={this.state.userInfo} advertisements={this.state.advertisements} sug={this.state.sug} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />) : <Login verify={this.authListener} />}</div>)
+        <div>{this.state.user ? (<Home getCategory={this.getCategory} updateMarket={this.updateMarket} filteredSearch={this.filteredSearch} search={this.search} buyingRequests={this.state.buyingRequests} buySug={this.state.buySug} reRender={this.reRender} user={this.state.userInfo} advertisements={this.state.advertisements} sug={this.state.sug} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />) : <Login verify={this.authListener} />}</div>)
     }
     else {
       return (<div></div>)

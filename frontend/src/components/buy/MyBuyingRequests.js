@@ -32,7 +32,7 @@ export default class MyBuyingRequests extends Component {
         </Form>
         return (
             <React.Fragment>
-                <BuyList title="My Buying Requests" searchBar={search} reRender={this.props.reRender} buyingRequests={this.state.data} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} />
+                <BuyList title="My Buying Requests"getCategory={this.props.getCategory}  searchBar={search} reRender={this.props.reRender} buyingRequests={this.state.data} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} />
             </React.Fragment >
         )
     }
