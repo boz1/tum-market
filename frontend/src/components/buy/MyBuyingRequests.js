@@ -28,7 +28,7 @@ export default class MyBuyingRequests extends Component {
     render() {
         this.props.updateMarket('buyers')
         const search = <Form inline>
-        <FormControl className="mr-sm-2 search" onChange={this.search} type="text" placeholder="Search your requests..." style={{ marginLeft: "27%", marginTop: "10px" }} />
+        <FormControl className="search" onChange={this.search} type="text" placeholder="Search your requests..." style={{ marginLeft: "20%", marginTop: "10px" }} />
         </Form>
         return (
             <React.Fragment>
