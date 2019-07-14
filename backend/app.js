@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require("cors");
+var middlewares = require('./middlewares');
 
 var home = require("./routes/home");
 var auth = require("./routes/auth");
@@ -24,6 +25,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(middlewares.allowCrossDomain);
+
 
 app.use('/', home);
 app.use('/auth', auth);
