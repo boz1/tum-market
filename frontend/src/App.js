@@ -4,6 +4,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import HomeService from './services/HomeService'
 import AuthService from './services/AuthService'
+import history from './history'
 
 class App extends Component {
   constructor() {
@@ -204,38 +205,22 @@ class App extends Component {
   getCategory(cat) {
     const mainCat = cat.split('-')[0]
     const subCat = cat.split('-')[1]
-    if (this.state.market === 'sellers') {
-      // Main Category
-      if (subCat === "*") {
-        this.setState({
-          sug: this.state.advertisements.filter(ad =>
-            ad.mainCategoryId === parseInt(mainCat)
-          )
-        }, () => this.forceUpdate())
-      }
-      else { // Sub Category
-        this.setState({
-          sug: this.state.advertisements.filter(ad =>
-            ad.mainCategoryId === parseInt(mainCat) && ad.subCategoryId === parseInt(subCat)
-          )
-        }, () => this.forceUpdate())
-      }
-    } else {
-      // Main Category
-      if (subCat === "*") {
-        this.setState({
-          buySug: this.state.buyingRequests.filter(buy =>
-            buy.mainCategoryId === parseInt(mainCat)
-          )
-        }, () => this.forceUpdate())
-      }
-      else { // Sub Category
-        this.setState({
-          buySug: this.state.buyingRequests.filter(buy =>
-            buy.mainCategoryId === parseInt(mainCat) && buy.subCategoryId === parseInt(subCat)
-          )
-        }, () => this.forceUpdate())
-      }
+    // Main Category
+    if (subCat === "*") {
+      this.setState({
+        sug: this.state.advertisements.filter(ad =>
+          ad.mainCategoryId === parseInt(mainCat)
+        )
+      }, () => this.forceUpdate())
+      history.push('/')
+    }
+    else { // Sub Category
+      this.setState({
+        sug: this.state.advertisements.filter(ad =>
+          ad.mainCategoryId === parseInt(mainCat) && ad.subCategoryId === parseInt(subCat)
+        )
+      }, () => this.forceUpdate())
+      history.push('/')
     }
   }
 
