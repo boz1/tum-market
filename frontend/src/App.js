@@ -196,10 +196,10 @@ class App extends Component {
         )
       }, () => this.forceUpdate())
     }
-    else { // not working properly yet
+    else { 
       const regix = new RegExp(`${input.title}`, 'i')
       this.setState({
-        buySug: this.state.advertisements.filter(ad => 
+        buySug: this.state.buyingRequests.filter(ad => 
           (regix.test(ad.title) && 
           (input.mainCategory === ad.mainCategory.id) &&
           (input.subCategory === ad.subCategory.id) &&
@@ -210,7 +210,27 @@ class App extends Component {
       }, () => this.forceUpdate())
     }
   }
-
+  getCategory(cat) {
+    const mainCat = cat.split('-')[0]
+    const subCat = cat.split('-')[1]
+    // Main Category
+    if (subCat === "*") {
+      this.setState({
+        sug: this.state.advertisements.filter(ad =>
+          ad.mainCategoryId === parseInt(mainCat)
+        )
+      }, () => this.forceUpdate())
+      history.push('/')
+    }
+    else { // Sub Category
+      this.setState({
+        sug: this.state.advertisements.filter(ad =>
+          ad.mainCategoryId === parseInt(mainCat) && ad.subCategoryId === parseInt(subCat)
+        )
+      }, () => this.forceUpdate())
+      history.push('/')
+    }
+  }
   updateMarket = (market) => {
     if (this.state.market !== market) {
       this.setState({
