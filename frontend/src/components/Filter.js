@@ -70,24 +70,9 @@ export default class Filter extends Component {
         return item;
     }
 
-    //not sure if this is also needed to do
-    /*handleCancel() {
-        document.getElementById("create-filteredsearch-form").reset();
-
-        this.setState({
-            mainCategory: '',
-            subCategory: '',
-            condition: '',
-            title: '',
-            minPrice: 0,
-            maxPrice: 0,
-            trade: "On",
-        });
-
-    }*/
-
     handleSubmit(event) {
         event.preventDefault()
+        this.props.close()
         this.props.filteredSearch(this.state)
     };
 

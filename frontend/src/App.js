@@ -190,11 +190,11 @@ class App extends Component {
           (input.condition === ad.condition.id) &&
           ((input.trade === "On" && ad.trade === true) || (input.trade === "Off" && ad.trade === false)) &&
           (ad.price >= input.minPrice && ad.price <= input.maxPrice)
-           //,console.log(ad)
           )
 
         )
       }, () => this.forceUpdate())
+      history.push('/')
     }
     else { 
       const regix = new RegExp(`${input.title}`, 'i')
@@ -208,6 +208,7 @@ class App extends Component {
 
         )
       }, () => this.forceUpdate())
+      history.push('/buyMarket')
     }
   }
   getCategory(cat) {
