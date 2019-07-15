@@ -58,7 +58,7 @@ export default class AdService {
                                     resolve(data.message);
                                 }
                                 else {
-                                    reject('Error while creating');
+                                    reject('Error while updating');
                                 }
                             }, function (textStatus) {
                                 reject(textStatus);
@@ -74,7 +74,7 @@ export default class AdService {
                         resolve(data.message);
                     }
                     else {
-                        reject('Error while creating');
+                        reject('Error while updating');
                     }
                 }, function (textStatus) {
                     reject(textStatus);

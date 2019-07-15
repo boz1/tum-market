@@ -4,11 +4,14 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require("cors");
+var middlewares = require('./middlewares');
 
 var home = require("./routes/home");
+var auth = require("./routes/auth");
 var ad = require("./routes/ad");
 var trade = require("./routes/trade");
-var buy = require("./routes/buy")
+var buy = require("./routes/buy");
+var notification = require("./routes/notification");
 
 var app = express();
 
@@ -22,11 +25,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(middlewares.allowCrossDomain);
+
 
 app.use('/', home);
+app.use('/auth', auth);
 app.use('/ad', ad);
 app.use('/trade', trade);
 app.use('/buy', buy)
+app.use('/notification', notification)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

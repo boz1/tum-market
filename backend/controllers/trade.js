@@ -1,6 +1,7 @@
 "use strict"
 
-const firebase = require('../firebaseConfig')
+const firebase = require('../config/firebaseConfig');
+const config = require('../config/secret');
 const nodemailer = require("nodemailer");
 
 
@@ -11,21 +12,21 @@ async function sendMail(to, subject, text, ) {
         port: 587,
         secure: false, // true for 465, false for other ports
         auth: {
-            user: "tummarket@hotmail.com", // generated ethereal user
-            pass: "Tumm201(" // generated ethereal password
+            user: config.username,
+            pass: config.pass
         }
     });
 
     // send mail with defined transport object
     let info = await transporter.sendMail({
-        from: '"TumMarket"tummarket@hotmail.com', // sender address
+        from: '"Tum Market" tummarket@hotmail.com', // sender address
         to: to, // list of receivers
         subject: subject, // Subject line
         text: text, // plain text body
     });
 
+    console.log("Message sent: %s", info.messageId);
 }
-
 
 const getTradeReq = (req, res) => {
     const id = req.params.id;
@@ -77,7 +78,6 @@ const deleteSentReq = (req, res) => {
     let checkTradeReqRef;
 
     let reqs = [];
-
     new Promise((resolve) => {
         checkTradeReqRef = firebase.database().ref('trade-requests').child(userId).orderByChild("offeredItemId").equalTo(id)
         checkTradeReqRef.once('value').then(snap => {
@@ -94,13 +94,14 @@ const deleteSentReq = (req, res) => {
                     firebase.database().ref('received-offers').child(req.sellerId).child(req.id).remove()
 
                     var newPostKey = firebase.database().ref('notifications').child(req.sellerId).push().key;
-                    let message = userName + " has deleted their " + title + " advertisement. The trade offer sent to you is also deleted."
-
+                    let message = userName + " has deleted their " + title + " advertisement. The trade request sent to you is also deleted."
                     const notification = {
                         id: newPostKey,
                         message: message,
                         isRead: false
                     };
+
+                    firebase.database().ref('users').child(sellerId).once('value').then(async snap => sendMail(snap.val().email, 'Trade Request Deleted', notification.message))
 
                     var updates = {};
                     updates['/notifications/' + req.sellerId + '/' + newPostKey] = notification;
@@ -114,13 +115,14 @@ const deleteSentReq = (req, res) => {
                 firebase.database().ref('received-offers').child(sellerId).child(id).remove()
 
                 var newPostKey = firebase.database().ref('notifications').child(sellerId).push().key;
-                let message = userName + " has deleted their trade request."
-
+                let message = userName + " has deleted their trade request for your " + title + "."
                 const notification = {
                     id: newPostKey,
                     message: message,
                     isRead: false
                 };
+
+                firebase.database().ref('users').child(sellerId).once('value').then(async snap => sendMail(snap.val().email, 'Trade Request Deleted', notification.message))
 
                 var updates = {};
                 updates['/notifications/' + sellerId + '/' + newPostKey] = notification;
@@ -128,8 +130,6 @@ const deleteSentReq = (req, res) => {
 
                 res.status(200).json({ message: `Sent request is deleted` })
             }
-
-
         })
         .catch(error => {
             res.status(500).json({
@@ -166,9 +166,11 @@ const deleteReceivedReq = (req, res) => {
 
                 const notification = {
                     id: newPostKey,
-                    message: userName + " has deleted their " + title + " advertisement. The trade offer you sent is also deleted.",
+                    message: userName + " has deleted their " + title + " advertisement. The trade request you sent is also deleted.",
                     isRead: false
                 };
+
+                firebase.database().ref('users').child(buyerId).once('value').then(async snap => sendMail(snap.val().email, 'Trade Request Deleted', notification.message))
 
                 var updates = {};
                 updates['/notifications/' + req.buyerId + '/' + newPostKey] = notification;
@@ -229,6 +231,8 @@ const sendTradeReq = (req, res) => {
             isRead: false
         };
 
+        sendMail(ad.user.email, 'New Trade Request', notification.message);
+
         var updates = {};
         updates['/trade-requests/' + user.info.id + '/' + newPostKey] = postDataBuyer;
         updates['/received-offers/' + ad.userId + '/' + newPostKey] = postDataSeller;
@@ -239,7 +243,7 @@ const sendTradeReq = (req, res) => {
         resolve();
     })
         .then(() => {
-            res.status(200).json({ message: `Created new ad` })
+            res.status(200).json({ message: `Sent trade request` })
         })
         .catch(error => {
             res.status(500).json({
@@ -364,7 +368,6 @@ const getSentItem = (req, res) => {
 };
 
 const updateStatus = (req, res) => {
-    console.log('adsladsakl')
     if (Object.keys(req.body).length === 0) return res.status(400).json({
         error: 'Bad Request',
         message: 'The request body is empty'

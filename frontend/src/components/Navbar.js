@@ -2,14 +2,19 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import firebase from '../config/firebaseConfig';
 import logo from '../assests/logo.svg'
-import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Dropdown from 'react-bootstrap/Dropdown';
 import history from '../history'
+import Filter from './Filter'
+import Button from 'react-bootstrap/Button';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import NotificationService from '../services/NotificationService'
+import AuthService from '../services/AuthService';
+
 
 
 export default class Navbar extends Component {
@@ -20,29 +25,21 @@ export default class Navbar extends Component {
             notificationIds: [],
             isRead: true,
             notReadNotificationCount: 0,
-            search: ""
+            search: "",
+            showFilter: false
         }
 
         this.logout = this.logout.bind(this)
         this.readNotifications = this.readNotifications.bind(this)
         this.getNotification = this.getNotification.bind(this)
         this.deleteNotification = this.deleteNotification.bind(this)
+        this.handleClose = this.handleClose.bind(this)
     }
 
     componentWillUnmount() {
         if (this.notifRef !== undefined) {
             this.notifRef.off('value')
             this.notifRef = null;
-        }
-
-        if (this.removeNotifRef !== undefined) {
-            this.removeNotifRef.off('value')
-            this.removeNotifRef = null;
-        }
-
-        if (this.notifReadRef !== undefined) {
-            this.notifReadRef.off('value')
-            this.notifReadRef = null;
         }
     }
 
@@ -54,59 +51,66 @@ export default class Navbar extends Component {
                 if (!this.state.notificationIds.includes(id)) {
                     let isRead = snap.val().isRead;
                     let notReadNotifCount = this.state.notReadNotificationCount;
-                    if (!isRead) {
-                        notReadNotifCount++;
-                    }
                     let notification = snap.val();
                     let idObj = this.state.notificationIds;
                     let notifObj = this.state.notifications;
                     idObj.push(id);
                     notifObj.push(notification)
-                    this.setState({
-                        notifications: notifObj,
-                        notificationIds: idObj,
-                        isRead: isRead,
-                        notReadNotificationCount: notReadNotifCount
-                    })
+                    if (!isRead) {
+                        notReadNotifCount++;
+                        this.setState({
+                            notifications: notifObj,
+                            notificationIds: idObj,
+                            isRead: isRead,
+                            notReadNotificationCount: notReadNotifCount
+                        })
+                    }
+                    else {
+                        this.setState({
+                            notifications: notifObj,
+                            notificationIds: idObj,
+                            notReadNotificationCount: notReadNotifCount
+                        })
+                    }
                 }
             })
         }
     }
 
     logout() {
-        firebase.auth().signOut();
-        history.push('/')
+        AuthService.logout(this.state.email, this.state.password).then((data) => {
+            window.location.reload();
+        })
+            .catch((er) => {
+                console.log(er)
+            })
     }
 
     readNotifications(isShown) {
         if (this.props.user !== undefined && this.props.user.info !== undefined && !this.state.isRead) {
-            this.notifReadRef = firebase.database().ref('notifications').child(this.props.user.info.id).orderByChild('isRead').equalTo(false)
-            this.notifReadRef.on('value', function (snap) {
-                snap.forEach(function (notification) {
-                    notification.ref.update({ isRead: true });
-                });
-            });
+            NotificationService.readNotifications(this.props.user.info.id).then((msg) => {
+                let notifications = this.state.notifications;
+                let isRead = this.state.isRead;
 
-            this.notifReadRef.off('value')
-            this.notifReadRef = null;
+                if (!isShown) {
+                    notifications.forEach(function (notification) {
+                        if (!notification.isRead) {
+                            notification.isRead = true;
+                        }
+                    })
+                    isRead = true;
+                }
 
-            let notifications = this.state.notifications;
-            let isRead = this.state.isRead;
-
-            if (!isShown) {
-                notifications.forEach(function (notification) {
-                    if (!notification.isRead) {
-                        notification.isRead = true;
-                    }
+                this.setState({
+                    isRead: isRead,
+                    notReadNotificationCount: 0,
+                    notifications: notifications
                 })
-                isRead = true;
-            }
 
-            this.setState({
-                isRead: isRead,
-                notReadNotificationCount: 0,
-                notifications: notifications
-            })
+                this.props.reRender()
+            }).catch((e) => {
+                console.log(e);
+            });
         }
     }
 
@@ -121,7 +125,6 @@ export default class Navbar extends Component {
             notificationContainer =
                 <Link to={{ pathname: '/tradeRequests' }} className="dropdown-item" style={{ padding: "0.75rem", background: "#C7DCF2" }}>{notification.message}</Link>
         }
-
         return <span>
             <div className="d-flex" style={{ padding: "0.5rem" }}>
                 {notificationContainer}
@@ -165,7 +168,11 @@ export default class Navbar extends Component {
                 notReadNotificationCount: notifCount
             })
 
-            this.removeNotifRef = firebase.database().ref('notifications').child(this.props.user.info.id).child(id).remove();
+            NotificationService.deleteNotification(this.props.user.info.id, id).then((msg) => {
+            }).catch((e) => {
+                console.log(e);
+            });
+
         }
     }
 
@@ -173,10 +180,21 @@ export default class Navbar extends Component {
         this.props.changeMarket('sell')
         history.push('/')
     }
-    
+
     reset = (e) => {
         this.props.reRender();
         this.setState({ [e.target.name]: "" });
+    }
+
+    showFilter = (e) => {
+        e.preventDefault();
+        this.setState({
+            showFilter: true
+        })
+    }
+
+    handleClose() {
+        this.setState({ showFilter: false});
     }
 
     render() {
@@ -195,7 +213,7 @@ export default class Navbar extends Component {
         }
 
         if (this.state.notificationIds.length > 0) {
-            this.state.notifications.slice(0).reverse().map((notif) => notifications.push(<span key={notif.id}>{this.getNotification(notif)}</span>))
+            this.state.notifications.slice(0).map((notif) => notifications.push(<span key={notif.id}>{this.getNotification(notif)}</span>))
         }
         else {
             notifications.push(<Dropdown.Item key={'no-notif-key'} disabled>No notifications.</Dropdown.Item>)
@@ -203,9 +221,9 @@ export default class Navbar extends Component {
 
         return (
             <nav className="navbar navbar-expand-sm px-sm-5 nav-back">
-                <span onClick={this.refresh} style={{cursor:"pointer"}}>
+                <span onClick={this.refresh} style={{ cursor: "pointer" }}>
                     <img src={logo} alt="Tum Market" className="navbar-brand img-responsive" style={{ width: "55px" }} />
-                    </span>
+                </span>
                 <ul className="navbar-nav align-items-center">
                     <li className="nav-item ml-5">
                         <Link to="/newAdvertisement" className="text-new-ad text-decoration-none">New Advertisement</Link>
@@ -213,12 +231,14 @@ export default class Navbar extends Component {
                 </ul>
                 <div className="ml-auto">
                     <Form inline>
-                        <FormControl name="search" onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />  
+                        <FormControl name="search" onChange={this.props.search} placeholder="Type in Product Title..." className="mr-sm-2 search" />
                         <Button type="reset" onClick={this.reset} variant="danger" className="mr-1">Clear</Button>
-                        <Button type="submit">Filter</Button>
                     </Form>
                 </div>
-
+                <Button variant="primary" type="submit" onClick={this.showFilter}>
+                                Filter
+                            </Button>
+                <Filter show={this.state.showFilter} close={this.handleClose} filteredSearch={this.props.filteredSearch} advertisements={this.props.advertisements} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
                 <span className="ml-auto d-flex">
                     {notificationCounter}
                     <Dropdown onToggle={this.readNotifications}>
@@ -235,15 +255,13 @@ export default class Navbar extends Component {
                 </span>
                 <span></span>
                 <Dropdown className="ml-auto">
-                    <Dropdown.Toggle variant="info" id="dropdown-basic">
+                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
                         {user !== undefined && user.info !== undefined ? user.info.name : ""}
                     </Dropdown.Toggle>
                     <Dropdown.Menu alignRight>
-                        <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
                         <Link to={{ pathname: '/myAds' }} className="dropdown-item">My Advertisements</Link>
                         <Link to={{ pathname: '/myBuy' }} className="dropdown-item">My Buying Requests</Link>
                         <Link to={{ pathname: '/tradeRequests' }} className="dropdown-item">My Trade Requests</Link>
-                        <Dropdown.Item href="#/action-3">Chat Bot</Dropdown.Item>
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={this.logout}>Log Out</Dropdown.Item>
                     </Dropdown.Menu>

@@ -28,11 +28,11 @@ export default class MyBuyingRequests extends Component {
     render() {
         this.props.updateMarket('buyers')
         const search = <Form inline>
-        <FormControl className="mr-sm-2 search" onChange={this.search} type="text" placeholder="Search your requests..." style={{ marginLeft: "27%", marginTop: "10px" }} />
+        <FormControl className="search" onChange={this.search} type="text" placeholder="Search your requests..." style={{ marginLeft: "20%", marginTop: "10px" }} />
         </Form>
         return (
             <React.Fragment>
-                <BuyList title="My Buying Requests" searchBar={search} reRender={this.props.reRender} buyingRequests={this.state.data} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} />
+                <BuyList title="My Buying Requests"getCategory={this.props.getCategory}  searchBar={search} reRender={this.props.reRender} buyingRequests={this.state.data} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} />
             </React.Fragment >
         )
     }
