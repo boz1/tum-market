@@ -70,24 +70,9 @@ export default class Filter extends Component {
         return item;
     }
 
-    //not sure if this is also needed to do
-    /*handleCancel() {
-        document.getElementById("create-filteredsearch-form").reset();
-
-        this.setState({
-            mainCategory: '',
-            subCategory: '',
-            condition: '',
-            title: '',
-            minPrice: 0,
-            maxPrice: 0,
-            trade: "On",
-        });
-
-    }*/
-
     handleSubmit(event) {
         event.preventDefault()
+        this.props.close()
         this.props.filteredSearch(this.state)
     };
 
@@ -122,15 +107,15 @@ export default class Filter extends Component {
         if (this.props.subCategories.length > 0) {
             let id = this.state.mainCategory;
             if (id !== '') {
-                subCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
+                subCatContainer = <PropertyDropdown isRequired={true} handleChange={this.handleDropChange} target="subCategory" items={this.props.subCategories[id]} title="Sub Category" />
             }
             else {
-                subCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
+                subCatContainer = <PropertyDropdown isRequired={true} handleChange={this.handleDropChange} target="subCategory" items={[]} title="Sub Category" />
             }
         }
 
         if (this.props.conditions.length > 0) {
-            conditionsContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="condition" items={this.props.conditions} title="Condition" />
+            conditionsContainer = <PropertyDropdown isRequired={true} handleChange={this.handleDropChange} target="condition" items={this.props.conditions} title="Condition" />
         }
 
         let body;
@@ -155,7 +140,7 @@ export default class Filter extends Component {
                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                     Title
                                  </Form.Label>
-                                <Form.Control name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
+                                <Form.Control required name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -188,11 +173,11 @@ export default class Filter extends Component {
                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                     Min Price (€)
                                  </Form.Label>
-                                <Form.Control name="minPrice" type="number" onChange={this.handleChange} placeholder="€" min={0} max={this.state.maxPrice} step="0.01" />
+                                <Form.Control required name="minPrice" type="number" onChange={this.handleChange} placeholder="€" min={0} step="0.01" />
                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                     Max Price (€)
                                  </Form.Label>
-                                <Form.Control name="maxPrice" type="number" onChange={this.handleChange} placeholder="€" min={this.state.minPrice} step="0.01" />
+                                <Form.Control required name="maxPrice" type="number" onChange={this.handleChange} placeholder="€" min={this.state.minPrice} step="0.01" />
                             </Form.Group>
 
                         </div>
@@ -226,17 +211,17 @@ export default class Filter extends Component {
                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                     Title
                                                  </Form.Label>
-                                <Form.Control name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
+                                <Form.Control required name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                     Min Price (€)
                                                  </Form.Label>
-                                <Form.Control name="minPrice" type="number" onChange={this.handleChange} placeholder="€" min={0} max={this.state.maxPrice} step="0.01" />
+                                <Form.Control required name="minPrice" type="number" onChange={this.handleChange} placeholder="€" min={0} step="0.01" />
                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                     Max Price (€)
                                                  </Form.Label>
-                                <Form.Control name="maxPrice" type="number" onChange={this.handleChange} placeholder="€" min={this.state.minPrice} step="0.01" />
+                                <Form.Control required name="maxPrice" type="number" onChange={this.handleChange} placeholder="€" min={this.state.minPrice} step="0.01" />
                             </Form.Group>
 
                         </div>

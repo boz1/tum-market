@@ -179,29 +179,38 @@ class App extends Component {
 
   filteredSearch(input) {
     console.log(input)
+
     if (input.market === "Seller's Market") {
+      const regix = new RegExp(`${input.title}`, 'i')
+      this.setState({
+        sug: this.state.advertisements.filter(ad => 
+          (regix.test(ad.title) && 
+          (input.mainCategory === ad.mainCategory.id) &&
+          (input.subCategory === ad.subCategory.id) &&
+          (input.condition === ad.condition.id) &&
+          ((input.trade === "On" && ad.trade === true) || (input.trade === "Off" && ad.trade === false)) &&
+          (ad.price >= input.minPrice && ad.price <= input.maxPrice)
+          )
 
-      console.log(input)
-      /*  if (input.target.value.length === 0)
-        this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
-        else {
-          const regix = new RegExp(`${input.target.value}`, 'i')
-          this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
-        }*/
+        )
+      }, () => this.forceUpdate())
+      history.push('/')
     }
-    else {
-      console.log(input)
-      /*if (input.target.value.length === 0)
-        this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
-      else {
-        const regix = new RegExp(`${input.target.value}`, 'i')
-        this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () =>  this.forceUpdate())
-      }
-      */
-    }
+    else { 
+      const regix = new RegExp(`${input.title}`, 'i')
+      this.setState({
+        buySug: this.state.buyingRequests.filter(ad => 
+          (regix.test(ad.title) && 
+          (input.mainCategory === ad.mainCategory.id) &&
+          (input.subCategory === ad.subCategory.id) &&
+          (ad.price >= input.minPrice && ad.price <= input.maxPrice)
+          )
 
+        )
+      }, () => this.forceUpdate())
+      history.push('/buyMarket')
+    }
   }
-
   getCategory(cat) {
     const mainCat = cat.split('-')[0]
     const subCat = cat.split('-')[1]
@@ -223,7 +232,6 @@ class App extends Component {
       history.push('/')
     }
   }
-
   updateMarket = (market) => {
     if (this.state.market !== market) {
       this.setState({
