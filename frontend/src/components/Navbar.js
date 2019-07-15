@@ -259,11 +259,9 @@ export default class Navbar extends Component {
                         {user !== undefined && user.info !== undefined ? user.info.name : ""}
                     </Dropdown.Toggle>
                     <Dropdown.Menu alignRight>
-                        <Dropdown.Item href="#/action-1">Profile</Dropdown.Item>
                         <Link to={{ pathname: '/myAds' }} className="dropdown-item">My Advertisements</Link>
                         <Link to={{ pathname: '/myBuy' }} className="dropdown-item">My Buying Requests</Link>
                         <Link to={{ pathname: '/tradeRequests' }} className="dropdown-item">My Trade Requests</Link>
-                        <Dropdown.Item href="#/action-3">Chat Bot</Dropdown.Item>
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={this.logout}>Log Out</Dropdown.Item>
                     </Dropdown.Menu>

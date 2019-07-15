@@ -109,7 +109,7 @@ export default class BuyList extends Component {
     }
 
     changeMarket = () =>{
-        this.props.changeMarket('sell')
+        this.props.changeMarket('sellers')
     }
 
     render() {
@@ -123,7 +123,7 @@ export default class BuyList extends Component {
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
                     <div className="col-md-3 mt-5">
-                        <Colbar props={this.props.categories}></Colbar>
+                        <Colbar getCategory={this.props.getCategory} categories={this.props.categories} subCategories={this.props.subCategories}></Colbar>
                     </div>
                     <div className="col-md-9">
                         <form className="form-inline">
@@ -133,7 +133,7 @@ export default class BuyList extends Component {
                             <div className="row mt-2 ml-auto">
                                 <div className="col-12">
                                     <Button type="submit" onClick={this.showModal} >New Request</Button>
-                                    <span style={{ fontSize: "16px", paddingTop: "7px", color: "#2A2525", marginLeft: "20px"}}>{this.state.sort}</span>
+                                    <span style={{ fontSize: "16px", paddingTop: "7px", color: "#2A2525", marginLeft: "5px"}}>{this.state.sort}</span>
                                     <Dropdown style={{ background: "#3482D1", borderRadius: "0.25rem", marginLeft: "20px" }}>
                                         <Dropdown.Toggle variant="info" id="dropdown-basic">Sort By</Dropdown.Toggle>
                                         <Dropdown.Menu alignRight>

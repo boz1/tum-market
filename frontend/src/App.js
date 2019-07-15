@@ -4,6 +4,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import HomeService from './services/HomeService'
 import AuthService from './services/AuthService'
+import history from './history'
 
 class App extends Component {
   constructor() {
@@ -34,6 +35,7 @@ class App extends Component {
     this.getMainContent = this.getMainContent.bind(this)
     this.getUserContent = this.getUserContent.bind(this)
     this.authListener = this.authListener.bind(this);
+    this.getCategory = this.getCategory.bind(this);
   }
 
   componentDidMount() {
@@ -53,9 +55,9 @@ class App extends Component {
         localStorage.removeItem('user');
       }
     })
-    .catch((er) => {
-      console.log(er)
-    })
+      .catch((er) => {
+        console.log(er)
+      })
   }
 
   getUserContent(us) {
@@ -220,7 +222,7 @@ class App extends Component {
   render() {
     if (this.state.mount) {
       return (
-        <div>{this.state.user ? (<Home updateMarket={this.updateMarket} filteredSearch={this.filteredSearch} search={this.search} buyingRequests={this.state.buyingRequests} buySug={this.state.buySug} reRender={this.reRender} user={this.state.userInfo} advertisements={this.state.advertisements} sug={this.state.sug} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />) : <Login verify={this.authListener} />}</div>)
+        <div>{this.state.user ? (<Home getCategory={this.getCategory} updateMarket={this.updateMarket} filteredSearch={this.filteredSearch} search={this.search} buyingRequests={this.state.buyingRequests} buySug={this.state.buySug} reRender={this.reRender} user={this.state.userInfo} advertisements={this.state.advertisements} sug={this.state.sug} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />) : <Login verify={this.authListener} />}</div>)
     }
     else {
       return (<div></div>)

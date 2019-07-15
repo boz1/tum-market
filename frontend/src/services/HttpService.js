@@ -3,8 +3,15 @@ export default class HttpService {
     static apiURL() { return "http://localhost:9000"; }
 
     static get(url, onSuccess, onError) {
+        let token = window.localStorage['user'];
+        let header = new Headers();
+        if(token !== undefined) {
+            header.append('Authorization', `${token}`);
+        }
+
         fetch(url, {
             method: 'GET',
+            headers: header
         }).then((resp) => {
             onSuccess(resp.clone().json())
         }).catch((e) => {
@@ -14,6 +21,10 @@ export default class HttpService {
 
     static put(url, data, onSuccess, onError) {
         let header = new Headers();
+        let token = window.localStorage['user'];
+        if(token !== undefined) {
+            header.append('Authorization', `${token}`);
+        }
         header.append('Content-Type', 'application/json');
 
         fetch(url, {
@@ -36,6 +47,10 @@ export default class HttpService {
 
     static post(url, data, onSuccess, onError) {
         let header = new Headers();
+        let token = window.localStorage['user'];
+        if(token !== undefined) {
+            header.append('Authorization', `${token}`);
+        }
         header.append('Content-Type', 'application/json');
 
         fetch(url, {
@@ -57,9 +72,15 @@ export default class HttpService {
     }
 
     static remove(url, onSuccess, onError) {
+        let header = new Headers();
+        let token = window.localStorage['user'];
+        if(token !== undefined) {
+            header.append('Authorization', `${token}`);
+        }
 
         fetch(url, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: header
         }).then((resp) => { return resp.json() })
             .then((resp) => {
                 if (resp.error) {

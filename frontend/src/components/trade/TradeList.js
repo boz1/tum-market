@@ -21,7 +21,7 @@ export default class TradeList extends Component {
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
                     <div className="col-md-3 mt-5">
-                        <Colbar></Colbar>
+                        <Colbar categories={this.props.categories} subCategories={this.props.subCategories} getCategory={this.props.getCategory}></Colbar>
                     </div>
                     <div className="col-md-9">
                         <Title title="My Trade Requests" />

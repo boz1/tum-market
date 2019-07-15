@@ -97,7 +97,7 @@ export default class AdvertisementList extends Component {
     }
 
     changeMarket = () =>{
-        this.props.changeMarket('buy')
+        this.props.changeMarket('buyers')
     }
 
     render() {
@@ -110,7 +110,7 @@ export default class AdvertisementList extends Component {
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
                     <div className="col-md-3 mt-5">
-                        <Colbar props={this.props.categories}></Colbar>
+                        <Colbar getCategory={this.props.getCategory} categories={this.props.categories} subCategories={this.props.subCategories}></Colbar>
                     </div>
                     <div className="col-md-9">
                         <form className="form-inline">
