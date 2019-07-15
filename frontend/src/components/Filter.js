@@ -32,6 +32,10 @@ export default class Filter extends Component {
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
+    componentWillReceiveProps() {
+        this.setState({ market: "Seller's Market" })
+    }
+
     handleDropChange = (item, target) => {
         if (target === 'mainCategory') {
             this.setState({
@@ -101,7 +105,7 @@ export default class Filter extends Component {
         </Modal>
 
         if (this.props.categories.length > 0) {
-            mainCatContainer = <PropertyDropdown isRequired={false} handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
+            mainCatContainer = <PropertyDropdown isRequired={true} handleChange={this.handleDropChange} target="mainCategory" items={this.props.categories} title="Main Category" />
         }
 
         if (this.props.subCategories.length > 0) {
@@ -140,7 +144,7 @@ export default class Filter extends Component {
                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                     Title
                                  </Form.Label>
-                                <Form.Control required name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
+                                <Form.Control required name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{1,40}" title="Title can't be less than 1 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -211,7 +215,7 @@ export default class Filter extends Component {
                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
                                     Title
                                                  </Form.Label>
-                                <Form.Control required name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{5,40}" title="Title can't be less than 5 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
+                                <Form.Control required name="title" maxLength="40" type="text" placeholder="Title" onChange={this.handleChange} pattern="[a-zA-Z0-9äöüÄÖÜß\s\)\(-_.!]{1,40}" title="Title can't be less than 1 and more than 40 characters, and can only contain English, German and following characters .-_()*=+.!" />
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label className="text-sub-title pl-0" style={{ fontSize: "16px" }}>
@@ -240,7 +244,7 @@ export default class Filter extends Component {
             </div>
         }
 
-        let marketSwitch = <div className="row ml-2 title-text" style={{ marginTop: "5px" }}>{selectedMarketText}|<span style={{ color: "#707070", fontSize: "20px", marginLeft: "5px", cursor: "pointer" }} onClick={this.changeMarket}>{switchMarketText}</span></div>
+        let marketSwitch = <div className="row ml-2 text-title" style={{ marginTop: "5px", fontSize: "18px" }}><span className="mr-1">{selectedMarketText}</span>|<span style={{ color: "#707070", cursor: "pointer" }} className="ml-1 mr-2" onClick={this.changeMarket}>{switchMarketText}</span></div>
 
         return (
             <Modal show={this.props.show} onHide={this.props.close} backdrop="static" keyboard={false}>

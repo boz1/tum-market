@@ -178,39 +178,36 @@ class App extends Component {
   }
 
   filteredSearch(input) {
-    console.log(input)
-
     if (input.market === "Seller's Market") {
       const regix = new RegExp(`${input.title}`, 'i')
       this.setState({
-        sug: this.state.advertisements.filter(ad => 
-          (regix.test(ad.title) && 
-          (input.mainCategory === ad.mainCategory.id) &&
-          (input.subCategory === ad.subCategory.id) &&
-          (input.condition === ad.condition.id) &&
-          ((input.trade === "On" && ad.trade === true) || (input.trade === "Off" && ad.trade === false)) &&
-          (ad.price >= input.minPrice && ad.price <= input.maxPrice)
+        sug: this.state.advertisements.filter(ad =>
+          (regix.test(ad.title) &&
+            (input.mainCategory === ad.mainCategory.id) &&
+            (input.subCategory === ad.subCategory.id) &&
+            (input.condition === ad.condition.id) &&
+            ((input.trade === "On" && ad.trade === true) || (input.trade === "Off" && ad.trade === false)) &&
+            (parseFloat(ad.price) >= parseFloat(input.minPrice) && parseFloat(ad.price) <= parseFloat(input.maxPrice))
           )
-
         )
       }, () => this.forceUpdate())
       history.push('/')
     }
-    else { 
+    else {
       const regix = new RegExp(`${input.title}`, 'i')
       this.setState({
-        buySug: this.state.buyingRequests.filter(ad => 
-          (regix.test(ad.title) && 
-          (input.mainCategory === ad.mainCategory.id) &&
-          (input.subCategory === ad.subCategory.id) &&
-          (ad.price >= input.minPrice && ad.price <= input.maxPrice)
+        buySug: this.state.buyingRequests.filter(ad =>
+          (regix.test(ad.title) &&
+            (input.mainCategory === ad.mainCategory.id) &&
+            (input.subCategory === ad.subCategory.id) &&
+            (parseFloat(ad.price) >= parseFloat(input.minPrice) && parseFloat(ad.price) <= parseFloat(input.maxPrice))
           )
-
         )
       }, () => this.forceUpdate())
       history.push('/buyMarket')
     }
   }
+
   getCategory(cat) {
     const mainCat = cat.split('-')[0]
     const subCat = cat.split('-')[1]

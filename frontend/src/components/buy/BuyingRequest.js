@@ -22,7 +22,7 @@ export default class BuyingRequest extends Component {
                         <Card.Body className="p-2">
                             <Card.Title className="card-title">{this.props.buyingRequest.title}</Card.Title>
                             <hr></hr>
-                            <Card.Text class="card-subtitle text-right">
+                            <Card.Text className="card-subtitle text-right">
                                 <span className="float-left">{this.props.buyingRequest.mainCategory.title}</span>
                                 <span className="bold text-premium">{this.props.buyingRequest.price + " €"}</span>
                             </Card.Text>
