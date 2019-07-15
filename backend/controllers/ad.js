@@ -1,6 +1,6 @@
 "use strict";
 
-const firebase = require('../firebaseConfig')
+const firebase = require('../config/firebaseConfig');
 
 const deleteAd = (req, res) => {
     const id = req.params.id;

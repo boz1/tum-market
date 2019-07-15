@@ -122,8 +122,8 @@ export default class BuyDetails extends Component {
                         <div className="col-md-12 d-flex p-0">
                             <div className="col-md-8">
                                 <span className="text-sub-title">Details</span>
-                                <div className="d-flex mt-2 col-sm-12 p-0 detail-div">
-                                    <div className="col-sm-6 my-3">
+                                <div className="d-flex mt-2 col-sm-12 p-3 detail-div">
+                                    <div className="col-sm-12">
                                         <ul className="align-content-center category-list details-list">
                                             <li className="center-item"><span className="float-left">ID</span><strong>{buyingRequest.id}</strong></li>
                                             <hr></hr>

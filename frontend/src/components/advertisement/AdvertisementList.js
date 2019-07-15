@@ -5,7 +5,6 @@ import CardDeck from 'react-bootstrap/CardDeck';
 import Colbar from '../Colbar'
 import Dropdown from 'react-bootstrap/Dropdown';
 import ReactPaginate from 'react-paginate';
-import { Link } from 'react-router-dom'
 
 export default class AdvertisementList extends Component {
     constructor(props) {
@@ -97,17 +96,21 @@ export default class AdvertisementList extends Component {
         return pageData.map((ad) => <Advertisment key={ad.id} ad={ad} reRender={this.props.reRender} user={this.state.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />)
     }
 
+    changeMarket = () =>{
+        this.props.changeMarket('buyers')
+    }
+
     render() {
         let searchBar;
         if (this.props.searchBar !== undefined && this.props.searchBar !== null) {
             searchBar = this.props.searchBar;
         }
-        let buyersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<Link style={{ color: "#707070", fontSize: "20px", marginLeft:"5px" }} to="/buyMarket">Buyer's Market</Link></div>
+        let buyersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<span style={{ color: "#707070", fontSize: "20px", marginLeft:"5px", cursor:"pointer" }} onClick={this.changeMarket}>Buyer's Market</span></div>
         return (
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
                     <div className="col-md-3 mt-5">
-                        <Colbar props={this.props.categories}></Colbar>
+                        <Colbar getCategory={this.props.getCategory} categories={this.props.categories} subCategories={this.props.subCategories}></Colbar>
                     </div>
                     <div className="col-md-9">
                         <form className="form-inline">

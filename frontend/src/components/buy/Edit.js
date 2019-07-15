@@ -58,7 +58,7 @@ export default class Edit extends Component {
         const buy = this.props.buyingRequest;
 
         if (this.state[item] === "") {
-            if(item === "condition"){
+            if(item === "condition" || item === "mainCategory" || item === "subCategory"){
                 item = buy[item].id;
             }else{
                 item = buy[item];

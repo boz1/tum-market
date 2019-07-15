@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import BuyingRequest from './BuyingRequest'
 import Title from '../Title'
 import CardDeck from 'react-bootstrap/CardDeck';
@@ -109,18 +108,22 @@ export default class BuyList extends Component {
         this.setState({ showNewModal: false });
     }
 
+    changeMarket = () =>{
+        this.props.changeMarket('sellers')
+    }
+
     render() {
         let searchBar;
         if (this.props.searchBar !== undefined && this.props.searchBar !== null) {
             searchBar = this.props.searchBar;
         }
         const newModal = <NewBuyRequest show={this.state.showNewModal} close={this.handleClose} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} reRender={this.props.reRender} />
-        let sellersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<Link style={{ color: "#707070", fontSize: "20px", marginLeft:"5px" }} to="/">Seller's Market</Link></div>
+        let sellersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<span style={{ color: "#707070", fontSize: "20px", marginLeft:"5px", cursor:"pointer" }} onClick={this.changeMarket}>Seller's Market</span></div>
         return (
             <React.Fragment>
                 <div className='col-md-12 d-flex'>
                     <div className="col-md-3 mt-5">
-                        <Colbar props={this.props.categories}></Colbar>
+                        <Colbar getCategory={this.props.getCategory} categories={this.props.categories} subCategories={this.props.subCategories}></Colbar>
                     </div>
                     <div className="col-md-9">
                         <form className="form-inline">
@@ -130,7 +133,7 @@ export default class BuyList extends Component {
                             <div className="row mt-2 ml-auto">
                                 <div className="col-12">
                                     <Button type="submit" onClick={this.showModal} >New Request</Button>
-                                    <span style={{ fontSize: "16px", paddingTop: "7px", color: "#2A2525", marginLeft: "20px"}}>{this.state.sort}</span>
+                                    <span style={{ fontSize: "16px", paddingTop: "7px", color: "#2A2525", marginLeft: "5px"}}>{this.state.sort}</span>
                                     <Dropdown style={{ background: "#3482D1", borderRadius: "0.25rem", marginLeft: "20px" }}>
                                         <Dropdown.Toggle variant="info" id="dropdown-basic">Sort By</Dropdown.Toggle>
                                         <Dropdown.Menu alignRight>

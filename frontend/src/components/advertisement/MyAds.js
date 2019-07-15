@@ -35,7 +35,7 @@ export default class MyAds extends Component {
         return (
             <div>
                 <React.Fragment>
-                        <AdvertisementList title="My Advertisements" searchBar = {search} reRender={this.props.reRender} adsList={this.state.mysearch} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
+                        <AdvertisementList title="My Advertisements" getCategory={this.props.getCategory} searchBar = {search} reRender={this.props.reRender} adsList={this.state.mysearch} user={this.props.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />
                 </React.Fragment >
             </div>
         )

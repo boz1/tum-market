@@ -29,7 +29,7 @@ export default class BuyingRequestService {
                     resolve(data.message);
                 }
                 else {
-                    reject('Error while creating');
+                    reject('Error while updating');
                 }
             }, function (textStatus) {
                 reject(textStatus);

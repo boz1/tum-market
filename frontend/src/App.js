@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
-import firebase from './config/firebaseConfig'
 import Home from './components/Home';
 import Login from './components/Login';
 import HomeService from './services/HomeService'
+import AuthService from './services/AuthService'
+import history from './history'
 
 class App extends Component {
   constructor() {
@@ -28,11 +29,13 @@ class App extends Component {
     }
 
     this.search = this.search.bind(this);
+    this.filteredSearch = this.filteredSearch.bind(this);
     this.getAdvertisements = this.getAdvertisements.bind(this)
     this.getBuyingRequest = this.getBuyingRequest.bind(this)
     this.getMainContent = this.getMainContent.bind(this)
     this.getUserContent = this.getUserContent.bind(this)
     this.authListener = this.authListener.bind(this);
+    this.getCategory = this.getCategory.bind(this);
   }
 
   componentDidMount() {
@@ -40,7 +43,8 @@ class App extends Component {
   }
 
   authListener() {
-    firebase.auth().onAuthStateChanged((us) => {
+    AuthService.getUser().then((data) => {
+      let us = data.us
       if (us && us.emailVerified) {
         this.setState({ user: us, mount: 1 });
         localStorage.setItem('user', us.uid);
@@ -50,7 +54,10 @@ class App extends Component {
         this.setState({ user: "", mount: 1 });
         localStorage.removeItem('user');
       }
-    });
+    })
+      .catch((er) => {
+        console.log(er)
+      })
   }
 
   getUserContent(us) {
@@ -142,27 +149,88 @@ class App extends Component {
   }
 
   search(input) {
-    input.preventDefault()
-    if (this.state.market === 'sellers') {
-      if (input.target.value.length === 0)
-      this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
-      else {
-        const regix = new RegExp(`${input.target.value}`, 'i')
-        this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
+    if (input === "null" || input === undefined) {
+      if (this.state.market === 'sellers') {
+        this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
+      } else {
+        this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
       }
     }
-    else {      
-      if (input.target.value.length === 0)
-        this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
+    else {
+      input.preventDefault()
+      if (this.state.market === 'sellers') {
+        if (input.target.value.length === 0)
+          this.setState({ sug: this.state.advertisements }, () => this.forceUpdate())
+        else {
+          const regix = new RegExp(`${input.target.value}`, 'i')
+          this.setState({ sug: this.state.advertisements.filter(ad => regix.test(ad.title)) }, () => this.forceUpdate())
+        }
+      }
       else {
-        const regix = new RegExp(`${input.target.value}`, 'i')
-        this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () =>  this.forceUpdate())
+        if (input.target.value.length === 0)
+          this.setState({ buySug: this.state.buyingRequests }, () => this.forceUpdate())
+        else {
+          const regix = new RegExp(`${input.target.value}`, 'i')
+          this.setState({ buySug: this.state.buyingRequests.filter(buy => regix.test(buy.title)) }, () => this.forceUpdate())
+        }
       }
     }
   }
 
+  filteredSearch(input) {
+    if (input.market === "Seller's Market") {
+      const regix = new RegExp(`${input.title}`, 'i')
+      this.setState({
+        sug: this.state.advertisements.filter(ad =>
+          (regix.test(ad.title) &&
+            (input.mainCategory === ad.mainCategory.id) &&
+            (input.subCategory === ad.subCategory.id) &&
+            (input.condition === ad.condition.id) &&
+            ((input.trade === "On" && ad.trade === true) || (input.trade === "Off" && ad.trade === false)) &&
+            (parseFloat(ad.price) >= parseFloat(input.minPrice) && parseFloat(ad.price) <= parseFloat(input.maxPrice))
+          )
+        )
+      }, () => this.forceUpdate())
+      history.push('/')
+    }
+    else {
+      const regix = new RegExp(`${input.title}`, 'i')
+      this.setState({
+        buySug: this.state.buyingRequests.filter(ad =>
+          (regix.test(ad.title) &&
+            (input.mainCategory === ad.mainCategory.id) &&
+            (input.subCategory === ad.subCategory.id) &&
+            (parseFloat(ad.price) >= parseFloat(input.minPrice) && parseFloat(ad.price) <= parseFloat(input.maxPrice))
+          )
+        )
+      }, () => this.forceUpdate())
+      history.push('/buyMarket')
+    }
+  }
+
+  getCategory(cat) {
+    const mainCat = cat.split('-')[0]
+    const subCat = cat.split('-')[1]
+    // Main Category
+    if (subCat === "*") {
+      this.setState({
+        sug: this.state.advertisements.filter(ad =>
+          ad.mainCategoryId === parseInt(mainCat)
+        )
+      }, () => this.forceUpdate())
+      history.push('/')
+    }
+    else { // Sub Category
+      this.setState({
+        sug: this.state.advertisements.filter(ad =>
+          ad.mainCategoryId === parseInt(mainCat) && ad.subCategoryId === parseInt(subCat)
+        )
+      }, () => this.forceUpdate())
+      history.push('/')
+    }
+  }
   updateMarket = (market) => {
-    if(this.state.market !== market){
+    if (this.state.market !== market) {
       this.setState({
         market: market
       })
@@ -172,7 +240,7 @@ class App extends Component {
   render() {
     if (this.state.mount) {
       return (
-        <div>{this.state.user ? (<Home updateMarket={this.updateMarket} search={this.search} buyingRequests={this.state.buyingRequests}  buySug={this.state.buySug}  reRender={this.reRender} user={this.state.userInfo} advertisements={this.state.advertisements} sug={this.state.sug} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />) : <Login verify={this.authListener} />}</div>)
+        <div>{this.state.user ? (<Home getCategory={this.getCategory} updateMarket={this.updateMarket} filteredSearch={this.filteredSearch} search={this.search} buyingRequests={this.state.buyingRequests} buySug={this.state.buySug} reRender={this.reRender} user={this.state.userInfo} advertisements={this.state.advertisements} sug={this.state.sug} categories={this.state.categories} subCategories={this.state.subCategories} conditions={this.state.conditions} />) : <Login verify={this.authListener} />}</div>)
     }
     else {
       return (<div></div>)

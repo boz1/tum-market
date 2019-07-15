@@ -1,31 +1,32 @@
 "use strict"
 
-const firebase = require('../firebaseConfig')
+const firebase = require('../config/firebaseConfig');
+const config = require('../config/secret');
 const nodemailer = require("nodemailer");
 
 
-async function sendMail(to,subject,text,){
+async function sendMail(to, subject, text, ) {
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
-      host: "smtp-mail.outlook.com",
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: "tummarket@hotmail.com", // generated ethereal user
-        pass: "Tumm201(" // generated ethereal password
-      }
+        host: "smtp-mail.outlook.com",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: config.username,
+            pass: config.pass
+        }
     });
-  
+
     // send mail with defined transport object
     let info = await transporter.sendMail({
-      from: '"TumMarket"tummarket@hotmail.com', // sender address
-      to: to, // list of receivers
-      subject:  subject, // Subject line
-      text: text, // plain text body
+        from: '"Tum Market" tummarket@hotmail.com', // sender address
+        to: to, // list of receivers
+        subject: subject, // Subject line
+        text: text, // plain text body
     });
-  
-  }
 
+    console.log("Message sent: %s", info.messageId);
+}
 
 const getTradeReq = (req, res) => {
     const id = req.params.id;
@@ -72,40 +73,63 @@ const deleteSentReq = (req, res) => {
     const userId = req.params.userId;
     const userName = req.params.userName;
     const title = req.params.title;
+    const type = req.params.type;
+    const sellerId = req.params.sellerId;
     let checkTradeReqRef;
 
     let reqs = [];
-
     new Promise((resolve) => {
         checkTradeReqRef = firebase.database().ref('trade-requests').child(userId).orderByChild("offeredItemId").equalTo(id)
         checkTradeReqRef.once('value').then(snap => {
             if (snap.val() !== null) {
                 reqs = Object.values(snap.val())
             }
-
             resolve(reqs)
         })
     })
         .then((obj) => {
-            obj.forEach((req) => {
+            if (type === "ad") {
+                obj.forEach((req) => {
+                    firebase.database().ref('trade-requests').child(userId).child(req.id).remove()
+                    firebase.database().ref('received-offers').child(req.sellerId).child(req.id).remove()
 
-                firebase.database().ref('trade-requests').child(userId).child(req.id).remove()
-                firebase.database().ref('received-offers').child(req.sellerId).child(req.id).remove()
+                    var newPostKey = firebase.database().ref('notifications').child(req.sellerId).push().key;
+                    let message = userName + " has deleted their " + title + " advertisement. The trade request sent to you is also deleted."
+                    const notification = {
+                        id: newPostKey,
+                        message: message,
+                        isRead: false
+                    };
 
-                var newPostKey = firebase.database().ref('notifications').child(req.sellerId).push().key;
+                    firebase.database().ref('users').child(sellerId).once('value').then(async snap => sendMail(snap.val().email, 'Trade Request Deleted', notification.message))
 
+                    var updates = {};
+                    updates['/notifications/' + req.sellerId + '/' + newPostKey] = notification;
+                    firebase.database().ref().update(updates);
+                })
+
+                res.status(200).json({ message: `Sent requests are deleted` })
+
+            } else {
+                firebase.database().ref('trade-requests').child(userId).child(id).remove()
+                firebase.database().ref('received-offers').child(sellerId).child(id).remove()
+
+                var newPostKey = firebase.database().ref('notifications').child(sellerId).push().key;
+                let message = userName + " has deleted their trade request for your " + title + "."
                 const notification = {
                     id: newPostKey,
-                    message: userName + " has deleted their " + title + " advertisement. The trade offer sent to you is also deleted.",
+                    message: message,
                     isRead: false
                 };
 
-                var updates = {};
-                updates['/notifications/' + req.sellerId + '/' + newPostKey] = notification;
-                firebase.database().ref().update(updates);
-            })
+                firebase.database().ref('users').child(sellerId).once('value').then(async snap => sendMail(snap.val().email, 'Trade Request Deleted', notification.message))
 
-            res.status(200).json({ message: `Sent requests are deleted` })
+                var updates = {};
+                updates['/notifications/' + sellerId + '/' + newPostKey] = notification;
+                firebase.database().ref().update(updates);
+
+                res.status(200).json({ message: `Sent request is deleted` })
+            }
         })
         .catch(error => {
             res.status(500).json({
@@ -142,9 +166,11 @@ const deleteReceivedReq = (req, res) => {
 
                 const notification = {
                     id: newPostKey,
-                    message: userName + " has deleted their " + title + " advertisement. The trade offer you sent is also deleted.",
+                    message: userName + " has deleted their " + title + " advertisement. The trade request you sent is also deleted.",
                     isRead: false
                 };
+
+                firebase.database().ref('users').child(buyerId).once('value').then(async snap => sendMail(snap.val().email, 'Trade Request Deleted', notification.message))
 
                 var updates = {};
                 updates['/notifications/' + req.buyerId + '/' + newPostKey] = notification;
@@ -205,6 +231,8 @@ const sendTradeReq = (req, res) => {
             isRead: false
         };
 
+        sendMail(ad.user.email, 'New Trade Request', notification.message);
+
         var updates = {};
         updates['/trade-requests/' + user.info.id + '/' + newPostKey] = postDataBuyer;
         updates['/received-offers/' + ad.userId + '/' + newPostKey] = postDataSeller;
@@ -215,7 +243,162 @@ const sendTradeReq = (req, res) => {
         resolve();
     })
         .then(() => {
-            res.status(200).json({ message: `Created new ad` })
+            res.status(200).json({ message: `Sent trade request` })
+        })
+        .catch(error => {
+            res.status(500).json({
+                error: 'Internal server error',
+                message: error.message
+            })
+        })
+};
+
+const getReceivedItem = (req, res) => {
+    const buyerId = req.params.buyerId;
+    const userId = req.params.userId;
+    const receivedItemId = req.params.receivedItemId;
+    const sentItemId = req.params.sentItemId;
+
+    let receivedRef, sentItemRef, otherPartyRef;
+    let obj = {};
+
+    new Promise((resolve) => {
+        receivedRef = firebase.database().ref('advertisements').child(buyerId).child(receivedItemId)
+        receivedRef.once('value').then(snap => {
+            if (snap.val() !== null) {
+                let data = obj;
+                data.receivedItem = snap.val()
+                obj = data;
+                resolve(obj)
+            }
+        })
+    })
+        .then((obj) => {
+            return new Promise((resolve) => {
+                sentItemRef = firebase.database().ref('advertisements').child(userId).child(sentItemId)
+                sentItemRef.once('value').then(snap => {
+                    if (snap.val() !== null) {
+                        let data = obj;
+                        data.sentItem = snap.val()
+                        obj = data;
+                        resolve(obj)
+                    }
+                })
+            })
+        })
+        .then((obj) => {
+            return new Promise((resolve) => {
+                otherPartyRef = firebase.database().ref('users').child(buyerId)
+                otherPartyRef.once('value').then(snap => {
+                    if (snap.val() !== null) {
+                        let data = obj;
+                        data.otherParty = snap.val()
+                        obj = data;
+                        resolve(obj)
+                    }
+                })
+            })
+        })
+        .then((obj) => {
+            res.status(200).json({ obj });
+        })
+        .catch(error => {
+            res.status(500).json({
+                error: 'Internal server error',
+                message: error.message
+            })
+        })
+};
+
+const getSentItem = (req, res) => {
+    const sellerId = req.params.sellerId;
+    const userId = req.params.userId;
+    const targetItemId = req.params.targetItemId;
+    const offeredItemId = req.params.offeredItemId;
+
+    let receivedRef, sentItemRef, otherPartyRef;
+    let obj = {};
+
+    new Promise((resolve) => {
+        receivedRef = firebase.database().ref('advertisements').child(sellerId).child(targetItemId)
+        receivedRef.once('value').then(snap => {
+            if (snap.val() !== null) {
+                let data = obj;
+                data.receivedItem = snap.val()
+                obj = data;
+                resolve(obj)
+            }
+        })
+    })
+        .then((obj) => {
+            return new Promise((resolve) => {
+                sentItemRef = firebase.database().ref('advertisements').child(userId).child(offeredItemId)
+                sentItemRef.once('value').then(snap => {
+                    if (snap.val() !== null) {
+                        let data = obj;
+                        data.sentItem = snap.val()
+                        obj = data;
+                        resolve(obj)
+                    }
+                })
+            })
+        })
+        .then((obj) => {
+            return new Promise((resolve) => {
+                otherPartyRef = firebase.database().ref('users').child(sellerId)
+                otherPartyRef.once('value').then(snap => {
+                    if (snap.val() !== null) {
+                        let data = obj;
+                        data.otherParty = snap.val()
+                        obj = data;
+                        resolve(obj)
+                    }
+                })
+            })
+        })
+        .then((obj) => {
+            res.status(200).json({ obj });
+        })
+        .catch(error => {
+            res.status(500).json({
+                error: 'Internal server error',
+                message: error.message
+            })
+        })
+};
+
+const updateStatus = (req, res) => {
+    if (Object.keys(req.body).length === 0) return res.status(400).json({
+        error: 'Bad Request',
+        message: 'The request body is empty'
+    });
+
+    const item = req.body.item;
+    const user = req.body.user;
+    const title = req.body.title;
+    const status = req.body.status;
+
+    new Promise((resolve) => {
+        // Get a key for a new Post.
+        var newPostKey = firebase.database().ref('notifications').child(item.buyerId).push().key;
+
+        const notification = {
+            id: newPostKey,
+            message: user.name + " has " + status.toLowerCase() + " your trade request for " + title + ".",
+            isRead: false
+        };
+
+        var updates = {};
+        updates['/trade-requests/' + item.buyerId + '/' + item.id + '/status'] = status;
+        updates['/received-offers/' + item.userId + '/' + item.id + '/status'] = status;
+        updates['/notifications/' + item.buyerId + '/' + newPostKey] = notification;
+
+        firebase.database().ref().update(updates);
+
+        resolve();
+    })
+        .then(() => {
+            res.status(200).json({ message: `Updated status` })
         })
         .catch(error => {
             res.status(500).json({
@@ -229,5 +412,8 @@ module.exports = {
     getTradeReq,
     deleteSentReq,
     deleteReceivedReq,
-    sendTradeReq
+    sendTradeReq,
+    getReceivedItem,
+    getSentItem,
+    updateStatus
 };

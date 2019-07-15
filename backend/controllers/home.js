@@ -1,6 +1,6 @@
 "use strict";
 
-const firebase = require('../firebaseConfig')
+const firebase = require('../config/firebaseConfig');
 
 const getMainContent = (req, res) => {
   let categoriesRef, subCategoriesRef, conditionsRef, adsRef, usersRef, buyRef;
@@ -71,21 +71,9 @@ const getMainContent = (req, res) => {
       })
     })
     .then((obj) => {
-      res.status(200).json({ obj });
-      // categoriesRef.off('value')
-      // categoriesRef = null;
-
-      // subCategoriesRef.off('value')
-      // subCategoriesRef = null;
-
-      // conditionsRef.off('value')
-      // conditionsRef = null;
-
-      // adsRef.off('value')
-      // adsRef = null;
-
-      // usersRef.off('value')
-      // usersRef.off('value')
+      if (!res.headersSent) {
+        res.status(200).json({ obj });
+      }
     })
     .catch((er) => {
       console.log(er)
@@ -160,7 +148,9 @@ const getUserContent = (req, res) => {
       })
     })
     .then((obj) => {
-      res.status(200).json({ obj });
+      if (!res.headersSent) {
+        res.status(200).json({ obj });
+      }
 
       userAdsRef.off('value')
       userAdsRef = null;
