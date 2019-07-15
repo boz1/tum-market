@@ -160,7 +160,7 @@ export default class TradeRequest extends Component {
         sentStatus = <span className="float-right offer-reject" style={{ cursor: "pointer" }} onClick={this.showDeleteModal}><FontAwesomeIcon icon={faTimes} /></span>
 
         if (type === "received") {
-            request = <Card className="w-100 h-auto">
+            request = <Card className="w-100 h-auto  mt-2">
                 <Card.Header>
                     <span className="text-sub-title" style={{ color: "coral" }}>Received Offer
                         {receivedStatus}

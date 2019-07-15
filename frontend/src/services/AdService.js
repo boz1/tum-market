@@ -6,6 +6,7 @@ export default class AdService {
     static baseURL() { return "http://localhost:9000/ad"; }
 
     static deleteAd(ad) {
+        console.log(ad)
         return new Promise((resolve, reject) => {
             HttpService.remove(`${AdService.baseURL()}/${ad.userId}/${ad.id}`,
                 function (data) {

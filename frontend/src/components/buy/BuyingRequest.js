@@ -17,13 +17,13 @@ export default class BuyingRequest extends Component {
         }
         return (
             <div>
-                <Link to={{ pathname: '/buyDetails/' + this.props.buyingRequest.id, state: { buyingRequest: this.props.buyingRequest, user: this.props.user, categories: this.props.categories, subCategories: this.props.subCategories }, func: this.props.reRender }} className="my-3 mx-auto">
+                <Link to={{ pathname: '/buyDetails/' + this.props.buyingRequest.id, state: { buyingRequest: this.props.buyingRequest, user: this.props.user, categories: this.props.categories, subCategories: this.props.subCategories }, func: this.props.reRender }} className="my-3 mx-auto text-decoration-none">
                     <Card style={{ width: '15rem', marginBottom: "10px" }} className={isPremium ? "premium" : ""}>
                         <Card.Body className="p-2">
                             <Card.Title className="card-title">{this.props.buyingRequest.title}</Card.Title>
                             <hr></hr>
                             <Card.Text class="card-subtitle text-right">
-                                {this.props.buyingRequest.mainCategory.title + "  -  "}
+                                <span className="float-left">{this.props.buyingRequest.mainCategory.title}</span>
                                 <span className="bold text-premium">{this.props.buyingRequest.price + " €"}</span>
                             </Card.Text>
                             <Card.Text className="bold text-right">

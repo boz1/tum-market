@@ -213,6 +213,7 @@ a[aria-disabled="true"] {
 }
 
 .card-title{
-  color: #444444;
+  color: #707070;
   font-weight: bold;
+  font-size:18px !important;
 }
