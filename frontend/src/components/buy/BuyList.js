@@ -32,7 +32,12 @@ export default class BuyList extends Component {
     }
 
     componentWillReceiveProps() {
-        this.setState({ data: this.props.buyingRequests, pageCount: Math.ceil(this.props.buyingRequests.length / this.state.itemPerPage), user: this.props.user })
+        if (this.props.buyingRequests !== undefined && Array.isArray(this.props.buyingRequests)) {
+            this.props.buyingRequests.sort(function (a, b) {
+                return b.user.isPremium - a.user.isPremium
+            });
+        }
+        this.setState({ data: this.props.buyingRequests, pageCount: Math.ceil(this.props.buyingRequests.length / this.state.itemPerPage), user: this.props.user, sort: "" })
     }
 
     dynamicSort(property) {
@@ -91,8 +96,8 @@ export default class BuyList extends Component {
         const topLimit = (this.state.currentPage + 1) * this.state.itemPerPage
         let pageData = this.state.data.slice(bottomLimit, topLimit)
         if (this.state.sort === '') {
-            pageData.sort(function (obj1, obj2) {
-                return (obj1.user.isPremium === obj2.user.isPremium) ? 0 : obj1 ? -1 : 1;
+            pageData.sort(function (a, b) {
+                return b.user.isPremium-a.user.isPremium
             });
         }
 
