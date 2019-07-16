@@ -6,7 +6,7 @@ export default class TradeService {
 
     static deleteSentReq(ad, type) {
         let title, username,sellerId;
-        console.log(ad)
+
         if(type==="req"){
             title = "-";
             username = ad.username;
