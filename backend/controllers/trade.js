@@ -77,6 +77,8 @@ const deleteSentReq = (req, res) => {
     const sellerId = req.params.sellerId;
     let checkTradeReqRef;
 
+    console.log(title)
+
     let reqs = [];
     new Promise((resolve) => {
         checkTradeReqRef = firebase.database().ref('trade-requests').child(userId).orderByChild("offeredItemId").equalTo(id)
@@ -115,7 +117,7 @@ const deleteSentReq = (req, res) => {
                 firebase.database().ref('received-offers').child(sellerId).child(id).remove()
 
                 var newPostKey = firebase.database().ref('notifications').child(sellerId).push().key;
-                let message = userName + " has deleted their trade request for your " + title + "."
+                let message = userName + " has deleted their trade request."
                 const notification = {
                     id: newPostKey,
                     message: message,
