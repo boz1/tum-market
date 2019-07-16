@@ -21,7 +21,7 @@ export default class Advertisement extends Component {
                         <Link to={{ pathname: '/adDetails/' + this.props.ad.id, state: { ad: this.props.ad, user: this.props.user, categories: this.props.categories, subCategories: this.props.subCategories, conditions: this.props.conditions}, func: this.props.reRender }} className="my-3 mx-auto">
                             <img
                                 src={this.props.ad.image}
-                                style={{ height: "150px" }}
+                                style={{ height: "150px", maxWidth: "180px"}}
                                 alt="Product"
                             />
                         </Link>
