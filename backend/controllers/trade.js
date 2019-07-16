@@ -77,8 +77,6 @@ const deleteSentReq = (req, res) => {
     const sellerId = req.params.sellerId;
     let checkTradeReqRef;
 
-    console.log(title)
-
     let reqs = [];
     new Promise((resolve) => {
         checkTradeReqRef = firebase.database().ref('trade-requests').child(userId).orderByChild("offeredItemId").equalTo(id)
