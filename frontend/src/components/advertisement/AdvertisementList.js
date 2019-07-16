@@ -29,7 +29,12 @@ export default class AdvertisementList extends Component {
     }
 
     componentWillReceiveProps() {
-        this.setState({ data: this.props.adsList, pageCount: Math.ceil(this.props.adsList.length / this.state.itemPerPage), user: this.props.user })
+        if (this.props.adsList !== undefined && Array.isArray(this.props.adsList)) {
+            this.props.adsList.sort(function (a, b) {
+                return b.user.isPremium - a.user.isPremium
+            });
+        }
+        this.setState({ data: this.props.adsList, pageCount: Math.ceil(this.props.adsList.length / this.state.itemPerPage), user: this.props.user, sort: "" })
     }
 
     dynamicSort(property) {
@@ -88,15 +93,15 @@ export default class AdvertisementList extends Component {
         const topLimit = (this.state.currentPage + 1) * this.state.itemPerPage
         let pageData = this.state.data.slice(bottomLimit, topLimit)
         if (this.state.sort === '') {
-            pageData.sort(function (obj1, obj2) {
-                return (obj1.user.isPremium === obj2.user.isPremium) ? 0 : obj1 ? -1 : 1;
+            pageData.sort(function (a, b) {
+                return b.user.isPremium - a.user.isPremium
             });
         }
 
         return pageData.map((ad) => <Advertisment key={ad.id} ad={ad} reRender={this.props.reRender} user={this.state.user} categories={this.props.categories} subCategories={this.props.subCategories} conditions={this.props.conditions} />)
     }
 
-    changeMarket = () =>{
+    changeMarket = () => {
         this.props.changeMarket('buyers')
     }
 
@@ -105,7 +110,7 @@ export default class AdvertisementList extends Component {
         if (this.props.searchBar !== undefined && this.props.searchBar !== null) {
             searchBar = this.props.searchBar;
         }
-        let buyersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop:"5px" }}>|<span style={{ color: "#707070", fontSize: "20px", marginLeft:"5px", cursor:"pointer" }} onClick={this.changeMarket}>Buyer's Market</span></div>
+        let buyersMarket = <div className="row ml-2" style={{ color: "#707070", fontSize: "20px", marginTop: "5px" }}>|<span style={{ color: "#707070", fontSize: "20px", marginLeft: "5px", cursor: "pointer" }} onClick={this.changeMarket}>Buyer's Market</span></div>
         return (
             <React.Fragment>
                 <div className='col-md-12 d-flex'>

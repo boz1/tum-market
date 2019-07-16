@@ -124,14 +124,12 @@ class App extends Component {
       if (data.buyreqs.length !== 0) {
         Object.keys(data.buyreqs).forEach(function (user) {
           Object.values(data.buyreqs[user]).forEach(function (buy) {
-
             if (buy !== null) {
               buy.user = data.users[user]
               buy.mainCategory = data.categories[buy.mainCategoryId]
               buy.subCategory = data.subCategories[buy.mainCategoryId][buy.subCategoryId]
               buyreqs.push(buy)
             }
-
           })
         })
       }
@@ -229,6 +227,7 @@ class App extends Component {
       history.push('/')
     }
   }
+
   updateMarket = (market) => {
     if (this.state.market !== market) {
       this.setState({
