@@ -27,7 +27,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(middlewares.allowCrossDomain);
 
-
 app.use('/', home);
 app.use('/auth', auth);
 app.use('/ad', ad);
